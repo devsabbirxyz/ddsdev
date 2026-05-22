@@ -348,12 +348,12 @@ export const saveSetting = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-// ----- Slides (hero + offer) -----
+// ----- Slides (hero + offer + review) -----
 export const saveSlide = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((i: unknown) =>
     z.object({
-      kind: z.enum(["hero", "offer"]),
+      kind: z.enum(["hero", "offer", "review"]),
       id: z.string().uuid().optional(),
       image_url: z.string().url(),
       link_url: z.string().max(500).optional().nullable(),
@@ -363,14 +363,18 @@ export const saveSlide = createServerFn({ method: "POST" })
     }).parse(i),
   )
   .handler(async ({ data }) => {
-    const table = data.kind === "hero" ? "hero_slides" : "offer_slides";
+    const table =
+      data.kind === "hero" ? "hero_slides" :
+      data.kind === "offer" ? "offer_slides" : "review_slides";
     const payload: any = {
       image_url: data.image_url,
-      link_url: data.link_url ?? null,
-      alt_text: data.alt_text ?? null,
       sort_order: data.sort_order ?? 0,
       is_active: data.is_active ?? true,
     };
+    if (data.kind !== "review") {
+      payload.link_url = data.link_url ?? null;
+      payload.alt_text = data.alt_text ?? null;
+    }
     if (data.id) {
       const { error } = await supabaseAdmin.from(table).update(payload).eq("id", data.id);
       if (error) throw new Error(error.message);
@@ -384,11 +388,43 @@ export const saveSlide = createServerFn({ method: "POST" })
 export const deleteSlide = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((i: unknown) =>
-    z.object({ kind: z.enum(["hero", "offer"]), id: z.string().uuid() }).parse(i),
+    z.object({ kind: z.enum(["hero", "offer", "review"]), id: z.string().uuid() }).parse(i),
   )
   .handler(async ({ data }) => {
-    const table = data.kind === "hero" ? "hero_slides" : "offer_slides";
+    const table =
+      data.kind === "hero" ? "hero_slides" :
+      data.kind === "offer" ? "offer_slides" : "review_slides";
     const { error } = await supabaseAdmin.from(table).delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ----- Bulk settings save -----
+export const saveSettingsBulk = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({
+      items: z.array(z.object({
+        key: z.string().min(1).max(100),
+        value: z.string().max(20000),
+        group_name: z.string().max(50).optional(),
+      })).min(1).max(50),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    for (const it of data.items) {
+      const { data: existing } = await supabaseAdmin
+        .from("site_settings").select("id").eq("key", it.key).maybeSingle();
+      if (existing) {
+        const { error } = await supabaseAdmin.from("site_settings")
+          .update({ value: it.value, group_name: it.group_name ?? null }).eq("id", existing.id);
+        if (error) throw new Error(error.message);
+      } else {
+        const { error } = await supabaseAdmin.from("site_settings")
+          .insert({ key: it.key, value: it.value, group_name: it.group_name ?? null });
+        if (error) throw new Error(error.message);
+      }
+    }
+    return { ok: true };
+  });
+
