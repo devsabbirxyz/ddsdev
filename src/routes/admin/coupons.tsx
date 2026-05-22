@@ -116,7 +116,7 @@ function AdminCoupons() {
             <thead className="bg-background/40">
               <tr className="text-left">
                 <Th>Code</Th><Th>Discount</Th><Th>Min Order</Th>
-                <Th>Used</Th><Th>Status</Th><Th>Expires</Th><Th></Th>
+                <Th>Used</Th><Th>Status</Th><Th>Expires</Th><Th>{" "}</Th>
               </tr>
             </thead>
             <tbody>
