@@ -136,27 +136,35 @@ function HomePage() {
 
       {/* FEATURED PRODUCTS */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <div className="text-xs text-primary font-bold uppercase tracking-wider">⭐ ফিচারড</div>
-            <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
-              সেরা <span className="text-gradient-brand">প্রোডাক্টসমূহ</span>
-            </h2>
-          </div>
-          <Link to="/shop" className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+        <div className="text-center mb-8 mx-auto max-w-2xl">
+          <div className="text-xs text-primary font-bold uppercase tracking-wider">⭐ ফিচারড</div>
+          <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
+            সেরা <span className="text-gradient-brand">প্রোডাক্টসমূহ</span>
+          </h2>
+          <p className="mt-3 text-sm text-muted-foreground">আমাদের জনপ্রিয় ফ্রি ও প্রিমিয়াম ডিজিটাল প্রোডাক্টসমূহ দেখুন।</p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <FreeDemoCard
+            title="Social Media Marketing Guide 2024"
+            category="Digital Guide"
+            description="সোশ্যাল মিডিয়া মার্কেটিং এর সম্পূর্ণ গাইড। ডাউনলোড করুন বিনামূল্যে।"
+            downloads={1240}
+          />
+          <FreeDemoCard
+            title="Canva Premium Templates Pack"
+            category="Design Templates"
+            description="৫০+ প্রিমিয়াম ক্যানভা টেমপ্লেট। ব্যবসার জন্য রেডিমেড ডিজাইন।"
+            downloads={862}
+          />
+          {products.slice(0, 6).map((p) => <ProductCard key={p.id} p={p} />)}
+        </div>
+
+        <div className="mt-6 text-center sm:hidden">
+          <Link to="/shop" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
             সব দেখুন <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        {products.length === 0 ? (
-          <div className="glass-card rounded-3xl p-10 text-center">
-            <h3 className="font-display font-bold text-xl">প্রোডাক্ট শীঘ্রই আসছে</h3>
-            <p className="mt-2 text-sm text-muted-foreground">অ্যাডমিন প্যানেল (Phase 7) থেকে প্রোডাক্ট যোগ করার পর এখানে দেখা যাবে।</p>
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {products.slice(0, 8).map((p) => <ProductCard key={p.id} p={p} />)}
-          </div>
-        )}
       </section>
 
       {/* SPECIAL OFFER */}
