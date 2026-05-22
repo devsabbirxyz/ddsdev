@@ -1,11 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import * as LucideIcons from "lucide-react";
 import { Zap, ShieldCheck, Headphones, Users, BadgeCheck, ArrowRight, Star, Mail, CheckCircle2, Download } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { productsQuery, blogPostsQuery, reviewSlidesQuery } from "@/lib/storefront";
+import { siteSettingsQuery, offerBannerQuery, parseTrustBar, HOMEPAGE_KEYS } from "@/lib/site-settings";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { supabase } from "@/integrations/supabase/client";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -38,23 +41,37 @@ function HomePage() {
   const { data: latest = [] } = useQuery(productsQuery({ sort: "new", limit: 4 }));
   const { data: posts = [] } = useQuery(blogPostsQuery(3));
   const { data: slides = [] } = useQuery(reviewSlidesQuery());
+  const { data: settings = {} } = useQuery(siteSettingsQuery);
+  const { data: offerBanner } = useQuery(offerBannerQuery);
 
   const products = featured.length > 0 ? featured : latest;
 
-  const trustItems = [
-    { icon: BadgeCheck, label: "Best Quality", sub: "100% Authentic" },
-    { icon: ShieldCheck, label: "Secure Payments", sub: "Bkash • Nagad • Rocket" },
-    { icon: Headphones, label: "24/7 Support", sub: "Anydesk / Teamviewer" },
-    { icon: Zap, label: "Instant Delivery", sub: "অটো ডেলিভারি" },
-    { icon: Users, label: "1000+ Customers", sub: "Happy & Trusted" },
-    { icon: Star, label: "Top Rated", sub: "5★ Reviews" },
+  const defaultTrust = [
+    { icon: "BadgeCheck", label: "Best Quality", sub: "100% Authentic" },
+    { icon: "ShieldCheck", label: "Secure Payments", sub: "Bkash • Nagad • Rocket" },
+    { icon: "Headphones", label: "24/7 Support", sub: "Anydesk / Teamviewer" },
+    { icon: "Zap", label: "Instant Delivery", sub: "অটো ডেলিভারি" },
+    { icon: "Users", label: "1000+ Customers", sub: "Happy & Trusted" },
+    { icon: "Star", label: "Top Rated", sub: "5★ Reviews" },
   ];
+  const trustParsed = parseTrustBar(settings[HOMEPAGE_KEYS.trust_bar]);
+  const trustItems = (trustParsed.length > 0 ? trustParsed : defaultTrust).map((it) => ({
+    icon: (LucideIcons as any)[it.icon] ?? BadgeCheck,
+    label: it.label,
+    sub: it.sub,
+  }));
+
+  const heroBadge = settings[HOMEPAGE_KEYS.hero_badge] || t("hero_badge");
+  const heroTagline = settings[HOMEPAGE_KEYS.hero_tagline] || `${t("tagline")} — সাবস্ক্রিপশন, সফটওয়্যার, অ্যাকাউন্ট, ডাউনলোডেবল প্রোডাক্ট সবকিছু এক জায়গায়। ইনস্ট্যান্ট অটো ডেলিভারি।`;
+  const ctaPrimary = settings[HOMEPAGE_KEYS.hero_cta_primary] || t("shop_now");
+  const ctaSecondary = settings[HOMEPAGE_KEYS.hero_cta_secondary] || "আরও জানুন";
+  const announcement = settings[HOMEPAGE_KEYS.announcement] || "🎉 লঞ্চিং অফার — প্রথম ১০০ অর্ডারে ১৫% ছাড়, কুপন কোড: DDS15";
 
   return (
     <>
       {/* Announcement bar */}
       <div className="bg-gradient-brand text-primary-foreground text-center text-xs sm:text-sm py-2 px-4 font-medium">
-        🎉 লঞ্চিং অফার — প্রথম ১০০ অর্ডারে ১৫% ছাড়, কুপন কোড: <span className="font-bold">DDS15</span>
+        {announcement}
       </div>
 
       {/* HERO */}
@@ -66,25 +83,32 @@ function HomePage() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 pt-8 pb-28 text-center">
           <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium">
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            {t("hero_badge")}
+            {heroBadge}
           </div>
 
-          {/* Offer banner image placeholder */}
+          {/* Offer banner image (admin-editable via /admin/homepage) */}
           <div className="mt-8 w-full rounded-3xl overflow-hidden bg-muted/40 border border-glass-border aspect-[16/6] grid place-items-center">
-            <img src="" alt="offer banner" className="w-full h-full object-cover" />
+            {offerBanner?.image_url ? (
+              offerBanner.link_url ? (
+                <a href={offerBanner.link_url} className="block w-full h-full"><img src={offerBanner.image_url} alt={offerBanner.alt_text ?? "offer banner"} className="w-full h-full object-cover" /></a>
+              ) : (
+                <img src={offerBanner.image_url} alt={offerBanner.alt_text ?? "offer banner"} className="w-full h-full object-cover" />
+              )
+            ) : (
+              <span className="text-xs text-muted-foreground">Offer Banner — admin panel থেকে ইমেজ আপলোড করুন</span>
+            )}
           </div>
 
-          <p className="mt-8 mx-auto max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
-            {t("tagline")} — সাবস্ক্রিপশন, সফটওয়্যার, অ্যাকাউন্ট, ডাউনলোডেবল প্রোডাক্ট সবকিছু এক জায়গায়। ইনস্ট্যান্ট অটো ডেলিভারি।
-          </p>
+          <p className="mt-8 mx-auto max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">{heroTagline}</p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Link to="/shop" className="rounded-2xl bg-gradient-brand px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-glow hover:scale-105 transition inline-flex items-center gap-2">
-              {t("shop_now")} <ArrowRight className="h-4 w-4" />
+              {ctaPrimary} <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/dashboard" className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">আরও জানুন</Link>
+            <Link to="/dashboard" className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">{ctaSecondary}</Link>
           </div>
         </div>
       </section>
+
 
       {/* TRUST BAR — glassmorphism */}
       <section className="py-8">

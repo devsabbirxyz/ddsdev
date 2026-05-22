@@ -4,7 +4,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, ShoppingBag, Store, Users, Package, Wallet,
-  Tag, Image as ImageIcon, Settings,
+  Tag, Image as ImageIcon, Settings, Home,
 } from "lucide-react";
 
 const adminAuthQuery = queryOptions({
@@ -28,6 +28,7 @@ export const Route = createFileRoute("/admin")({
 
 const nav = [
   { to: "/admin", label: "ওভারভিউ", icon: LayoutDashboard, exact: true },
+  { to: "/admin/homepage", label: "হোমপেজ CMS", icon: Home },
   { to: "/admin/orders", label: "অর্ডার", icon: ShoppingBag },
   { to: "/admin/sellers", label: "সেলার", icon: Store },
   { to: "/admin/affiliates", label: "অ্যাফিলিয়েট", icon: Users },
@@ -37,6 +38,7 @@ const nav = [
   { to: "/admin/slides", label: "স্লাইড", icon: ImageIcon },
   { to: "/admin/settings", label: "সেটিংস", icon: Settings },
 ];
+
 
 function AdminLayout() {
   const navigate = useNavigate();
