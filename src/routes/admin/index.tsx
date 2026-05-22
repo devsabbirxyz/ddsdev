@@ -5,6 +5,7 @@ import { formatBDT } from "@/lib/storefront";
 
 const overviewQuery = queryOptions({
   queryKey: ["admin", "overview"],
+  staleTime: 60_000,
   queryFn: async () => {
     const [orders, sellers, affiliates, products, pendingOrders, pendingSellers, pendingAffiliates, pendingProducts, pendingWithdrawalsS, pendingWithdrawalsA] = await Promise.all([
       supabase.from("orders").select("total_price", { count: "exact" }),
