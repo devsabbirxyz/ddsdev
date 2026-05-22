@@ -462,7 +462,10 @@ export const saveProduct = createServerFn({ method: "POST" })
       long_description: z.string().max(20000).optional().nullable(),
       long_description_en: z.string().max(20000).optional().nullable(),
       regular_price: z.number().min(0).optional().nullable(),
-      offer_price: z.number().min(0).optional().nullable(),
+      offer_price: z.preprocess(
+        (value) => typeof value === "number" && value < 0 ? null : value,
+        z.number().min(0).optional().nullable(),
+      ),
       delivery_type: z.enum(DELIVERY_TYPES),
       delivery_content: z.string().max(20000).optional().nullable(),
       subscription_input_label: z.string().max(200).optional().nullable(),
