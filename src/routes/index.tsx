@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Zap, ShieldCheck, Headphones, Users, BadgeCheck, ArrowRight, Star, Mail, CheckCircle2, Download } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { productsQuery, blogPostsQuery, reviewSlidesQuery } from "@/lib/storefront";
-import { ProductCard, type ProductCardData } from "@/components/storefront/ProductCard";
+import { ProductCard } from "@/components/storefront/ProductCard";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
