@@ -42,12 +42,12 @@ function HomePage() {
   const products = featured.length > 0 ? featured : latest;
 
   const trustItems = [
-    { icon: Trophy, label: "Best Quality", sub: "100% Authentic" },
-    { icon: Lock, label: "Secure Payments", sub: "Bkash • Nagad • Rocket" },
+    { icon: BadgeCheck, label: "Best Quality", sub: "100% Authentic" },
+    { icon: ShieldCheck, label: "Secure Payments", sub: "Bkash • Nagad • Rocket" },
     { icon: Headphones, label: "24/7 Support", sub: "Anydesk / Teamviewer" },
     { icon: Zap, label: "Instant Delivery", sub: "অটো ডেলিভারি" },
     { icon: Users, label: "1000+ Customers", sub: "Happy & Trusted" },
-    { icon: Shield, label: "Safe & Private", sub: "Privacy Protected" },
+    { icon: Star, label: "Top Rated", sub: "5★ Reviews" },
   ];
 
   return (
