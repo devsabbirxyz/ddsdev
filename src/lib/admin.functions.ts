@@ -681,3 +681,49 @@ export const deletePaymentMethod = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ----- Coupons -----
+export const saveCoupon = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({
+      id: z.string().uuid().optional().nullable(),
+      code: z.string().min(2).max(50).regex(/^[A-Za-z0-9_-]+$/),
+      discount_type: z.enum(["percentage", "fixed"]),
+      discount_value: z.number().min(0),
+      minimum_order: z.number().min(0).optional(),
+      max_uses: z.number().int().min(0).optional().nullable(),
+      max_uses_per_user: z.number().int().min(1).optional(),
+      applies_to: z.enum(["all", "categories", "products"]).optional(),
+      start_date: z.string().optional().nullable(),
+      end_date: z.string().optional().nullable(),
+      is_active: z.boolean().optional(),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { id, ...rest } = data;
+    const payload = {
+      ...rest,
+      code: rest.code.toUpperCase(),
+      max_uses: rest.max_uses ?? null,
+      start_date: rest.start_date || null,
+      end_date: rest.end_date || null,
+    };
+    if (id) {
+      const { error } = await supabaseAdmin.from("coupons").update(payload).eq("id", id);
+      if (error) throw new Error(error.message);
+      return { ok: true, id };
+    }
+    const { data: ins, error } = await supabaseAdmin.from("coupons").insert(payload).select("id").single();
+    if (error) throw new Error(error.message);
+    return { ok: true, id: ins.id };
+  });
+
+export const deleteCoupon = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("coupons").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

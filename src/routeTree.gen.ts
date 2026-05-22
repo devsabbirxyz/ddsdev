@@ -49,6 +49,7 @@ import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
 import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
+import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminAffiliatesRouteImport } from './routes/admin/affiliates'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -267,6 +268,11 @@ const AdminHomepageRoute = AdminHomepageRouteImport.update({
   path: '/homepage',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCouponsRoute = AdminCouponsRouteImport.update({
+  id: '/coupons',
+  path: '/coupons',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
@@ -391,6 +397,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/coupons': typeof AdminCouponsRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
@@ -446,6 +453,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/coupons': typeof AdminCouponsRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
@@ -506,6 +514,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/coupons': typeof AdminCouponsRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
@@ -567,6 +576,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/admin/affiliates'
     | '/admin/categories'
+    | '/admin/coupons'
     | '/admin/homepage'
     | '/admin/orders'
     | '/admin/payments'
@@ -622,6 +632,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/admin/affiliates'
     | '/admin/categories'
+    | '/admin/coupons'
     | '/admin/homepage'
     | '/admin/orders'
     | '/admin/payments'
@@ -681,6 +692,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/admin/affiliates'
     | '/admin/categories'
+    | '/admin/coupons'
     | '/admin/homepage'
     | '/admin/orders'
     | '/admin/payments'
@@ -1023,6 +1035,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminHomepageRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/coupons': {
+      id: '/admin/coupons'
+      path: '/coupons'
+      fullPath: '/admin/coupons'
+      preLoaderRoute: typeof AdminCouponsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/categories': {
       id: '/admin/categories'
       path: '/categories'
@@ -1226,6 +1245,7 @@ const AdminProductsRouteWithChildren = AdminProductsRoute._addFileChildren(
 interface AdminRouteChildren {
   AdminAffiliatesRoute: typeof AdminAffiliatesRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminCouponsRoute: typeof AdminCouponsRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
   AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
   AdminPaymentsRoute: typeof AdminPaymentsRoute
@@ -1240,6 +1260,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAffiliatesRoute: AdminAffiliatesRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminCouponsRoute: AdminCouponsRoute,
   AdminHomepageRoute: AdminHomepageRoute,
   AdminOrdersRoute: AdminOrdersRouteWithChildren,
   AdminPaymentsRoute: AdminPaymentsRoute,
