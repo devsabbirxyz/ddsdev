@@ -25,7 +25,7 @@ const myProductsQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_seller/products")({
+export const Route = createFileRoute("/seller/products")({
   head: () => ({ meta: [{ title: "My Products — Seller" }, { name: "robots", content: "noindex" }] }),
   component: SellerProducts,
 });

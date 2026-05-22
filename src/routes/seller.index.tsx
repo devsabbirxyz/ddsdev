@@ -23,7 +23,7 @@ const overviewQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_seller/")({
+export const Route = createFileRoute("/seller/")({
   head: () => ({ meta: [{ title: "Seller Overview — DDS-Digital" }, { name: "robots", content: "noindex" }] }),
   component: SellerOverview,
 });

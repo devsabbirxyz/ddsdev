@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect, Link } from "@tanstack/react-router"
 import { supabase } from "@/integrations/supabase/client";
 import { Store, Package, ShoppingBag, Wallet, Settings } from "lucide-react";
 
-export const Route = createFileRoute("/_seller")({
+export const Route = createFileRoute("/seller")({
   beforeLoad: async ({ location }) => {
     const { data: sess } = await supabase.auth.getSession();
     if (!sess.session) {

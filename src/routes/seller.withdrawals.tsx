@@ -24,7 +24,7 @@ const wdQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_seller/withdrawals")({
+export const Route = createFileRoute("/seller/withdrawals")({
   head: () => ({ meta: [{ title: "Withdrawals — Seller" }, { name: "robots", content: "noindex" }] }),
   component: SellerWithdrawals,
 });

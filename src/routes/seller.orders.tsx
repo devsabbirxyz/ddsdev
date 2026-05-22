@@ -22,7 +22,7 @@ const sellerOrdersQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_seller/orders")({
+export const Route = createFileRoute("/seller/orders")({
   head: () => ({ meta: [{ title: "Seller Orders — DDS-Digital" }, { name: "robots", content: "noindex" }] }),
   component: SellerOrders,
 });

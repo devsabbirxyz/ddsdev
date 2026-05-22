@@ -17,13 +17,13 @@ const productQuery = (id: string) =>
     },
   });
 
-export const Route = createFileRoute("/_seller/products/$id")({
+export const Route = createFileRoute("/seller/products/$id")({
   head: () => ({ meta: [{ title: "Edit Product — Seller" }, { name: "robots", content: "noindex" }] }),
   component: EditProduct,
 });
 
 function EditProduct() {
-  const { id } = useParams({ from: "/_seller/products/$id" });
+  const { id } = useParams({ from: "/seller/products/$id" });
   const { data, isLoading } = useQuery(productQuery(id));
   if (isLoading) return <div className="text-muted-foreground">Loading...</div>;
   if (!data) return <div>Not found</div>;
