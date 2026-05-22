@@ -25,12 +25,13 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as ApplySellerRouteImport } from './routes/apply-seller'
 import { Route as ApplyAffiliateRouteImport } from './routes/apply-affiliate'
 import { Route as AffiliateRouteImport } from './routes/affiliate'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SellerIndexRouteImport } from './routes/seller.index'
 import { Route as AffiliateIndexRouteImport } from './routes/affiliate.index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as SellerWithdrawalsRouteImport } from './routes/seller.withdrawals'
 import { Route as SellerStoreRouteImport } from './routes/seller.store'
 import { Route as SellerProductsRouteImport } from './routes/seller.products'
@@ -39,12 +40,20 @@ import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AffiliateWithdrawalsRouteImport } from './routes/affiliate.withdrawals'
 import { Route as AffiliateReferralsRouteImport } from './routes/affiliate.referrals'
+import { Route as AdminWithdrawalsRouteImport } from './routes/admin/withdrawals'
+import { Route as AdminSlidesRouteImport } from './routes/admin/slides'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
+import { Route as AdminSellersRouteImport } from './routes/admin/sellers'
+import { Route as AdminProductsRouteImport } from './routes/admin/products'
+import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
+import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
+import { Route as AdminAffiliatesRouteImport } from './routes/admin/affiliates'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
-import { Route as AdminOrdersRouteImport } from './routes/_admin/orders'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as SellerProductsNewRouteImport } from './routes/seller.products.new'
 import { Route as SellerProductsIdRouteImport } from './routes/seller.products.$id'
+import { Route as AdminOrdersIdRouteImport } from './routes/admin/orders.$id'
 import { Route as AuthenticatedOrderIdRouteImport } from './routes/_authenticated/order.$id'
 import { Route as AuthenticatedDashboardWishlistRouteImport } from './routes/_authenticated/dashboard.wishlist'
 import { Route as AuthenticatedDashboardSupportRouteImport } from './routes/_authenticated/dashboard.support'
@@ -53,7 +62,6 @@ import { Route as AuthenticatedDashboardOrdersRouteImport } from './routes/_auth
 import { Route as AuthenticatedDashboardNotificationsRouteImport } from './routes/_authenticated/dashboard.notifications'
 import { Route as AuthenticatedDashboardDownloadsRouteImport } from './routes/_authenticated/dashboard.downloads'
 import { Route as AuthenticatedDashboardCouponsRouteImport } from './routes/_authenticated/dashboard.coupons'
-import { Route as AdminOrdersIdRouteImport } from './routes/_admin/orders.$id'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -135,6 +143,11 @@ const AffiliateRoute = AffiliateRouteImport.update({
   path: '/affiliate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -142,10 +155,6 @@ const AboutRoute = AboutRouteImport.update({
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/_admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -162,6 +171,11 @@ const AffiliateIndexRoute = AffiliateIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AffiliateRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const SellerWithdrawalsRoute = SellerWithdrawalsRouteImport.update({
   id: '/withdrawals',
@@ -203,6 +217,46 @@ const AffiliateReferralsRoute = AffiliateReferralsRouteImport.update({
   path: '/referrals',
   getParentRoute: () => AffiliateRoute,
 } as any)
+const AdminWithdrawalsRoute = AdminWithdrawalsRouteImport.update({
+  id: '/withdrawals',
+  path: '/withdrawals',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSlidesRoute = AdminSlidesRouteImport.update({
+  id: '/slides',
+  path: '/slides',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSellersRoute = AdminSellersRouteImport.update({
+  id: '/sellers',
+  path: '/sellers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductsRoute = AdminProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAffiliatesRoute = AdminAffiliatesRouteImport.update({
+  id: '/affiliates',
+  path: '/affiliates',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -212,11 +266,6 @@ const AuthenticatedCheckoutRoute = AuthenticatedCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
   getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AdminOrdersRoute = AdminOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => AdminRoute,
 } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
@@ -233,6 +282,11 @@ const SellerProductsIdRoute = SellerProductsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => SellerProductsRoute,
+} as any)
+const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminOrdersRoute,
 } as any)
 const AuthenticatedOrderIdRoute = AuthenticatedOrderIdRouteImport.update({
   id: '/order/$id',
@@ -281,15 +335,11 @@ const AuthenticatedDashboardCouponsRoute =
     path: '/coupons',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
-const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AdminOrdersRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/affiliate': typeof AffiliateRouteWithChildren
   '/apply-affiliate': typeof ApplyAffiliateRoute
   '/apply-seller': typeof ApplySellerRoute
@@ -306,9 +356,16 @@ export interface FileRoutesByFullPath {
   '/seller': typeof SellerRouteWithChildren
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
-  '/orders': typeof AdminOrdersRouteWithChildren
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/admin/affiliates': typeof AdminAffiliatesRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/sellers': typeof AdminSellersRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/slides': typeof AdminSlidesRoute
+  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/affiliate/referrals': typeof AffiliateReferralsRoute
   '/affiliate/withdrawals': typeof AffiliateWithdrawalsRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -317,9 +374,9 @@ export interface FileRoutesByFullPath {
   '/seller/products': typeof SellerProductsRouteWithChildren
   '/seller/store': typeof SellerStoreRoute
   '/seller/withdrawals': typeof SellerWithdrawalsRoute
+  '/admin/': typeof AdminIndexRoute
   '/affiliate/': typeof AffiliateIndexRoute
   '/seller/': typeof SellerIndexRoute
-  '/orders/$id': typeof AdminOrdersIdRoute
   '/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
   '/dashboard/downloads': typeof AuthenticatedDashboardDownloadsRoute
   '/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
@@ -328,6 +385,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/order/$id': typeof AuthenticatedOrderIdRoute
+  '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -349,8 +407,15 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
-  '/orders': typeof AdminOrdersRouteWithChildren
   '/checkout': typeof AuthenticatedCheckoutRoute
+  '/admin/affiliates': typeof AdminAffiliatesRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/sellers': typeof AdminSellersRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/slides': typeof AdminSlidesRoute
+  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/affiliate/referrals': typeof AffiliateReferralsRoute
   '/affiliate/withdrawals': typeof AffiliateWithdrawalsRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -359,9 +424,9 @@ export interface FileRoutesByTo {
   '/seller/products': typeof SellerProductsRouteWithChildren
   '/seller/store': typeof SellerStoreRoute
   '/seller/withdrawals': typeof SellerWithdrawalsRoute
+  '/admin': typeof AdminIndexRoute
   '/affiliate': typeof AffiliateIndexRoute
   '/seller': typeof SellerIndexRoute
-  '/orders/$id': typeof AdminOrdersIdRoute
   '/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
   '/dashboard/downloads': typeof AuthenticatedDashboardDownloadsRoute
   '/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
@@ -370,6 +435,7 @@ export interface FileRoutesByTo {
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/order/$id': typeof AuthenticatedOrderIdRoute
+  '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
@@ -377,9 +443,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_admin': typeof AdminRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/affiliate': typeof AffiliateRouteWithChildren
   '/apply-affiliate': typeof ApplyAffiliateRoute
   '/apply-seller': typeof ApplySellerRoute
@@ -396,9 +462,16 @@ export interface FileRoutesById {
   '/seller': typeof SellerRouteWithChildren
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
-  '/_admin/orders': typeof AdminOrdersRouteWithChildren
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/admin/affiliates': typeof AdminAffiliatesRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/sellers': typeof AdminSellersRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/slides': typeof AdminSlidesRoute
+  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/affiliate/referrals': typeof AffiliateReferralsRoute
   '/affiliate/withdrawals': typeof AffiliateWithdrawalsRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -407,9 +480,9 @@ export interface FileRoutesById {
   '/seller/products': typeof SellerProductsRouteWithChildren
   '/seller/store': typeof SellerStoreRoute
   '/seller/withdrawals': typeof SellerWithdrawalsRoute
+  '/admin/': typeof AdminIndexRoute
   '/affiliate/': typeof AffiliateIndexRoute
   '/seller/': typeof SellerIndexRoute
-  '/_admin/orders/$id': typeof AdminOrdersIdRoute
   '/_authenticated/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
   '/_authenticated/dashboard/downloads': typeof AuthenticatedDashboardDownloadsRoute
   '/_authenticated/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
@@ -418,6 +491,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/_authenticated/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/_authenticated/order/$id': typeof AuthenticatedOrderIdRoute
+  '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -427,6 +501,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/affiliate'
     | '/apply-affiliate'
     | '/apply-seller'
@@ -443,9 +518,16 @@ export interface FileRouteTypes {
     | '/seller'
     | '/shop'
     | '/terms'
-    | '/orders'
     | '/checkout'
     | '/dashboard'
+    | '/admin/affiliates'
+    | '/admin/categories'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/sellers'
+    | '/admin/settings'
+    | '/admin/slides'
+    | '/admin/withdrawals'
     | '/affiliate/referrals'
     | '/affiliate/withdrawals'
     | '/blog/$slug'
@@ -454,9 +536,9 @@ export interface FileRouteTypes {
     | '/seller/products'
     | '/seller/store'
     | '/seller/withdrawals'
+    | '/admin/'
     | '/affiliate/'
     | '/seller/'
-    | '/orders/$id'
     | '/dashboard/coupons'
     | '/dashboard/downloads'
     | '/dashboard/notifications'
@@ -465,6 +547,7 @@ export interface FileRouteTypes {
     | '/dashboard/support'
     | '/dashboard/wishlist'
     | '/order/$id'
+    | '/admin/orders/$id'
     | '/seller/products/$id'
     | '/seller/products/new'
     | '/dashboard/'
@@ -486,8 +569,15 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/shop'
     | '/terms'
-    | '/orders'
     | '/checkout'
+    | '/admin/affiliates'
+    | '/admin/categories'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/sellers'
+    | '/admin/settings'
+    | '/admin/slides'
+    | '/admin/withdrawals'
     | '/affiliate/referrals'
     | '/affiliate/withdrawals'
     | '/blog/$slug'
@@ -496,9 +586,9 @@ export interface FileRouteTypes {
     | '/seller/products'
     | '/seller/store'
     | '/seller/withdrawals'
+    | '/admin'
     | '/affiliate'
     | '/seller'
-    | '/orders/$id'
     | '/dashboard/coupons'
     | '/dashboard/downloads'
     | '/dashboard/notifications'
@@ -507,15 +597,16 @@ export interface FileRouteTypes {
     | '/dashboard/support'
     | '/dashboard/wishlist'
     | '/order/$id'
+    | '/admin/orders/$id'
     | '/seller/products/$id'
     | '/seller/products/new'
     | '/dashboard'
   id:
     | '__root__'
     | '/'
-    | '/_admin'
     | '/_authenticated'
     | '/about'
+    | '/admin'
     | '/affiliate'
     | '/apply-affiliate'
     | '/apply-seller'
@@ -532,9 +623,16 @@ export interface FileRouteTypes {
     | '/seller'
     | '/shop'
     | '/terms'
-    | '/_admin/orders'
     | '/_authenticated/checkout'
     | '/_authenticated/dashboard'
+    | '/admin/affiliates'
+    | '/admin/categories'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/sellers'
+    | '/admin/settings'
+    | '/admin/slides'
+    | '/admin/withdrawals'
     | '/affiliate/referrals'
     | '/affiliate/withdrawals'
     | '/blog/$slug'
@@ -543,9 +641,9 @@ export interface FileRouteTypes {
     | '/seller/products'
     | '/seller/store'
     | '/seller/withdrawals'
+    | '/admin/'
     | '/affiliate/'
     | '/seller/'
-    | '/_admin/orders/$id'
     | '/_authenticated/dashboard/coupons'
     | '/_authenticated/dashboard/downloads'
     | '/_authenticated/dashboard/notifications'
@@ -554,6 +652,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/support'
     | '/_authenticated/dashboard/wishlist'
     | '/_authenticated/order/$id'
+    | '/admin/orders/$id'
     | '/seller/products/$id'
     | '/seller/products/new'
     | '/_authenticated/dashboard/'
@@ -561,9 +660,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AffiliateRoute: typeof AffiliateRouteWithChildren
   ApplyAffiliateRoute: typeof ApplyAffiliateRoute
   ApplySellerRoute: typeof ApplySellerRoute
@@ -697,6 +796,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AffiliateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -709,13 +815,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_admin': {
-      id: '/_admin'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -738,6 +837,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/affiliate/'
       preLoaderRoute: typeof AffiliateIndexRouteImport
       parentRoute: typeof AffiliateRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/seller/withdrawals': {
       id: '/seller/withdrawals'
@@ -795,6 +901,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AffiliateReferralsRouteImport
       parentRoute: typeof AffiliateRoute
     }
+    '/admin/withdrawals': {
+      id: '/admin/withdrawals'
+      path: '/withdrawals'
+      fullPath: '/admin/withdrawals'
+      preLoaderRoute: typeof AdminWithdrawalsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/slides': {
+      id: '/admin/slides'
+      path: '/slides'
+      fullPath: '/admin/slides'
+      preLoaderRoute: typeof AdminSlidesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sellers': {
+      id: '/admin/sellers'
+      path: '/sellers'
+      fullPath: '/admin/sellers'
+      preLoaderRoute: typeof AdminSellersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/products': {
+      id: '/admin/products'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/categories': {
+      id: '/admin/categories'
+      path: '/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminCategoriesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/affiliates': {
+      id: '/admin/affiliates'
+      path: '/affiliates'
+      fullPath: '/admin/affiliates'
+      preLoaderRoute: typeof AdminAffiliatesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -808,13 +970,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/checkout'
       preLoaderRoute: typeof AuthenticatedCheckoutRouteImport
       parentRoute: typeof AuthenticatedRoute
-    }
-    '/_admin/orders': {
-      id: '/_admin/orders'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof AdminOrdersRouteImport
-      parentRoute: typeof AdminRoute
     }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
@@ -836,6 +991,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/seller/products/$id'
       preLoaderRoute: typeof SellerProductsIdRouteImport
       parentRoute: typeof SellerProductsRoute
+    }
+    '/admin/orders/$id': {
+      id: '/admin/orders/$id'
+      path: '/$id'
+      fullPath: '/admin/orders/$id'
+      preLoaderRoute: typeof AdminOrdersIdRouteImport
+      parentRoute: typeof AdminOrdersRoute
     }
     '/_authenticated/order/$id': {
       id: '/_authenticated/order/$id'
@@ -893,37 +1055,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardCouponsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
-    '/_admin/orders/$id': {
-      id: '/_admin/orders/$id'
-      path: '/$id'
-      fullPath: '/orders/$id'
-      preLoaderRoute: typeof AdminOrdersIdRouteImport
-      parentRoute: typeof AdminOrdersRoute
-    }
   }
 }
-
-interface AdminOrdersRouteChildren {
-  AdminOrdersIdRoute: typeof AdminOrdersIdRoute
-}
-
-const AdminOrdersRouteChildren: AdminOrdersRouteChildren = {
-  AdminOrdersIdRoute: AdminOrdersIdRoute,
-}
-
-const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
-  AdminOrdersRouteChildren,
-)
-
-interface AdminRouteChildren {
-  AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminOrdersRoute: AdminOrdersRouteWithChildren,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardCouponsRoute: typeof AuthenticatedDashboardCouponsRoute
@@ -969,6 +1102,44 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
+
+interface AdminOrdersRouteChildren {
+  AdminOrdersIdRoute: typeof AdminOrdersIdRoute
+}
+
+const AdminOrdersRouteChildren: AdminOrdersRouteChildren = {
+  AdminOrdersIdRoute: AdminOrdersIdRoute,
+}
+
+const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
+  AdminOrdersRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminAffiliatesRoute: typeof AdminAffiliatesRoute
+  AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
+  AdminProductsRoute: typeof AdminProductsRoute
+  AdminSellersRoute: typeof AdminSellersRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminSlidesRoute: typeof AdminSlidesRoute
+  AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAffiliatesRoute: AdminAffiliatesRoute,
+  AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminOrdersRoute: AdminOrdersRouteWithChildren,
+  AdminProductsRoute: AdminProductsRoute,
+  AdminSellersRoute: AdminSellersRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminSlidesRoute: AdminSlidesRoute,
+  AdminWithdrawalsRoute: AdminWithdrawalsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AffiliateRouteChildren {
   AffiliateReferralsRoute: typeof AffiliateReferralsRoute
@@ -1031,9 +1202,9 @@ const SellerRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   AffiliateRoute: AffiliateRouteWithChildren,
   ApplyAffiliateRoute: ApplyAffiliateRoute,
   ApplySellerRoute: ApplySellerRoute,
@@ -1055,3 +1226,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

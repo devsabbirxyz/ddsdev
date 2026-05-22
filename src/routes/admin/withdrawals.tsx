@@ -20,7 +20,7 @@ const dataQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_admin/withdrawals")({
+export const Route = createFileRoute("/admin/withdrawals")({
   head: () => ({ meta: [{ title: "Withdrawals — Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminWithdrawals,
 });

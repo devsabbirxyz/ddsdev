@@ -19,7 +19,7 @@ const dataQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_admin/affiliates")({
+export const Route = createFileRoute("/admin/affiliates")({
   head: () => ({ meta: [{ title: "Affiliates — Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminAffiliates,
 });

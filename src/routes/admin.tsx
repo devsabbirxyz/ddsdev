@@ -5,7 +5,7 @@ import {
   Tag, Image as ImageIcon, Settings,
 } from "lucide-react";
 
-export const Route = createFileRoute("/_admin")({
+export const Route = createFileRoute("/admin")({
   beforeLoad: async ({ location }) => {
     const { data: sess } = await supabase.auth.getSession();
     if (!sess.session) {
