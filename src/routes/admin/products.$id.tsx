@@ -215,7 +215,10 @@ function ProductEditor() {
   );
 }
 
-function Field({ label, value, onChange, type = "text", textarea = false, rows = 3, mono = false }: any) {
+function Field({ label, value, onChange, type = "text", textarea = false, rows = 3, mono = false }: {
+  label: string; value: any; onChange: (v: any) => void;
+  type?: string; textarea?: boolean; rows?: number; mono?: boolean;
+}) {
   return (
     <div>
       <label className="text-sm font-medium mb-1.5 block">{label}</label>
@@ -228,7 +231,9 @@ function Field({ label, value, onChange, type = "text", textarea = false, rows =
   );
 }
 
-function Toggle({ label, checked, onChange, icon }: any) {
+function Toggle({ label, checked, onChange, icon }: {
+  label: string; checked: boolean; onChange: (v: boolean) => void; icon?: React.ReactNode;
+}) {
   return (
     <label className="flex items-center justify-between gap-3 cursor-pointer">
       <span className="text-sm font-medium inline-flex items-center gap-2">{icon}{label}</span>
@@ -236,6 +241,7 @@ function Toggle({ label, checked, onChange, icon }: any) {
     </label>
   );
 }
+
 
 function MediaTab({ productId, images, onChange }: any) {
   const addImg = useServerFn(saveProductImage);
