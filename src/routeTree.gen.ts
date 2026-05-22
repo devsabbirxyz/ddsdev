@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as SellerRouteImport } from './routes/seller'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as RefundRouteImport } from './routes/refund'
@@ -21,16 +22,24 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DeveloperRouteImport } from './routes/developer'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as ApplySellerRouteImport } from './routes/apply-seller'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SellerIndexRouteImport } from './routes/seller.index'
+import { Route as SellerWithdrawalsRouteImport } from './routes/seller.withdrawals'
+import { Route as SellerStoreRouteImport } from './routes/seller.store'
+import { Route as SellerProductsRouteImport } from './routes/seller.products'
+import { Route as SellerOrdersRouteImport } from './routes/seller.orders'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AdminOrdersRouteImport } from './routes/_admin/orders'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as SellerProductsNewRouteImport } from './routes/seller.products.new'
+import { Route as SellerProductsIdRouteImport } from './routes/seller.products.$id'
 import { Route as AuthenticatedOrderIdRouteImport } from './routes/_authenticated/order.$id'
 import { Route as AuthenticatedDashboardWishlistRouteImport } from './routes/_authenticated/dashboard.wishlist'
 import { Route as AuthenticatedDashboardSupportRouteImport } from './routes/_authenticated/dashboard.support'
@@ -49,6 +58,11 @@ const TermsRoute = TermsRouteImport.update({
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellerRoute = SellerRouteImport.update({
+  id: '/seller',
+  path: '/seller',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -101,6 +115,11 @@ const BlogRoute = BlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApplySellerRoute = ApplySellerRouteImport.update({
+  id: '/apply-seller',
+  path: '/apply-seller',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -118,6 +137,31 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SellerIndexRoute = SellerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SellerRoute,
+} as any)
+const SellerWithdrawalsRoute = SellerWithdrawalsRouteImport.update({
+  id: '/withdrawals',
+  path: '/withdrawals',
+  getParentRoute: () => SellerRoute,
+} as any)
+const SellerStoreRoute = SellerStoreRouteImport.update({
+  id: '/store',
+  path: '/store',
+  getParentRoute: () => SellerRoute,
+} as any)
+const SellerProductsRoute = SellerProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => SellerRoute,
+} as any)
+const SellerOrdersRoute = SellerOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => SellerRoute,
 } as any)
 const ProductSlugRoute = ProductSlugRouteImport.update({
   id: '/product/$slug',
@@ -150,6 +194,16 @@ const AuthenticatedDashboardIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const SellerProductsNewRoute = SellerProductsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => SellerProductsRoute,
+} as any)
+const SellerProductsIdRoute = SellerProductsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => SellerProductsRoute,
+} as any)
 const AuthenticatedOrderIdRoute = AuthenticatedOrderIdRouteImport.update({
   id: '/order/$id',
   path: '/order/$id',
@@ -206,6 +260,7 @@ const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/apply-seller': typeof ApplySellerRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/developer': typeof DeveloperRoute
@@ -216,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/refund': typeof RefundRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/seller': typeof SellerRouteWithChildren
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
   '/orders': typeof AdminOrdersRouteWithChildren
@@ -223,6 +279,11 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/seller/orders': typeof SellerOrdersRoute
+  '/seller/products': typeof SellerProductsRouteWithChildren
+  '/seller/store': typeof SellerStoreRoute
+  '/seller/withdrawals': typeof SellerWithdrawalsRoute
+  '/seller/': typeof SellerIndexRoute
   '/orders/$id': typeof AdminOrdersIdRoute
   '/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
   '/dashboard/downloads': typeof AuthenticatedDashboardDownloadsRoute
@@ -232,11 +293,14 @@ export interface FileRoutesByFullPath {
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/order/$id': typeof AuthenticatedOrderIdRoute
+  '/seller/products/$id': typeof SellerProductsIdRoute
+  '/seller/products/new': typeof SellerProductsNewRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/apply-seller': typeof ApplySellerRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/developer': typeof DeveloperRoute
@@ -253,6 +317,11 @@ export interface FileRoutesByTo {
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/seller/orders': typeof SellerOrdersRoute
+  '/seller/products': typeof SellerProductsRouteWithChildren
+  '/seller/store': typeof SellerStoreRoute
+  '/seller/withdrawals': typeof SellerWithdrawalsRoute
+  '/seller': typeof SellerIndexRoute
   '/orders/$id': typeof AdminOrdersIdRoute
   '/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
   '/dashboard/downloads': typeof AuthenticatedDashboardDownloadsRoute
@@ -262,6 +331,8 @@ export interface FileRoutesByTo {
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/order/$id': typeof AuthenticatedOrderIdRoute
+  '/seller/products/$id': typeof SellerProductsIdRoute
+  '/seller/products/new': typeof SellerProductsNewRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -270,6 +341,7 @@ export interface FileRoutesById {
   '/_admin': typeof AdminRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/apply-seller': typeof ApplySellerRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/developer': typeof DeveloperRoute
@@ -280,6 +352,7 @@ export interface FileRoutesById {
   '/refund': typeof RefundRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/seller': typeof SellerRouteWithChildren
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
   '/_admin/orders': typeof AdminOrdersRouteWithChildren
@@ -287,6 +360,11 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/seller/orders': typeof SellerOrdersRoute
+  '/seller/products': typeof SellerProductsRouteWithChildren
+  '/seller/store': typeof SellerStoreRoute
+  '/seller/withdrawals': typeof SellerWithdrawalsRoute
+  '/seller/': typeof SellerIndexRoute
   '/_admin/orders/$id': typeof AdminOrdersIdRoute
   '/_authenticated/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
   '/_authenticated/dashboard/downloads': typeof AuthenticatedDashboardDownloadsRoute
@@ -296,6 +374,8 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/_authenticated/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/_authenticated/order/$id': typeof AuthenticatedOrderIdRoute
+  '/seller/products/$id': typeof SellerProductsIdRoute
+  '/seller/products/new': typeof SellerProductsNewRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
@@ -303,6 +383,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/apply-seller'
     | '/blog'
     | '/cart'
     | '/developer'
@@ -313,6 +394,7 @@ export interface FileRouteTypes {
     | '/refund'
     | '/register'
     | '/reset-password'
+    | '/seller'
     | '/shop'
     | '/terms'
     | '/orders'
@@ -320,6 +402,11 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/blog/$slug'
     | '/product/$slug'
+    | '/seller/orders'
+    | '/seller/products'
+    | '/seller/store'
+    | '/seller/withdrawals'
+    | '/seller/'
     | '/orders/$id'
     | '/dashboard/coupons'
     | '/dashboard/downloads'
@@ -329,11 +416,14 @@ export interface FileRouteTypes {
     | '/dashboard/support'
     | '/dashboard/wishlist'
     | '/order/$id'
+    | '/seller/products/$id'
+    | '/seller/products/new'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/apply-seller'
     | '/blog'
     | '/cart'
     | '/developer'
@@ -350,6 +440,11 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/blog/$slug'
     | '/product/$slug'
+    | '/seller/orders'
+    | '/seller/products'
+    | '/seller/store'
+    | '/seller/withdrawals'
+    | '/seller'
     | '/orders/$id'
     | '/dashboard/coupons'
     | '/dashboard/downloads'
@@ -359,6 +454,8 @@ export interface FileRouteTypes {
     | '/dashboard/support'
     | '/dashboard/wishlist'
     | '/order/$id'
+    | '/seller/products/$id'
+    | '/seller/products/new'
     | '/dashboard'
   id:
     | '__root__'
@@ -366,6 +463,7 @@ export interface FileRouteTypes {
     | '/_admin'
     | '/_authenticated'
     | '/about'
+    | '/apply-seller'
     | '/blog'
     | '/cart'
     | '/developer'
@@ -376,6 +474,7 @@ export interface FileRouteTypes {
     | '/refund'
     | '/register'
     | '/reset-password'
+    | '/seller'
     | '/shop'
     | '/terms'
     | '/_admin/orders'
@@ -383,6 +482,11 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/blog/$slug'
     | '/product/$slug'
+    | '/seller/orders'
+    | '/seller/products'
+    | '/seller/store'
+    | '/seller/withdrawals'
+    | '/seller/'
     | '/_admin/orders/$id'
     | '/_authenticated/dashboard/coupons'
     | '/_authenticated/dashboard/downloads'
@@ -392,6 +496,8 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/support'
     | '/_authenticated/dashboard/wishlist'
     | '/_authenticated/order/$id'
+    | '/seller/products/$id'
+    | '/seller/products/new'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -400,6 +506,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
+  ApplySellerRoute: typeof ApplySellerRoute
   BlogRoute: typeof BlogRouteWithChildren
   CartRoute: typeof CartRoute
   DeveloperRoute: typeof DeveloperRoute
@@ -410,6 +517,7 @@ export interface RootRouteChildren {
   RefundRoute: typeof RefundRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SellerRoute: typeof SellerRouteWithChildren
   ShopRoute: typeof ShopRoute
   TermsRoute: typeof TermsRoute
   ProductSlugRoute: typeof ProductSlugRoute
@@ -429,6 +537,13 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seller': {
+      id: '/seller'
+      path: '/seller'
+      fullPath: '/seller'
+      preLoaderRoute: typeof SellerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -501,6 +616,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/apply-seller': {
+      id: '/apply-seller'
+      path: '/apply-seller'
+      fullPath: '/apply-seller'
+      preLoaderRoute: typeof ApplySellerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -528,6 +650,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/seller/': {
+      id: '/seller/'
+      path: '/'
+      fullPath: '/seller/'
+      preLoaderRoute: typeof SellerIndexRouteImport
+      parentRoute: typeof SellerRoute
+    }
+    '/seller/withdrawals': {
+      id: '/seller/withdrawals'
+      path: '/withdrawals'
+      fullPath: '/seller/withdrawals'
+      preLoaderRoute: typeof SellerWithdrawalsRouteImport
+      parentRoute: typeof SellerRoute
+    }
+    '/seller/store': {
+      id: '/seller/store'
+      path: '/store'
+      fullPath: '/seller/store'
+      preLoaderRoute: typeof SellerStoreRouteImport
+      parentRoute: typeof SellerRoute
+    }
+    '/seller/products': {
+      id: '/seller/products'
+      path: '/products'
+      fullPath: '/seller/products'
+      preLoaderRoute: typeof SellerProductsRouteImport
+      parentRoute: typeof SellerRoute
+    }
+    '/seller/orders': {
+      id: '/seller/orders'
+      path: '/orders'
+      fullPath: '/seller/orders'
+      preLoaderRoute: typeof SellerOrdersRouteImport
+      parentRoute: typeof SellerRoute
     }
     '/product/$slug': {
       id: '/product/$slug'
@@ -570,6 +727,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/seller/products/new': {
+      id: '/seller/products/new'
+      path: '/new'
+      fullPath: '/seller/products/new'
+      preLoaderRoute: typeof SellerProductsNewRouteImport
+      parentRoute: typeof SellerProductsRoute
+    }
+    '/seller/products/$id': {
+      id: '/seller/products/$id'
+      path: '/$id'
+      fullPath: '/seller/products/$id'
+      preLoaderRoute: typeof SellerProductsIdRouteImport
+      parentRoute: typeof SellerProductsRoute
     }
     '/_authenticated/order/$id': {
       id: '/_authenticated/order/$id'
@@ -714,11 +885,45 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
+interface SellerProductsRouteChildren {
+  SellerProductsIdRoute: typeof SellerProductsIdRoute
+  SellerProductsNewRoute: typeof SellerProductsNewRoute
+}
+
+const SellerProductsRouteChildren: SellerProductsRouteChildren = {
+  SellerProductsIdRoute: SellerProductsIdRoute,
+  SellerProductsNewRoute: SellerProductsNewRoute,
+}
+
+const SellerProductsRouteWithChildren = SellerProductsRoute._addFileChildren(
+  SellerProductsRouteChildren,
+)
+
+interface SellerRouteChildren {
+  SellerOrdersRoute: typeof SellerOrdersRoute
+  SellerProductsRoute: typeof SellerProductsRouteWithChildren
+  SellerStoreRoute: typeof SellerStoreRoute
+  SellerWithdrawalsRoute: typeof SellerWithdrawalsRoute
+  SellerIndexRoute: typeof SellerIndexRoute
+}
+
+const SellerRouteChildren: SellerRouteChildren = {
+  SellerOrdersRoute: SellerOrdersRoute,
+  SellerProductsRoute: SellerProductsRouteWithChildren,
+  SellerStoreRoute: SellerStoreRoute,
+  SellerWithdrawalsRoute: SellerWithdrawalsRoute,
+  SellerIndexRoute: SellerIndexRoute,
+}
+
+const SellerRouteWithChildren =
+  SellerRoute._addFileChildren(SellerRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
+  ApplySellerRoute: ApplySellerRoute,
   BlogRoute: BlogRouteWithChildren,
   CartRoute: CartRoute,
   DeveloperRoute: DeveloperRoute,
@@ -729,6 +934,7 @@ const rootRouteChildren: RootRouteChildren = {
   RefundRoute: RefundRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SellerRoute: SellerRouteWithChildren,
   ShopRoute: ShopRoute,
   TermsRoute: TermsRoute,
   ProductSlugRoute: ProductSlugRoute,
@@ -736,3 +942,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
