@@ -55,7 +55,15 @@ function ProductEditor() {
 
   const [form, setForm] = useState<any>(null);
   useEffect(() => {
-    if (productQ.data?.product && !form) setForm(productQ.data.product);
+    if (productQ.data?.product && !form) {
+      setForm({
+        ...productQ.data.product,
+        offer_price:
+          typeof productQ.data.product.offer_price === "number" && productQ.data.product.offer_price < 0
+            ? null
+            : productQ.data.product.offer_price,
+      });
+    }
   }, [productQ.data, form]);
 
   if (productQ.isLoading || !productQ.data || !form) {
@@ -67,6 +75,10 @@ function ProductEditor() {
 
   const onSave = async () => {
     try {
+      const regularPrice = form.regular_price != null ? Number(form.regular_price) : null;
+      const offerPriceRaw = form.offer_price != null ? Number(form.offer_price) : null;
+      const offerPrice = offerPriceRaw != null && offerPriceRaw < 0 ? null : offerPriceRaw;
+
       await save({
         data: {
           id,
@@ -78,8 +90,8 @@ function ProductEditor() {
           short_description_en: form.short_description_en,
           long_description: form.long_description,
           long_description_en: form.long_description_en,
-          regular_price: form.regular_price != null ? Number(form.regular_price) : null,
-          offer_price: form.offer_price != null ? Number(form.offer_price) : null,
+          regular_price: regularPrice,
+          offer_price: offerPrice,
           delivery_type: form.delivery_type,
           delivery_content: form.delivery_content,
           subscription_input_label: form.subscription_input_label,
