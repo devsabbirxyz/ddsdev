@@ -15,7 +15,7 @@ import {
   Package, Image as ImageIcon, Layers, Database, Search,
 } from "lucide-react";
 
-export const Route = createFileRoute("/admin/products/$id")({
+export const Route = createFileRoute("/admin/products_/$id")({
   head: () => ({ meta: [{ title: "Edit Product — Admin" }, { name: "robots", content: "noindex" }] }),
   component: ProductEditor,
 });
