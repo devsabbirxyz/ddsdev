@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Zap, Shield, Headphones, Trophy, Users, Lock, ArrowRight, Star, Mail, CheckCircle2 } from "lucide-react";
+import { Zap, ShieldCheck, Headphones, Users, BadgeCheck, ArrowRight, Star, Mail, CheckCircle2, Download } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { productsQuery, blogPostsQuery, reviewSlidesQuery } from "@/lib/storefront";
 import { ProductCard } from "@/components/storefront/ProductCard";
@@ -42,12 +42,12 @@ function HomePage() {
   const products = featured.length > 0 ? featured : latest;
 
   const trustItems = [
-    { icon: Trophy, label: "Best Quality", sub: "100% Authentic" },
-    { icon: Lock, label: "Secure Payments", sub: "Bkash • Nagad • Rocket" },
+    { icon: BadgeCheck, label: "Best Quality", sub: "100% Authentic" },
+    { icon: ShieldCheck, label: "Secure Payments", sub: "Bkash • Nagad • Rocket" },
     { icon: Headphones, label: "24/7 Support", sub: "Anydesk / Teamviewer" },
     { icon: Zap, label: "Instant Delivery", sub: "অটো ডেলিভারি" },
     { icon: Users, label: "1000+ Customers", sub: "Happy & Trusted" },
-    { icon: Shield, label: "Safe & Private", sub: "Privacy Protected" },
+    { icon: Star, label: "Top Rated", sub: "5★ Reviews" },
   ];
 
   return (
@@ -63,36 +63,64 @@ function HomePage() {
         <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-primary/30 blur-[120px] pointer-events-none" />
         <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-secondary/30 blur-[120px] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 pt-20 pb-28 text-center">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 pt-8 pb-28 text-center">
           <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium">
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             {t("hero_badge")}
           </div>
-          <h1 className="mt-6 font-display font-bold text-4xl sm:text-6xl lg:text-7xl tracking-tight leading-[1.05]">
-            <span className="block">{t("site_name")}</span>
-            <span className="block mt-2 text-gradient-brand">{t("tagline_full")}</span>
-          </h1>
-          <p className="mt-6 mx-auto max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
+
+          {/* Offer banner image placeholder */}
+          <div className="mt-8 w-full rounded-3xl overflow-hidden bg-muted/40 border border-glass-border aspect-[16/6] grid place-items-center">
+            <img src="" alt="offer banner" className="w-full h-full object-cover" />
+          </div>
+
+          <p className="mt-8 mx-auto max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
             {t("tagline")} — সাবস্ক্রিপশন, সফটওয়্যার, অ্যাকাউন্ট, ডাউনলোডেবল প্রোডাক্ট সবকিছু এক জায়গায়। ইনস্ট্যান্ট অটো ডেলিভারি।
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Link to="/shop" className="rounded-2xl bg-gradient-brand px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-glow hover:scale-105 transition inline-flex items-center gap-2">
               {t("shop_now")} <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/about" className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">আরও জানুন</Link>
+            <Link to="/dashboard" className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">আরও জানুন</Link>
           </div>
         </div>
       </section>
 
-      {/* TRUST BAR */}
-      <section className="border-y border-glass-border bg-surface py-8">
+      {/* TRUST BAR — glassmorphism */}
+      <section className="py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {/* Mobile: marquee */}
+          <div className="md:hidden overflow-hidden relative [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+            <div className="flex gap-3 w-max animate-marquee">
+              {[...trustItems, ...trustItems].map((item, i) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl px-4 py-3 shadow-lg shrink-0"
+                  >
+                    <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shrink-0">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-semibold whitespace-nowrap">{item.label}</div>
+                      <div className="text-[10px] text-muted-foreground whitespace-nowrap">{item.sub}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          {/* Desktop: single row */}
+          <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-6 gap-3">
             {trustItems.map((item) => {
               const Icon = item.icon;
               return (
-                <div key={item.label} className="flex items-center gap-3 rounded-xl glass p-3">
-                  <div className="grid h-10 w-10 place-items-center rounded-lg bg-gradient-brand text-primary-foreground shrink-0">
+                <div
+                  key={item.label}
+                  className="flex items-center gap-3 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-3 shadow-lg hover:bg-white/15 transition"
+                >
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shrink-0">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
@@ -108,27 +136,35 @@ function HomePage() {
 
       {/* FEATURED PRODUCTS */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <div className="text-xs text-primary font-bold uppercase tracking-wider">⭐ ফিচারড</div>
-            <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
-              সেরা <span className="text-gradient-brand">প্রোডাক্টসমূহ</span>
-            </h2>
-          </div>
-          <Link to="/shop" className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+        <div className="text-center mb-8 mx-auto max-w-2xl">
+          <div className="text-xs text-primary font-bold uppercase tracking-wider">⭐ ফিচারড</div>
+          <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
+            সেরা <span className="text-gradient-brand">প্রোডাক্টসমূহ</span>
+          </h2>
+          <p className="mt-3 text-sm text-muted-foreground">আমাদের জনপ্রিয় ফ্রি ও প্রিমিয়াম ডিজিটাল প্রোডাক্টসমূহ দেখুন।</p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <FreeDemoCard
+            title="Social Media Marketing Guide 2024"
+            category="Digital Guide"
+            description="সোশ্যাল মিডিয়া মার্কেটিং এর সম্পূর্ণ গাইড। ডাউনলোড করুন বিনামূল্যে।"
+            downloads={1240}
+          />
+          <FreeDemoCard
+            title="Canva Premium Templates Pack"
+            category="Design Templates"
+            description="৫০+ প্রিমিয়াম ক্যানভা টেমপ্লেট। ব্যবসার জন্য রেডিমেড ডিজাইন।"
+            downloads={862}
+          />
+          {products.slice(0, 6).map((p) => <ProductCard key={p.id} p={p} />)}
+        </div>
+
+        <div className="mt-6 text-center sm:hidden">
+          <Link to="/shop" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
             সব দেখুন <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        {products.length === 0 ? (
-          <div className="glass-card rounded-3xl p-10 text-center">
-            <h3 className="font-display font-bold text-xl">প্রোডাক্ট শীঘ্রই আসছে</h3>
-            <p className="mt-2 text-sm text-muted-foreground">অ্যাডমিন প্যানেল (Phase 7) থেকে প্রোডাক্ট যোগ করার পর এখানে দেখা যাবে।</p>
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {products.slice(0, 8).map((p) => <ProductCard key={p.id} p={p} />)}
-          </div>
-        )}
       </section>
 
       {/* SPECIAL OFFER */}
@@ -294,6 +330,56 @@ function Newsletter() {
             {msg}
           </p>
         )}
+      </div>
+    </div>
+  );
+}
+
+function FreeDemoCard({
+  title,
+  category,
+  description,
+  downloads,
+}: {
+  title: string;
+  category: string;
+  description: string;
+  downloads: number;
+}) {
+  return (
+    <div className="group glass-card rounded-2xl overflow-hidden hover:shadow-glow transition-all hover:-translate-y-1 flex flex-col">
+      <div className="relative aspect-[4/3] bg-muted/40 border-b border-glass-border grid place-items-center overflow-hidden">
+        <img src="" alt={title} className="w-full h-full object-cover" />
+        <span className="absolute top-2 left-2 rounded-full bg-green-500 px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
+          FREE
+        </span>
+      </div>
+      <div className="p-4 flex flex-col flex-1">
+        <div className="text-[10px] uppercase tracking-wider text-primary font-bold">{category}</div>
+        <h3 className="mt-1 font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">{title}</h3>
+        <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{description}</p>
+
+        <div className="mt-3 flex items-center justify-between">
+          <div className="flex gap-0.5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} className="h-3 w-3 fill-primary text-primary" />
+            ))}
+          </div>
+          <div className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+            <Download className="h-3 w-3" />
+            {downloads.toLocaleString()}
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-baseline justify-between">
+          <span className="font-display font-bold text-lg text-green-600">৳0</span>
+          <span className="text-[10px] text-muted-foreground">Free</span>
+        </div>
+
+        <button className="mt-4 w-full rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold py-2.5 inline-flex items-center justify-center gap-2 transition">
+          <Download className="h-4 w-4" />
+          ফ্রি ডাউনলোড
+        </button>
       </div>
     </div>
   );
