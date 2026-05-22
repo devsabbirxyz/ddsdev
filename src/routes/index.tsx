@@ -334,3 +334,53 @@ function Newsletter() {
     </div>
   );
 }
+
+function FreeDemoCard({
+  title,
+  category,
+  description,
+  downloads,
+}: {
+  title: string;
+  category: string;
+  description: string;
+  downloads: number;
+}) {
+  return (
+    <div className="group glass-card rounded-2xl overflow-hidden hover:shadow-glow transition-all hover:-translate-y-1 flex flex-col">
+      <div className="relative aspect-[4/3] bg-muted/40 border-b border-glass-border grid place-items-center overflow-hidden">
+        <img src="" alt={title} className="w-full h-full object-cover" />
+        <span className="absolute top-2 left-2 rounded-full bg-green-500 px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
+          FREE
+        </span>
+      </div>
+      <div className="p-4 flex flex-col flex-1">
+        <div className="text-[10px] uppercase tracking-wider text-primary font-bold">{category}</div>
+        <h3 className="mt-1 font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">{title}</h3>
+        <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{description}</p>
+
+        <div className="mt-3 flex items-center justify-between">
+          <div className="flex gap-0.5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} className="h-3 w-3 fill-primary text-primary" />
+            ))}
+          </div>
+          <div className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+            <Download className="h-3 w-3" />
+            {downloads.toLocaleString()}
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-baseline justify-between">
+          <span className="font-display font-bold text-lg text-green-600">৳0</span>
+          <span className="text-[10px] text-muted-foreground">Free</span>
+        </div>
+
+        <button className="mt-4 w-full rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold py-2.5 inline-flex items-center justify-center gap-2 transition">
+          <Download className="h-4 w-4" />
+          ফ্রি ডাউনলোড
+        </button>
+      </div>
+    </div>
+  );
+}
