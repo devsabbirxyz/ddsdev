@@ -54,7 +54,7 @@ function OrdersPage() {
                 </div>
                 <div className="text-right">
                   <div className="font-display font-bold text-xl text-gradient-brand">{formatBDT(o.total_price)}</div>
-                  <StatusBadge status={o.status} />
+                  <StatusBadge status={o.status ?? "pending"} />
                 </div>
               </div>
             </Link>

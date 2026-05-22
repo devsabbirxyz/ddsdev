@@ -88,7 +88,7 @@ function DashboardHome() {
                 </div>
                 <div className="text-right shrink-0">
                   <div className="font-bold text-sm">{formatBDT(o.total_price)}</div>
-                  <StatusBadge status={o.status} />
+                  <StatusBadge status={o.status ?? "pending"} />
                 </div>
               </Link>
             ))}
