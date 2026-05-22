@@ -248,6 +248,7 @@ function MediaTab({ productId, images, onChange }: any) {
   const delImg = useServerFn(deleteProductImage);
   const [url, setUrl] = useState("");
   const [main, setMain] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const add = async () => {
     if (!url.trim()) return;
@@ -257,6 +258,34 @@ function MediaTab({ productId, images, onChange }: any) {
       toast.success("ছবি যোগ হয়েছে");
     } catch (e: any) { toast.error(e.message); }
   };
+
+  const onFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setUploading(true);
+    try {
+      let added = 0;
+      for (const file of files) {
+        if (file.size > 10 * 1024 * 1024) { toast.error(`${file.name}: ১০MB এর বেশি`); continue; }
+        const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+        const path = `${productId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("product-images").upload(path, file, {
+          cacheControl: "3600", upsert: false, contentType: file.type,
+        });
+        if (upErr) { toast.error(`আপলোড ফেইল: ${upErr.message}`); continue; }
+        const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
+        await addImg({ data: { product_id: productId, image_url: pub.publicUrl, is_main: images.length + added === 0, sort_order: images.length + added } });
+        added++;
+      }
+      if (added > 0) { toast.success(`${added} টি ছবি যোগ হয়েছে`); onChange(); }
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
+
   const remove = async (id: string) => {
     if (!confirm("ডিলিট?")) return;
     try { await delImg({ data: { id } }); onChange(); } catch (e: any) { toast.error(e.message); }
@@ -265,13 +294,24 @@ function MediaTab({ productId, images, onChange }: any) {
   return (
     <div className="space-y-4">
       <div className="glass-card rounded-2xl p-5 space-y-3">
-        <h3 className="font-bold inline-flex items-center gap-2"><ImagePlus className="h-4 w-4" /> ছবি যোগ করুন</h3>
+        <h3 className="font-bold inline-flex items-center gap-2"><ImagePlus className="h-4 w-4" /> ছবি আপলোড করুন</h3>
+        <label className={`block rounded-2xl border-2 border-dashed border-border hover:border-primary/60 transition cursor-pointer p-6 text-center ${uploading ? "opacity-60 pointer-events-none" : ""}`}>
+          <input type="file" accept="image/*" multiple onChange={onFileUpload} disabled={uploading} className="hidden" />
+          <ImagePlus className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+          <div className="text-sm font-semibold">{uploading ? "আপলোড হচ্ছে..." : "ক্লিক করে ছবি বাছাই করুন (একাধিক সাপোর্ট করে)"}</div>
+          <div className="text-xs text-muted-foreground mt-1">JPG, PNG, WEBP — সর্বোচ্চ ১০MB প্রতি ছবি</div>
+        </label>
+
+        <div className="flex items-center gap-2">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground">অথবা URL দিন</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
         <div className="flex gap-2 flex-wrap">
           <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://image-url.jpg" className="flex-1 min-w-[260px] rounded-xl border border-border bg-background px-3 py-2 text-sm" />
           <label className="inline-flex items-center gap-2 text-sm"><input type="checkbox" checked={main} onChange={(e) => setMain(e.target.checked)} /> মেইন</label>
           <button onClick={add} className="rounded-xl bg-gradient-brand text-primary-foreground px-4 py-2 text-sm font-bold inline-flex items-center gap-2"><Plus className="h-4 w-4" /> অ্যাড</button>
         </div>
-        <p className="text-xs text-muted-foreground">টিপ: চাইলে চ্যাটে ছবি আপলোড করুন, আমি URL সেট করে দেব।</p>
       </div>
 
       {images.length === 0 ? (
