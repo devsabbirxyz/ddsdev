@@ -4,7 +4,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, ShoppingBag, Store, Users, Package, Wallet,
-  Tag, Image as ImageIcon, Settings, Home, CreditCard,
+  Tag, Image as ImageIcon, Settings, Home, CreditCard, Ticket,
 } from "lucide-react";
 
 const adminAuthQuery = queryOptions({
@@ -36,6 +36,7 @@ const nav = [
   { to: "/admin/products", label: "প্রোডাক্ট", icon: Package },
   { to: "/admin/withdrawals", label: "উইথড্র", icon: Wallet },
   { to: "/admin/categories", label: "ক্যাটাগরি", icon: Tag },
+  { to: "/admin/coupons", label: "কুপন", icon: Ticket },
   { to: "/admin/slides", label: "স্লাইড", icon: ImageIcon },
   { to: "/admin/settings", label: "সেটিংস", icon: Settings },
 ];
