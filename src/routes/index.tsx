@@ -63,36 +63,64 @@ function HomePage() {
         <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-primary/30 blur-[120px] pointer-events-none" />
         <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-secondary/30 blur-[120px] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 pt-20 pb-28 text-center">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 pt-8 pb-28 text-center">
           <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium">
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             {t("hero_badge")}
           </div>
-          <h1 className="mt-6 font-display font-bold text-4xl sm:text-6xl lg:text-7xl tracking-tight leading-[1.05]">
-            <span className="block">{t("site_name")}</span>
-            <span className="block mt-2 text-gradient-brand">{t("tagline_full")}</span>
-          </h1>
-          <p className="mt-6 mx-auto max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
+
+          {/* Offer banner image placeholder */}
+          <div className="mt-8 w-full rounded-3xl overflow-hidden bg-muted/40 border border-glass-border aspect-[16/6] grid place-items-center">
+            <img src="" alt="offer banner" className="w-full h-full object-cover" />
+          </div>
+
+          <p className="mt-8 mx-auto max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">
             {t("tagline")} — সাবস্ক্রিপশন, সফটওয়্যার, অ্যাকাউন্ট, ডাউনলোডেবল প্রোডাক্ট সবকিছু এক জায়গায়। ইনস্ট্যান্ট অটো ডেলিভারি।
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Link to="/shop" className="rounded-2xl bg-gradient-brand px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-glow hover:scale-105 transition inline-flex items-center gap-2">
               {t("shop_now")} <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/about" className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">আরও জানুন</Link>
+            <Link to="/dashboard" className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">আরও জানুন</Link>
           </div>
         </div>
       </section>
 
-      {/* TRUST BAR */}
-      <section className="border-y border-glass-border bg-surface py-8">
+      {/* TRUST BAR — glassmorphism */}
+      <section className="py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {/* Mobile: marquee */}
+          <div className="md:hidden overflow-hidden relative [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+            <div className="flex gap-3 w-max animate-marquee">
+              {[...trustItems, ...trustItems].map((item, i) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl px-4 py-3 shadow-lg shrink-0"
+                  >
+                    <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shrink-0">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-semibold whitespace-nowrap">{item.label}</div>
+                      <div className="text-[10px] text-muted-foreground whitespace-nowrap">{item.sub}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          {/* Desktop: single row */}
+          <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-6 gap-3">
             {trustItems.map((item) => {
               const Icon = item.icon;
               return (
-                <div key={item.label} className="flex items-center gap-3 rounded-xl glass p-3">
-                  <div className="grid h-10 w-10 place-items-center rounded-lg bg-gradient-brand text-primary-foreground shrink-0">
+                <div
+                  key={item.label}
+                  className="flex items-center gap-3 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-3 shadow-lg hover:bg-white/15 transition"
+                >
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shrink-0">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
