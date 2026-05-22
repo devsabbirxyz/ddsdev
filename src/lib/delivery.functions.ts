@@ -130,9 +130,14 @@ export const deliverOrder = createServerFn({ method: "POST" })
     if (updErr) throw new Error(updErr.message);
 
     // Increment product total_sales
+    const { data: pCur } = await supabaseAdmin
+      .from("products")
+      .select("total_sales")
+      .eq("id", product.id)
+      .maybeSingle();
     await supabaseAdmin
       .from("products")
-      .update({ total_sales: ((order.quantity ?? 1) + 0) })
+      .update({ total_sales: (pCur?.total_sales ?? 0) + (order.quantity ?? 1) })
       .eq("id", product.id);
 
     // Notify user

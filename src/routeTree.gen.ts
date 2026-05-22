@@ -23,11 +23,13 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
+import { Route as AdminOrdersRouteImport } from './routes/_admin/orders'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AuthenticatedOrderIdRouteImport } from './routes/_authenticated/order.$id'
 import { Route as AuthenticatedDashboardWishlistRouteImport } from './routes/_authenticated/dashboard.wishlist'
@@ -37,6 +39,7 @@ import { Route as AuthenticatedDashboardOrdersRouteImport } from './routes/_auth
 import { Route as AuthenticatedDashboardNotificationsRouteImport } from './routes/_authenticated/dashboard.notifications'
 import { Route as AuthenticatedDashboardDownloadsRouteImport } from './routes/_authenticated/dashboard.downloads'
 import { Route as AuthenticatedDashboardCouponsRouteImport } from './routes/_authenticated/dashboard.coupons'
+import { Route as AdminOrdersIdRouteImport } from './routes/_admin/orders.$id'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -107,6 +110,10 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -131,6 +138,11 @@ const AuthenticatedCheckoutRoute = AuthenticatedCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
   getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
@@ -185,6 +197,11 @@ const AuthenticatedDashboardCouponsRoute =
     path: '/coupons',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminOrdersRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -201,10 +218,12 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
+  '/orders': typeof AdminOrdersRouteWithChildren
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/orders/$id': typeof AdminOrdersIdRoute
   '/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
   '/dashboard/downloads': typeof AuthenticatedDashboardDownloadsRoute
   '/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
@@ -230,9 +249,11 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
+  '/orders': typeof AdminOrdersRouteWithChildren
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/orders/$id': typeof AdminOrdersIdRoute
   '/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
   '/dashboard/downloads': typeof AuthenticatedDashboardDownloadsRoute
   '/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
@@ -246,6 +267,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_admin': typeof AdminRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/blog': typeof BlogRouteWithChildren
@@ -260,10 +282,12 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
+  '/_admin/orders': typeof AdminOrdersRouteWithChildren
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/_admin/orders/$id': typeof AdminOrdersIdRoute
   '/_authenticated/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
   '/_authenticated/dashboard/downloads': typeof AuthenticatedDashboardDownloadsRoute
   '/_authenticated/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
@@ -291,10 +315,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/shop'
     | '/terms'
+    | '/orders'
     | '/checkout'
     | '/dashboard'
     | '/blog/$slug'
     | '/product/$slug'
+    | '/orders/$id'
     | '/dashboard/coupons'
     | '/dashboard/downloads'
     | '/dashboard/notifications'
@@ -320,9 +346,11 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/shop'
     | '/terms'
+    | '/orders'
     | '/checkout'
     | '/blog/$slug'
     | '/product/$slug'
+    | '/orders/$id'
     | '/dashboard/coupons'
     | '/dashboard/downloads'
     | '/dashboard/notifications'
@@ -335,6 +363,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_admin'
     | '/_authenticated'
     | '/about'
     | '/blog'
@@ -349,10 +378,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/shop'
     | '/terms'
+    | '/_admin/orders'
     | '/_authenticated/checkout'
     | '/_authenticated/dashboard'
     | '/blog/$slug'
     | '/product/$slug'
+    | '/_admin/orders/$id'
     | '/_authenticated/dashboard/coupons'
     | '/_authenticated/dashboard/downloads'
     | '/_authenticated/dashboard/notifications'
@@ -366,6 +397,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
   BlogRoute: typeof BlogRouteWithChildren
@@ -483,6 +515,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_admin': {
+      id: '/_admin'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -517,6 +556,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/checkout'
       preLoaderRoute: typeof AuthenticatedCheckoutRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/_admin/orders': {
+      id: '/_admin/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
@@ -581,8 +627,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardCouponsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_admin/orders/$id': {
+      id: '/_admin/orders/$id'
+      path: '/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof AdminOrdersIdRouteImport
+      parentRoute: typeof AdminOrdersRoute
+    }
   }
 }
+
+interface AdminOrdersRouteChildren {
+  AdminOrdersIdRoute: typeof AdminOrdersIdRoute
+}
+
+const AdminOrdersRouteChildren: AdminOrdersRouteChildren = {
+  AdminOrdersIdRoute: AdminOrdersIdRoute,
+}
+
+const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
+  AdminOrdersRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminOrdersRoute: AdminOrdersRouteWithChildren,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardCouponsRoute: typeof AuthenticatedDashboardCouponsRoute
@@ -641,6 +716,7 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
   BlogRoute: BlogRouteWithChildren,
