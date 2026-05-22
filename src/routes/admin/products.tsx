@@ -118,7 +118,7 @@ function AdminProducts() {
                   <td className="px-4 py-3"><span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-accent">{p.status}</span></td>
                   <td className="px-4 py-3 text-right">
                     <div className="inline-flex gap-2">
-                      <Link to={"/admin/products/$id" as any} params={{ id: p.id }} className="rounded-lg glass-card hover:bg-accent px-2.5 py-1.5 text-xs font-bold inline-flex items-center gap-1">
+                      <Link to={"/admin/products/$id" as any} params={{ id: p.id } as any} className="rounded-lg glass-card hover:bg-accent px-2.5 py-1.5 text-xs font-bold inline-flex items-center gap-1">
                         <Pencil className="h-3 w-3" /> ইডিট
                       </Link>
                       <button onClick={() => onDelete(p.id)} className="rounded-lg border border-destructive/40 text-destructive hover:bg-destructive/10 px-2.5 py-1.5 text-xs font-bold inline-flex items-center gap-1">
