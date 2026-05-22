@@ -52,9 +52,11 @@ import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminAffiliatesRouteImport } from './routes/admin/affiliates'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
+import { Route as AdminProductsIndexRouteImport } from './routes/admin/products.index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as SellerProductsNewRouteImport } from './routes/seller.products.new'
 import { Route as SellerProductsIdRouteImport } from './routes/seller.products.$id'
+import { Route as AdminProductsIdRouteImport } from './routes/admin/products.$id'
 import { Route as AdminOrdersIdRouteImport } from './routes/admin/orders.$id'
 import { Route as AuthenticatedOrderIdRouteImport } from './routes/_authenticated/order.$id'
 import { Route as AuthenticatedDashboardWishlistRouteImport } from './routes/_authenticated/dashboard.wishlist'
@@ -279,6 +281,11 @@ const AuthenticatedCheckoutRoute = AuthenticatedCheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AdminProductsIndexRoute = AdminProductsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminProductsRoute,
+} as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/',
@@ -294,6 +301,11 @@ const SellerProductsIdRoute = SellerProductsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => SellerProductsRoute,
+} as any)
+const AdminProductsIdRoute = AdminProductsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminProductsRoute,
 } as any)
 const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
   id: '/$id',
@@ -375,7 +387,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
-  '/admin/products': typeof AdminProductsRoute
+  '/admin/products': typeof AdminProductsRouteWithChildren
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -400,9 +412,11 @@ export interface FileRoutesByFullPath {
   '/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/order/$id': typeof AuthenticatedOrderIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
+  '/admin/products/$id': typeof AdminProductsIdRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/admin/products/': typeof AdminProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -427,7 +441,6 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
-  '/admin/products': typeof AdminProductsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -452,9 +465,11 @@ export interface FileRoutesByTo {
   '/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/order/$id': typeof AuthenticatedOrderIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
+  '/admin/products/$id': typeof AdminProductsIdRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/admin/products': typeof AdminProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -485,7 +500,7 @@ export interface FileRoutesById {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
-  '/admin/products': typeof AdminProductsRoute
+  '/admin/products': typeof AdminProductsRouteWithChildren
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -510,9 +525,11 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/_authenticated/order/$id': typeof AuthenticatedOrderIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
+  '/admin/products/$id': typeof AdminProductsIdRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/admin/products/': typeof AdminProductsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -568,9 +585,11 @@ export interface FileRouteTypes {
     | '/dashboard/wishlist'
     | '/order/$id'
     | '/admin/orders/$id'
+    | '/admin/products/$id'
     | '/seller/products/$id'
     | '/seller/products/new'
     | '/dashboard/'
+    | '/admin/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -595,7 +614,6 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/homepage'
     | '/admin/orders'
-    | '/admin/products'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/slides'
@@ -620,9 +638,11 @@ export interface FileRouteTypes {
     | '/dashboard/wishlist'
     | '/order/$id'
     | '/admin/orders/$id'
+    | '/admin/products/$id'
     | '/seller/products/$id'
     | '/seller/products/new'
     | '/dashboard'
+    | '/admin/products'
   id:
     | '__root__'
     | '/'
@@ -677,9 +697,11 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/wishlist'
     | '/_authenticated/order/$id'
     | '/admin/orders/$id'
+    | '/admin/products/$id'
     | '/seller/products/$id'
     | '/seller/products/new'
     | '/_authenticated/dashboard/'
+    | '/admin/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1010,6 +1032,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCheckoutRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/admin/products/': {
+      id: '/admin/products/'
+      path: '/'
+      fullPath: '/admin/products/'
+      preLoaderRoute: typeof AdminProductsIndexRouteImport
+      parentRoute: typeof AdminProductsRoute
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/'
@@ -1030,6 +1059,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/seller/products/$id'
       preLoaderRoute: typeof SellerProductsIdRouteImport
       parentRoute: typeof SellerProductsRoute
+    }
+    '/admin/products/$id': {
+      id: '/admin/products/$id'
+      path: '/$id'
+      fullPath: '/admin/products/$id'
+      preLoaderRoute: typeof AdminProductsIdRouteImport
+      parentRoute: typeof AdminProductsRoute
     }
     '/admin/orders/$id': {
       id: '/admin/orders/$id'
@@ -1154,12 +1190,26 @@ const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
   AdminOrdersRouteChildren,
 )
 
+interface AdminProductsRouteChildren {
+  AdminProductsIdRoute: typeof AdminProductsIdRoute
+  AdminProductsIndexRoute: typeof AdminProductsIndexRoute
+}
+
+const AdminProductsRouteChildren: AdminProductsRouteChildren = {
+  AdminProductsIdRoute: AdminProductsIdRoute,
+  AdminProductsIndexRoute: AdminProductsIndexRoute,
+}
+
+const AdminProductsRouteWithChildren = AdminProductsRoute._addFileChildren(
+  AdminProductsRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminAffiliatesRoute: typeof AdminAffiliatesRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
   AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
-  AdminProductsRoute: typeof AdminProductsRoute
+  AdminProductsRoute: typeof AdminProductsRouteWithChildren
   AdminSellersRoute: typeof AdminSellersRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSlidesRoute: typeof AdminSlidesRoute
@@ -1172,7 +1222,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminHomepageRoute: AdminHomepageRoute,
   AdminOrdersRoute: AdminOrdersRouteWithChildren,
-  AdminProductsRoute: AdminProductsRoute,
+  AdminProductsRoute: AdminProductsRouteWithChildren,
   AdminSellersRoute: AdminSellersRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSlidesRoute: AdminSlidesRoute,

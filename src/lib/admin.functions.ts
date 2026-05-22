@@ -428,3 +428,215 @@ export const saveSettingsBulk = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ----- Products CRUD -----
+const DELIVERY_TYPES = ["instant_text", "account", "invite_link", "subscription", "manual"] as const;
+
+export const getProductFull = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { data: product, error } = await supabaseAdmin
+      .from("products").select("*").eq("id", data.id).maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!product) throw new Error("Not found");
+    const [{ data: images }, { data: variants }, { data: accounts }] = await Promise.all([
+      supabaseAdmin.from("product_images").select("*").eq("product_id", data.id).order("sort_order"),
+      supabaseAdmin.from("product_variants").select("*").eq("product_id", data.id).order("sort_order"),
+      supabaseAdmin.from("product_accounts").select("id,username,is_sold,created_at,variant_id,extra_info")
+        .eq("product_id", data.id).order("created_at", { ascending: false }).limit(200),
+    ]);
+    return { product, images: images ?? [], variants: variants ?? [], accounts: accounts ?? [] };
+  });
+
+export const saveProduct = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({
+      id: z.string().uuid().optional(),
+      title: z.string().min(1).max(200),
+      title_en: z.string().max(200).optional().nullable(),
+      slug: z.string().max(200).optional().nullable(),
+      category_id: z.string().uuid().optional().nullable(),
+      short_description: z.string().max(500).optional().nullable(),
+      short_description_en: z.string().max(500).optional().nullable(),
+      long_description: z.string().max(20000).optional().nullable(),
+      long_description_en: z.string().max(20000).optional().nullable(),
+      regular_price: z.number().min(0).optional().nullable(),
+      offer_price: z.number().min(0).optional().nullable(),
+      delivery_type: z.enum(DELIVERY_TYPES),
+      delivery_content: z.string().max(20000).optional().nullable(),
+      subscription_input_label: z.string().max(200).optional().nullable(),
+      subscription_input_label_en: z.string().max(200).optional().nullable(),
+      video_url: z.string().max(500).optional().nullable(),
+      seo_title: z.string().max(200).optional().nullable(),
+      seo_description: z.string().max(500).optional().nullable(),
+      is_variant: z.boolean().optional(),
+      is_active: z.boolean().optional(),
+      is_featured: z.boolean().optional(),
+      is_new_arrival: z.boolean().optional(),
+      is_best_seller: z.boolean().optional(),
+      status: z.enum(["pending", "approved", "rejected"]).optional(),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const payload: any = {
+      title: data.title,
+      title_en: data.title_en ?? null,
+      category_id: data.category_id ?? null,
+      short_description: data.short_description ?? null,
+      short_description_en: data.short_description_en ?? null,
+      long_description: data.long_description ?? null,
+      long_description_en: data.long_description_en ?? null,
+      regular_price: data.regular_price ?? null,
+      offer_price: data.offer_price ?? null,
+      delivery_type: data.delivery_type,
+      delivery_content: data.delivery_content ?? null,
+      subscription_input_label: data.subscription_input_label ?? null,
+      subscription_input_label_en: data.subscription_input_label_en ?? null,
+      video_url: data.video_url ?? null,
+      seo_title: data.seo_title ?? null,
+      seo_description: data.seo_description ?? null,
+      is_variant: data.is_variant ?? false,
+      is_active: data.is_active ?? true,
+      is_featured: data.is_featured ?? false,
+      is_new_arrival: data.is_new_arrival ?? false,
+      is_best_seller: data.is_best_seller ?? false,
+      status: data.status ?? "approved",
+    };
+    if (data.id) {
+      if (data.slug) payload.slug = data.slug;
+      const { error } = await supabaseAdmin.from("products").update(payload).eq("id", data.id);
+      if (error) throw new Error(error.message);
+      return { ok: true, id: data.id };
+    } else {
+      payload.slug = data.slug || `${slugify(data.title)}-${Math.random().toString(36).slice(2, 6)}`;
+      const { data: ins, error } = await supabaseAdmin.from("products").insert(payload).select("id").single();
+      if (error) throw new Error(error.message);
+      return { ok: true, id: ins!.id };
+    }
+  });
+
+export const deleteProduct = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    await supabaseAdmin.from("product_images").delete().eq("product_id", data.id);
+    await supabaseAdmin.from("product_variants").delete().eq("product_id", data.id);
+    await supabaseAdmin.from("product_accounts").delete().eq("product_id", data.id);
+    const { error } = await supabaseAdmin.from("products").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const saveProductImage = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({
+      product_id: z.string().uuid(),
+      image_url: z.string().url(),
+      is_main: z.boolean().optional(),
+      sort_order: z.number().int().min(0).optional(),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    if (data.is_main) {
+      await supabaseAdmin.from("product_images").update({ is_main: false }).eq("product_id", data.product_id);
+    }
+    const { error } = await supabaseAdmin.from("product_images").insert({
+      product_id: data.product_id,
+      image_url: data.image_url,
+      is_main: data.is_main ?? false,
+      sort_order: data.sort_order ?? 0,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteProductImage = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("product_images").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const saveVariant = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({
+      id: z.string().uuid().optional(),
+      product_id: z.string().uuid(),
+      label: z.string().min(1).max(100),
+      label_en: z.string().max(100).optional().nullable(),
+      regular_price: z.number().min(0),
+      offer_price: z.number().min(0).optional().nullable(),
+      sort_order: z.number().int().min(0).optional(),
+      is_active: z.boolean().optional(),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const payload: any = {
+      product_id: data.product_id,
+      label: data.label,
+      label_en: data.label_en ?? null,
+      regular_price: data.regular_price,
+      offer_price: data.offer_price ?? null,
+      sort_order: data.sort_order ?? 0,
+      is_active: data.is_active ?? true,
+    };
+    if (data.id) {
+      const { error } = await supabaseAdmin.from("product_variants").update(payload).eq("id", data.id);
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabaseAdmin.from("product_variants").insert(payload);
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
+
+export const deleteVariant = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("product_variants").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const addProductAccounts = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({
+      product_id: z.string().uuid(),
+      variant_id: z.string().uuid().optional().nullable(),
+      accounts: z.array(z.object({
+        username: z.string().max(500).optional().nullable(),
+        password: z.string().max(500).optional().nullable(),
+        extra_info: z.string().max(2000).optional().nullable(),
+      })).min(1).max(500),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const rows = data.accounts.map((a) => ({
+      product_id: data.product_id,
+      variant_id: data.variant_id ?? null,
+      username: a.username ?? null,
+      password: a.password ?? null,
+      extra_info: a.extra_info ?? null,
+    }));
+    const { error } = await supabaseAdmin.from("product_accounts").insert(rows);
+    if (error) throw new Error(error.message);
+    return { ok: true, count: rows.length };
+  });
+
+export const deleteProductAccount = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("product_accounts").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+
