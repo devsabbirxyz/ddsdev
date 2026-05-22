@@ -9,13 +9,15 @@ import { toast } from "sonner";
 const slidesQuery = queryOptions({
   queryKey: ["admin", "slides"],
   queryFn: async () => {
-    const [h, o] = await Promise.all([
+    const [h, o, r] = await Promise.all([
       supabase.from("hero_slides").select("*").order("sort_order"),
       supabase.from("offer_slides").select("*").order("sort_order"),
+      supabase.from("review_slides").select("*").order("sort_order"),
     ]);
     if (h.error) throw h.error;
     if (o.error) throw o.error;
-    return { hero: h.data ?? [], offer: o.data ?? [] };
+    if (r.error) throw r.error;
+    return { hero: h.data ?? [], offer: o.data ?? [], review: r.data ?? [] };
   },
 });
 
@@ -29,11 +31,11 @@ function AdminSlides() {
   const qc = useQueryClient();
   const save = useServerFn(saveSlide);
   const del = useServerFn(deleteSlide);
-  const [kind, setKind] = useState<"hero" | "offer">("hero");
+  const [kind, setKind] = useState<"hero" | "offer" | "review">("hero");
   const [form, setForm] = useState({ id: "", image_url: "", link_url: "", alt_text: "", sort_order: 0, is_active: true });
 
   if (isLoading || !data) return <div className="text-muted-foreground">Loading...</div>;
-  const list = kind === "hero" ? data.hero : data.offer;
+  const list = kind === "hero" ? data.hero : kind === "offer" ? data.offer : data.review;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,11 +66,12 @@ function AdminSlides() {
   return (
     <div className="space-y-6">
       <h1 className="font-display font-bold text-2xl">স্লাইডার</h1>
-      <div className="flex gap-2 text-sm">
-        {(["hero", "offer"] as const).map((k) => (
+      <div className="flex gap-2 text-sm flex-wrap">
+        {(["hero", "offer", "review"] as const).map((k) => (
           <button key={k} onClick={() => { setKind(k); setForm({ id: "", image_url: "", link_url: "", alt_text: "", sort_order: 0, is_active: true }); }} className={`rounded-xl px-4 py-2 font-semibold capitalize ${kind === k ? "bg-gradient-brand text-primary-foreground shadow-glow" : "glass-card hover:bg-accent"}`}>{k}</button>
         ))}
       </div>
+
 
       <form onSubmit={submit} className="glass-card rounded-2xl p-5 grid sm:grid-cols-2 gap-3">
         <input className="ip sm:col-span-2" placeholder="Image URL *" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} required />
