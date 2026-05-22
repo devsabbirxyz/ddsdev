@@ -44,19 +44,17 @@ function AdminLoginPage() {
       setError("ভুল ইউজারনেম বা পাসওয়ার্ড");
       return;
     }
-    const { data: role } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", data.user.id)
-      .eq("role", "admin")
-      .maybeSingle();
+    const { data: isAdmin, error: rpcErr } = await supabase.rpc("has_role", {
+      _user_id: data.user.id,
+      _role: "admin",
+    });
     setLoading(false);
-    if (!role) {
+    if (rpcErr || !isAdmin) {
       await supabase.auth.signOut();
       setError("এই অ্যাকাউন্টে এডমিন অ্যাক্সেস নেই");
       return;
     }
-    navigate({ to: "/admin" });
+    window.location.href = "/admin";
   }
 
   return (
