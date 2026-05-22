@@ -36,7 +36,7 @@ const overviewQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_admin/")({
+export const Route = createFileRoute("/admin/")({
   head: () => ({ meta: [{ title: "Admin Overview — DDS-Digital" }, { name: "robots", content: "noindex" }] }),
   component: AdminOverview,
 });

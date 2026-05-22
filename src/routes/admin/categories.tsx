@@ -15,7 +15,7 @@ const catsQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_admin/categories")({
+export const Route = createFileRoute("/admin/categories")({
   head: () => ({ meta: [{ title: "Categories — Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminCategories,
 });

@@ -19,7 +19,7 @@ const slidesQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_admin/slides")({
+export const Route = createFileRoute("/admin/slides")({
   head: () => ({ meta: [{ title: "Slides — Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminSlides,
 });

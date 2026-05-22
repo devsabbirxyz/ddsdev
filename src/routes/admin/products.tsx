@@ -20,7 +20,7 @@ const productsQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_admin/products")({
+export const Route = createFileRoute("/admin/products")({
   head: () => ({ meta: [{ title: "Products — Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminProducts,
 });

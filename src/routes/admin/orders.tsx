@@ -20,7 +20,7 @@ const ordersQuery = (status: string) =>
     },
   });
 
-export const Route = createFileRoute("/_admin/orders")({
+export const Route = createFileRoute("/admin/orders")({
   head: () => ({ meta: [{ title: "Orders — Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminOrdersList,
 });

@@ -27,7 +27,7 @@ const FIELDS = [
   { key: "footer_about", label: "Footer About Text", group: "general" },
 ];
 
-export const Route = createFileRoute("/_admin/settings")({
+export const Route = createFileRoute("/admin/settings")({
   head: () => ({ meta: [{ title: "Settings — Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminSettings,
 });

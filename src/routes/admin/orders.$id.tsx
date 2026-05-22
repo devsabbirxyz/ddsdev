@@ -52,7 +52,7 @@ const stockQuery = (productId: string | null | undefined, variantId: string | nu
     },
   });
 
-export const Route = createFileRoute("/_admin/orders/$id")({
+export const Route = createFileRoute("/admin/orders/$id")({
   head: () => ({ meta: [{ title: "Order — Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminOrderDetail,
 });
