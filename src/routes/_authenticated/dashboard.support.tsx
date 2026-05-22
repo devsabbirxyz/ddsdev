@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -69,14 +69,15 @@ function SupportPage() {
       ) : (
         <div className="space-y-3">
           {tickets.map((t) => (
-            <div key={t.id} className="glass-card rounded-2xl p-5 flex items-center justify-between gap-3">
+            <Link key={t.id} to="/dashboard/tickets/$id" params={{ id: t.id }}
+              className="glass-card rounded-2xl p-5 flex items-center justify-between gap-3 hover:bg-accent/30 transition">
               <div>
                 <div className="font-semibold">{t.subject}</div>
                 <div className="text-xs text-muted-foreground mt-0.5 font-mono">{t.ticket_number} · {t.category}</div>
                 <div className="text-[11px] text-muted-foreground mt-1">{new Date(t.created_at!).toLocaleString("bn-BD")}</div>
               </div>
               <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${t.status === "open" ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"}`}>{t.status}</span>
-            </div>
+            </Link>
           ))}
         </div>
       )}
