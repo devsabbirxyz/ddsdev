@@ -137,13 +137,15 @@ export const reviewSlidesQuery = () =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("review_slides")
-        .select("id,customer_name,review_text,rating,avatar_url,product_name")
+        .select("id,image_url,sort_order")
         .eq("is_active", true)
+        .order("sort_order", { ascending: true })
         .limit(12);
-      if (error) throw error;
+      if (error) return [];
       return data ?? [];
     },
   });
+
 
 export const pageBySlugQuery = (slug: string) =>
   queryOptions({

@@ -1,25 +1,28 @@
-import { createFileRoute, Outlet, redirect, Link } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useQuery, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, ShoppingBag, Store, Users, Package, Wallet,
   Tag, Image as ImageIcon, Settings,
 } from "lucide-react";
 
-export const Route = createFileRoute("/admin")({
-  staleTime: 5 * 60 * 1000,
-  beforeLoad: async () => {
+const adminAuthQuery = queryOptions({
+  queryKey: ["admin", "auth-check"],
+  staleTime: 10 * 60 * 1000,
+  gcTime: 30 * 60 * 1000,
+  queryFn: async () => {
     const { data: sess } = await supabase.auth.getSession();
-    if (!sess.session) {
-      throw redirect({ to: "/admin-login" });
-    }
+    if (!sess.session) return { ok: false as const };
     const { data: isAdmin } = await supabase.rpc("has_role", {
       _user_id: sess.session.user.id,
       _role: "admin",
     });
-    if (!isAdmin) {
-      throw redirect({ to: "/admin-login" });
-    }
+    return { ok: Boolean(isAdmin) };
   },
+});
+
+export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
@@ -36,6 +39,24 @@ const nav = [
 ];
 
 function AdminLayout() {
+  const navigate = useNavigate();
+  const { data, isLoading } = useQuery(adminAuthQuery);
+
+  useEffect(() => {
+    if (!isLoading && data && !data.ok) {
+      navigate({ to: "/admin-login" });
+    }
+  }, [isLoading, data, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 text-center text-muted-foreground">
+        লোড হচ্ছে...
+      </div>
+    );
+  }
+  if (!data?.ok) return null;
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
       <div className="grid lg:grid-cols-[240px_1fr] gap-6">
