@@ -6,10 +6,10 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
-  beforeLoad: async ({ location }) => {
+  beforeLoad: async () => {
     const { data: sess } = await supabase.auth.getSession();
     if (!sess.session) {
-      throw redirect({ to: "/login", search: { redirect: location.href } as never });
+      throw redirect({ to: "/admin-login" });
     }
     const { data: role } = await supabase
       .from("user_roles")
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/admin")({
       .eq("role", "admin")
       .maybeSingle();
     if (!role) {
-      throw redirect({ to: "/dashboard" });
+      throw redirect({ to: "/admin-login" });
     }
   },
   component: AdminLayout,

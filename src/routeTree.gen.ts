@@ -25,6 +25,7 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as ApplySellerRouteImport } from './routes/apply-seller'
 import { Route as ApplyAffiliateRouteImport } from './routes/apply-affiliate'
 import { Route as AffiliateRouteImport } from './routes/affiliate'
+import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -141,6 +142,11 @@ const ApplyAffiliateRoute = ApplyAffiliateRouteImport.update({
 const AffiliateRoute = AffiliateRouteImport.update({
   id: '/affiliate',
   path: '/affiliate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin-login',
+  path: '/admin-login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -340,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
+  '/admin-login': typeof AdminLoginRoute
   '/affiliate': typeof AffiliateRouteWithChildren
   '/apply-affiliate': typeof ApplyAffiliateRoute
   '/apply-seller': typeof ApplySellerRoute
@@ -393,6 +400,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin-login': typeof AdminLoginRoute
   '/apply-affiliate': typeof ApplyAffiliateRoute
   '/apply-seller': typeof ApplySellerRoute
   '/blog': typeof BlogRouteWithChildren
@@ -446,6 +454,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
+  '/admin-login': typeof AdminLoginRoute
   '/affiliate': typeof AffiliateRouteWithChildren
   '/apply-affiliate': typeof ApplyAffiliateRoute
   '/apply-seller': typeof ApplySellerRoute
@@ -502,6 +511,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/admin-login'
     | '/affiliate'
     | '/apply-affiliate'
     | '/apply-seller'
@@ -555,6 +565,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/admin-login'
     | '/apply-affiliate'
     | '/apply-seller'
     | '/blog'
@@ -607,6 +618,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/admin'
+    | '/admin-login'
     | '/affiliate'
     | '/apply-affiliate'
     | '/apply-seller'
@@ -663,6 +675,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AdminLoginRoute: typeof AdminLoginRoute
   AffiliateRoute: typeof AffiliateRouteWithChildren
   ApplyAffiliateRoute: typeof ApplyAffiliateRoute
   ApplySellerRoute: typeof ApplySellerRoute
@@ -794,6 +807,13 @@ declare module '@tanstack/react-router' {
       path: '/affiliate'
       fullPath: '/affiliate'
       preLoaderRoute: typeof AffiliateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-login': {
+      id: '/admin-login'
+      path: '/admin-login'
+      fullPath: '/admin-login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -1205,6 +1225,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
+  AdminLoginRoute: AdminLoginRoute,
   AffiliateRoute: AffiliateRouteWithChildren,
   ApplyAffiliateRoute: ApplyAffiliateRoute,
   ApplySellerRoute: ApplySellerRoute,
@@ -1226,13 +1247,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
