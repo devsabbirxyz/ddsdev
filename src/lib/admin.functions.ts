@@ -640,3 +640,44 @@ export const deleteProductAccount = createServerFn({ method: "POST" })
   });
 
 
+
+// ----- Payment methods -----
+export const savePaymentMethod = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({
+      id: z.string().uuid().optional().nullable(),
+      name: z.string().min(1).max(100),
+      name_en: z.string().max(100).optional().nullable(),
+      account_type: z.string().max(50).optional().nullable(),
+      send_type: z.string().max(50).optional().nullable(),
+      account_number: z.string().max(200).optional().nullable(),
+      instructions: z.string().max(2000).optional().nullable(),
+      instructions_en: z.string().max(2000).optional().nullable(),
+      api_key: z.string().max(500).optional().nullable(),
+      has_automatic: z.boolean().optional(),
+      is_manual_active: z.boolean().optional(),
+      is_automatic_active: z.boolean().optional(),
+      sort_order: z.number().int().optional(),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { id, ...rest } = data;
+    if (id) {
+      const { error } = await supabaseAdmin.from("payment_methods").update(rest).eq("id", id);
+      if (error) throw new Error(error.message);
+      return { ok: true, id };
+    }
+    const { data: ins, error } = await supabaseAdmin.from("payment_methods").insert(rest).select("id").single();
+    if (error) throw new Error(error.message);
+    return { ok: true, id: ins.id };
+  });
+
+export const deletePaymentMethod = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("payment_methods").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
