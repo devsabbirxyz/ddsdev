@@ -3,6 +3,8 @@ import { I18nContext, translations, type Lang, type TKey } from "@/lib/i18n";
 import { ThemeContext, type Theme } from "@/lib/theme";
 import { AuthContext, type AuthUser } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { CartProvider } from "@/lib/cart";
+import { WishlistProvider } from "@/lib/wishlist";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   // ---- Theme (dark default) ----
@@ -63,7 +65,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeContext.Provider value={themeValue}>
       <I18nContext.Provider value={i18nValue}>
-        <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={authValue}>
+          <CartProvider>
+            <WishlistProvider>{children}</WishlistProvider>
+          </CartProvider>
+        </AuthContext.Provider>
       </I18nContext.Provider>
     </ThemeContext.Provider>
   );
