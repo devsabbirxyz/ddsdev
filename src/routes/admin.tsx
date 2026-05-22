@@ -6,18 +6,17 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
+  staleTime: 5 * 60 * 1000,
   beforeLoad: async () => {
     const { data: sess } = await supabase.auth.getSession();
     if (!sess.session) {
       throw redirect({ to: "/admin-login" });
     }
-    const { data: role } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", sess.session.user.id)
-      .eq("role", "admin")
-      .maybeSingle();
-    if (!role) {
+    const { data: isAdmin } = await supabase.rpc("has_role", {
+      _user_id: sess.session.user.id,
+      _role: "admin",
+    });
+    if (!isAdmin) {
       throw redirect({ to: "/admin-login" });
     }
   },
