@@ -55,7 +55,7 @@ import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as SellerProductsNewRouteImport } from './routes/seller.products.new'
 import { Route as SellerProductsIdRouteImport } from './routes/seller.products.$id'
-import { Route as AdminProductsIdRouteImport } from './routes/admin/products.$id'
+import { Route as AdminProductsIdRouteImport } from './routes/admin/products_.$id'
 import { Route as AdminOrdersIdRouteImport } from './routes/admin/orders.$id'
 import { Route as AuthenticatedOrderIdRouteImport } from './routes/_authenticated/order.$id'
 import { Route as AuthenticatedDashboardWishlistRouteImport } from './routes/_authenticated/dashboard.wishlist'
@@ -297,9 +297,9 @@ const SellerProductsIdRoute = SellerProductsIdRouteImport.update({
   getParentRoute: () => SellerProductsRoute,
 } as any)
 const AdminProductsIdRoute = AdminProductsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AdminProductsRoute,
+  id: '/products_/$id',
+  path: '/products/$id',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
   id: '/$id',
@@ -381,7 +381,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
-  '/admin/products': typeof AdminProductsRouteWithChildren
+  '/admin/products': typeof AdminProductsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -434,7 +434,7 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
-  '/admin/products': typeof AdminProductsRouteWithChildren
+  '/admin/products': typeof AdminProductsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -493,7 +493,7 @@ export interface FileRoutesById {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
-  '/admin/products': typeof AdminProductsRouteWithChildren
+  '/admin/products': typeof AdminProductsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -518,7 +518,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/_authenticated/order/$id': typeof AuthenticatedOrderIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
-  '/admin/products/$id': typeof AdminProductsIdRoute
+  '/admin/products_/$id': typeof AdminProductsIdRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -688,7 +688,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/wishlist'
     | '/_authenticated/order/$id'
     | '/admin/orders/$id'
-    | '/admin/products/$id'
+    | '/admin/products_/$id'
     | '/seller/products/$id'
     | '/seller/products/new'
     | '/_authenticated/dashboard/'
@@ -1043,12 +1043,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SellerProductsIdRouteImport
       parentRoute: typeof SellerProductsRoute
     }
-    '/admin/products/$id': {
-      id: '/admin/products/$id'
-      path: '/$id'
+    '/admin/products_/$id': {
+      id: '/admin/products_/$id'
+      path: '/products/$id'
       fullPath: '/admin/products/$id'
       preLoaderRoute: typeof AdminProductsIdRouteImport
-      parentRoute: typeof AdminProductsRoute
+      parentRoute: typeof AdminRoute
     }
     '/admin/orders/$id': {
       id: '/admin/orders/$id'
@@ -1173,29 +1173,18 @@ const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
   AdminOrdersRouteChildren,
 )
 
-interface AdminProductsRouteChildren {
-  AdminProductsIdRoute: typeof AdminProductsIdRoute
-}
-
-const AdminProductsRouteChildren: AdminProductsRouteChildren = {
-  AdminProductsIdRoute: AdminProductsIdRoute,
-}
-
-const AdminProductsRouteWithChildren = AdminProductsRoute._addFileChildren(
-  AdminProductsRouteChildren,
-)
-
 interface AdminRouteChildren {
   AdminAffiliatesRoute: typeof AdminAffiliatesRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
   AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
-  AdminProductsRoute: typeof AdminProductsRouteWithChildren
+  AdminProductsRoute: typeof AdminProductsRoute
   AdminSellersRoute: typeof AdminSellersRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSlidesRoute: typeof AdminSlidesRoute
   AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminProductsIdRoute: typeof AdminProductsIdRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -1203,12 +1192,13 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminHomepageRoute: AdminHomepageRoute,
   AdminOrdersRoute: AdminOrdersRouteWithChildren,
-  AdminProductsRoute: AdminProductsRouteWithChildren,
+  AdminProductsRoute: AdminProductsRoute,
   AdminSellersRoute: AdminSellersRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSlidesRoute: AdminSlidesRoute,
   AdminWithdrawalsRoute: AdminWithdrawalsRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminProductsIdRoute: AdminProductsIdRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -1299,3 +1289,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
