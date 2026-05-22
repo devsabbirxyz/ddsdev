@@ -23,17 +23,22 @@ import { Route as DeveloperRouteImport } from './routes/developer'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as ApplySellerRouteImport } from './routes/apply-seller'
+import { Route as ApplyAffiliateRouteImport } from './routes/apply-affiliate'
+import { Route as AffiliateRouteImport } from './routes/affiliate'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SellerIndexRouteImport } from './routes/seller.index'
+import { Route as AffiliateIndexRouteImport } from './routes/affiliate.index'
 import { Route as SellerWithdrawalsRouteImport } from './routes/seller.withdrawals'
 import { Route as SellerStoreRouteImport } from './routes/seller.store'
 import { Route as SellerProductsRouteImport } from './routes/seller.products'
 import { Route as SellerOrdersRouteImport } from './routes/seller.orders'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AffiliateWithdrawalsRouteImport } from './routes/affiliate.withdrawals'
+import { Route as AffiliateReferralsRouteImport } from './routes/affiliate.referrals'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AdminOrdersRouteImport } from './routes/_admin/orders'
@@ -120,6 +125,16 @@ const ApplySellerRoute = ApplySellerRouteImport.update({
   path: '/apply-seller',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApplyAffiliateRoute = ApplyAffiliateRouteImport.update({
+  id: '/apply-affiliate',
+  path: '/apply-affiliate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AffiliateRoute = AffiliateRouteImport.update({
+  id: '/affiliate',
+  path: '/affiliate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -142,6 +157,11 @@ const SellerIndexRoute = SellerIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => SellerRoute,
+} as any)
+const AffiliateIndexRoute = AffiliateIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AffiliateRoute,
 } as any)
 const SellerWithdrawalsRoute = SellerWithdrawalsRouteImport.update({
   id: '/withdrawals',
@@ -172,6 +192,16 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => BlogRoute,
+} as any)
+const AffiliateWithdrawalsRoute = AffiliateWithdrawalsRouteImport.update({
+  id: '/withdrawals',
+  path: '/withdrawals',
+  getParentRoute: () => AffiliateRoute,
+} as any)
+const AffiliateReferralsRoute = AffiliateReferralsRouteImport.update({
+  id: '/referrals',
+  path: '/referrals',
+  getParentRoute: () => AffiliateRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -260,6 +290,8 @@ const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/affiliate': typeof AffiliateRouteWithChildren
+  '/apply-affiliate': typeof ApplyAffiliateRoute
   '/apply-seller': typeof ApplySellerRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
@@ -277,12 +309,15 @@ export interface FileRoutesByFullPath {
   '/orders': typeof AdminOrdersRouteWithChildren
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/affiliate/referrals': typeof AffiliateReferralsRoute
+  '/affiliate/withdrawals': typeof AffiliateWithdrawalsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/seller/orders': typeof SellerOrdersRoute
   '/seller/products': typeof SellerProductsRouteWithChildren
   '/seller/store': typeof SellerStoreRoute
   '/seller/withdrawals': typeof SellerWithdrawalsRoute
+  '/affiliate/': typeof AffiliateIndexRoute
   '/seller/': typeof SellerIndexRoute
   '/orders/$id': typeof AdminOrdersIdRoute
   '/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
@@ -300,6 +335,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/apply-affiliate': typeof ApplyAffiliateRoute
   '/apply-seller': typeof ApplySellerRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
@@ -315,12 +351,15 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/orders': typeof AdminOrdersRouteWithChildren
   '/checkout': typeof AuthenticatedCheckoutRoute
+  '/affiliate/referrals': typeof AffiliateReferralsRoute
+  '/affiliate/withdrawals': typeof AffiliateWithdrawalsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/seller/orders': typeof SellerOrdersRoute
   '/seller/products': typeof SellerProductsRouteWithChildren
   '/seller/store': typeof SellerStoreRoute
   '/seller/withdrawals': typeof SellerWithdrawalsRoute
+  '/affiliate': typeof AffiliateIndexRoute
   '/seller': typeof SellerIndexRoute
   '/orders/$id': typeof AdminOrdersIdRoute
   '/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
@@ -341,6 +380,8 @@ export interface FileRoutesById {
   '/_admin': typeof AdminRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/affiliate': typeof AffiliateRouteWithChildren
+  '/apply-affiliate': typeof ApplyAffiliateRoute
   '/apply-seller': typeof ApplySellerRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
@@ -358,12 +399,15 @@ export interface FileRoutesById {
   '/_admin/orders': typeof AdminOrdersRouteWithChildren
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/affiliate/referrals': typeof AffiliateReferralsRoute
+  '/affiliate/withdrawals': typeof AffiliateWithdrawalsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/seller/orders': typeof SellerOrdersRoute
   '/seller/products': typeof SellerProductsRouteWithChildren
   '/seller/store': typeof SellerStoreRoute
   '/seller/withdrawals': typeof SellerWithdrawalsRoute
+  '/affiliate/': typeof AffiliateIndexRoute
   '/seller/': typeof SellerIndexRoute
   '/_admin/orders/$id': typeof AdminOrdersIdRoute
   '/_authenticated/dashboard/coupons': typeof AuthenticatedDashboardCouponsRoute
@@ -383,6 +427,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/affiliate'
+    | '/apply-affiliate'
     | '/apply-seller'
     | '/blog'
     | '/cart'
@@ -400,12 +446,15 @@ export interface FileRouteTypes {
     | '/orders'
     | '/checkout'
     | '/dashboard'
+    | '/affiliate/referrals'
+    | '/affiliate/withdrawals'
     | '/blog/$slug'
     | '/product/$slug'
     | '/seller/orders'
     | '/seller/products'
     | '/seller/store'
     | '/seller/withdrawals'
+    | '/affiliate/'
     | '/seller/'
     | '/orders/$id'
     | '/dashboard/coupons'
@@ -423,6 +472,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/apply-affiliate'
     | '/apply-seller'
     | '/blog'
     | '/cart'
@@ -438,12 +488,15 @@ export interface FileRouteTypes {
     | '/terms'
     | '/orders'
     | '/checkout'
+    | '/affiliate/referrals'
+    | '/affiliate/withdrawals'
     | '/blog/$slug'
     | '/product/$slug'
     | '/seller/orders'
     | '/seller/products'
     | '/seller/store'
     | '/seller/withdrawals'
+    | '/affiliate'
     | '/seller'
     | '/orders/$id'
     | '/dashboard/coupons'
@@ -463,6 +516,8 @@ export interface FileRouteTypes {
     | '/_admin'
     | '/_authenticated'
     | '/about'
+    | '/affiliate'
+    | '/apply-affiliate'
     | '/apply-seller'
     | '/blog'
     | '/cart'
@@ -480,12 +535,15 @@ export interface FileRouteTypes {
     | '/_admin/orders'
     | '/_authenticated/checkout'
     | '/_authenticated/dashboard'
+    | '/affiliate/referrals'
+    | '/affiliate/withdrawals'
     | '/blog/$slug'
     | '/product/$slug'
     | '/seller/orders'
     | '/seller/products'
     | '/seller/store'
     | '/seller/withdrawals'
+    | '/affiliate/'
     | '/seller/'
     | '/_admin/orders/$id'
     | '/_authenticated/dashboard/coupons'
@@ -506,6 +564,8 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AffiliateRoute: typeof AffiliateRouteWithChildren
+  ApplyAffiliateRoute: typeof ApplyAffiliateRoute
   ApplySellerRoute: typeof ApplySellerRoute
   BlogRoute: typeof BlogRouteWithChildren
   CartRoute: typeof CartRoute
@@ -623,6 +683,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplySellerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/apply-affiliate': {
+      id: '/apply-affiliate'
+      path: '/apply-affiliate'
+      fullPath: '/apply-affiliate'
+      preLoaderRoute: typeof ApplyAffiliateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/affiliate': {
+      id: '/affiliate'
+      path: '/affiliate'
+      fullPath: '/affiliate'
+      preLoaderRoute: typeof AffiliateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -657,6 +731,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/seller/'
       preLoaderRoute: typeof SellerIndexRouteImport
       parentRoute: typeof SellerRoute
+    }
+    '/affiliate/': {
+      id: '/affiliate/'
+      path: '/'
+      fullPath: '/affiliate/'
+      preLoaderRoute: typeof AffiliateIndexRouteImport
+      parentRoute: typeof AffiliateRoute
     }
     '/seller/withdrawals': {
       id: '/seller/withdrawals'
@@ -699,6 +780,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
+    }
+    '/affiliate/withdrawals': {
+      id: '/affiliate/withdrawals'
+      path: '/withdrawals'
+      fullPath: '/affiliate/withdrawals'
+      preLoaderRoute: typeof AffiliateWithdrawalsRouteImport
+      parentRoute: typeof AffiliateRoute
+    }
+    '/affiliate/referrals': {
+      id: '/affiliate/referrals'
+      path: '/referrals'
+      fullPath: '/affiliate/referrals'
+      preLoaderRoute: typeof AffiliateReferralsRouteImport
+      parentRoute: typeof AffiliateRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -875,6 +970,22 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface AffiliateRouteChildren {
+  AffiliateReferralsRoute: typeof AffiliateReferralsRoute
+  AffiliateWithdrawalsRoute: typeof AffiliateWithdrawalsRoute
+  AffiliateIndexRoute: typeof AffiliateIndexRoute
+}
+
+const AffiliateRouteChildren: AffiliateRouteChildren = {
+  AffiliateReferralsRoute: AffiliateReferralsRoute,
+  AffiliateWithdrawalsRoute: AffiliateWithdrawalsRoute,
+  AffiliateIndexRoute: AffiliateIndexRoute,
+}
+
+const AffiliateRouteWithChildren = AffiliateRoute._addFileChildren(
+  AffiliateRouteChildren,
+)
+
 interface BlogRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
 }
@@ -923,6 +1034,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
+  AffiliateRoute: AffiliateRouteWithChildren,
+  ApplyAffiliateRoute: ApplyAffiliateRoute,
   ApplySellerRoute: ApplySellerRoute,
   BlogRoute: BlogRouteWithChildren,
   CartRoute: CartRoute,
@@ -942,13 +1055,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
