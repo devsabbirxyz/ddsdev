@@ -1,53 +1,52 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link } from "@tanstack/react-router";
+import { LayoutDashboard, ShoppingBag, Download, Heart, Bell, Ticket, LifeBuoy, User as UserIcon, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import { ShoppingBag, Download, Heart, Bell, MessageSquare, Settings } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({
-    meta: [
-      { title: "ড্যাশবোর্ড — DDS-Digital" },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
-  component: DashboardPage,
+  head: () => ({ meta: [{ title: "ড্যাশবোর্ড — DDS-Digital" }, { name: "robots", content: "noindex" }] }),
+  component: DashboardLayout,
 });
 
-function DashboardPage() {
-  const { user } = useAuth();
-  const tiles = [
-    { icon: ShoppingBag, label: "My Orders", value: "0" },
-    { icon: Download, label: "Downloads", value: "0" },
-    { icon: Heart, label: "Wishlist", value: "0" },
-    { icon: Bell, label: "Notifications", value: "0" },
-    { icon: MessageSquare, label: "Support Tickets", value: "0" },
-    { icon: Settings, label: "Profile", value: "—" },
-  ];
+const items = [
+  { to: "/dashboard", label: "ওভারভিউ", icon: LayoutDashboard, exact: true },
+  { to: "/dashboard/orders", label: "আমার অর্ডার", icon: ShoppingBag },
+  { to: "/dashboard/downloads", label: "ডাউনলোড", icon: Download },
+  { to: "/dashboard/wishlist", label: "উইশলিস্ট", icon: Heart },
+  { to: "/dashboard/notifications", label: "নোটিফিকেশন", icon: Bell },
+  { to: "/dashboard/coupons", label: "কুপন", icon: Ticket },
+  { to: "/dashboard/support", label: "সাপোর্ট", icon: LifeBuoy },
+  { to: "/dashboard/profile", label: "প্রোফাইল", icon: UserIcon },
+] as const;
+
+function DashboardLayout() {
+  const { user, signOut } = useAuth();
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12">
-      <div className="mb-8">
-        <h1 className="font-display font-bold text-3xl">স্বাগতম 👋</h1>
-        <p className="text-sm text-muted-foreground mt-1">{user?.email}</p>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {tiles.map((tile) => {
-          const Icon = tile.icon;
-          return (
-            <div key={tile.label} className="glass-card rounded-2xl p-5 hover:shadow-glow transition">
-              <div className="flex items-center justify-between mb-3">
-                <div className="grid h-10 w-10 place-items-center rounded-lg bg-gradient-brand text-primary-foreground">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <span className="text-2xl font-display font-bold">{tile.value}</span>
-              </div>
-              <div className="text-sm font-medium">{tile.label}</div>
-            </div>
-          );
-        })}
-      </div>
-      <div className="mt-8 rounded-2xl glass-card p-6 text-center">
-        <p className="text-sm text-muted-foreground">
-          🚀 কাস্টমার ড্যাশবোর্ডের সব ফিচার Phase 3 এ আসছে — Orders, Downloads, Cart, Checkout সহ।
-        </p>
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+      <div className="grid lg:grid-cols-[260px_1fr] gap-6">
+        <aside className="glass-card rounded-2xl p-4 h-fit lg:sticky lg:top-24">
+          <div className="px-2 pb-3 mb-3 border-b border-border">
+            <div className="text-xs text-muted-foreground">লগইন</div>
+            <div className="font-semibold text-sm truncate">{user?.email}</div>
+          </div>
+          <nav className="space-y-1">
+            {items.map((it) => (
+              <Link
+                key={it.to}
+                to={it.to}
+                activeOptions={{ exact: it.exact ?? false }}
+                activeProps={{ className: "bg-gradient-brand text-primary-foreground shadow-glow" }}
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-accent transition"
+              >
+                <it.icon className="h-4 w-4" />
+                {it.label}
+              </Link>
+            ))}
+            <button onClick={signOut} className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-destructive/10 hover:text-destructive transition">
+              <LogOut className="h-4 w-4" /> লগআউট
+            </button>
+          </nav>
+        </aside>
+        <div><Outlet /></div>
       </div>
     </div>
   );
