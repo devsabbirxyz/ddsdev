@@ -1,14 +1,16 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Moon, Sun, X, ShoppingBag, User, LogOut } from "lucide-react";
+import { Menu, Moon, Sun, X, ShoppingCart, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "@/lib/theme";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
+import { useCart } from "@/lib/cart";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
   const { lang, setLang, t } = useI18n();
   const { isAuthenticated, signOut } = useAuth();
+  const { count } = useCart();
   const [open, setOpen] = useState(false);
 
   const navItems: { to: string; label: string }[] = [
@@ -63,6 +65,12 @@ export function Navbar() {
           >
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
+          <Link to="/cart" className="relative rounded-lg p-2 glass hover:bg-accent transition" aria-label="Cart">
+            <ShoppingCart className="h-4 w-4" />
+            {count > 0 && (
+              <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-gradient-brand px-1 text-[10px] font-bold text-primary-foreground">{count}</span>
+            )}
+          </Link>
           {isAuthenticated ? (
             <>
               <Link to="/dashboard" className="rounded-lg p-2 glass hover:bg-accent transition" aria-label="Dashboard">
