@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardLayout,
 });
 
-const items = [
+const items: Array<{ to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }> = [
   { to: "/dashboard", label: "ওভারভিউ", icon: LayoutDashboard, exact: true },
   { to: "/dashboard/orders", label: "আমার অর্ডার", icon: ShoppingBag },
   { to: "/dashboard/downloads", label: "ডাউনলোড", icon: Download },
@@ -16,7 +16,7 @@ const items = [
   { to: "/dashboard/coupons", label: "কুপন", icon: Ticket },
   { to: "/dashboard/support", label: "সাপোর্ট", icon: LifeBuoy },
   { to: "/dashboard/profile", label: "প্রোফাইল", icon: UserIcon },
-] as const;
+];
 
 function DashboardLayout() {
   const { user, signOut } = useAuth();
@@ -32,7 +32,7 @@ function DashboardLayout() {
             {items.map((it) => (
               <Link
                 key={it.to}
-                to={it.to}
+                to={it.to as any}
                 activeOptions={{ exact: it.exact ?? false }}
                 activeProps={{ className: "bg-gradient-brand text-primary-foreground shadow-glow" }}
                 className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-accent transition"
