@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Star, Zap } from "lucide-react";
+import { Eye, Layers, ArrowUpRight, Zap } from "lucide-react";
 import { formatBDT } from "@/lib/storefront";
 
 export interface ProductCardData {
@@ -15,64 +15,118 @@ export interface ProductCardData {
   is_featured?: boolean | null;
   is_new_arrival?: boolean | null;
   is_best_seller?: boolean | null;
+  is_variant?: boolean | null;
+  view_count?: number | null;
+  sellers?: { store_name?: string | null; store_logo_url?: string | null } | null;
+  product_variants?: Array<{ regular_price?: number | null; offer_price?: number | null; is_active?: boolean | null }> | null;
 }
 
 export function ProductCard({ p }: { p: ProductCardData }) {
   const price = p.offer_price ?? p.regular_price;
   const hasDiscount = p.offer_price != null && p.regular_price != null && p.offer_price < p.regular_price;
-  const off = hasDiscount
-    ? Math.round((1 - Number(p.offer_price) / Number(p.regular_price)) * 100)
-    : 0;
+
+  const activeVariants = (p.product_variants ?? []).filter((v) => v.is_active);
+  const isVariant = !!p.is_variant && activeVariants.length > 0;
+  const variantPrices = activeVariants
+    .map((v) => Number(v.offer_price ?? v.regular_price ?? 0))
+    .filter((n) => n > 0);
+  const variantMin = variantPrices.length ? Math.min(...variantPrices) : null;
+  const variantMax = variantPrices.length ? Math.max(...variantPrices) : null;
+
+  const sellerName = p.sellers?.store_name ?? null;
+  const sellerLogo = p.sellers?.store_logo_url ?? null;
+  const initials = (sellerName ?? p.title).slice(0, 2).toUpperCase();
+  const views = p.view_count ?? 0;
 
   return (
     <Link
       to="/product/$slug"
       params={{ slug: p.slug }}
-      className="group glass-card rounded-2xl overflow-hidden hover:shadow-glow transition-all hover:-translate-y-1"
+      className="group relative block overflow-hidden rounded-3xl border border-primary/20 bg-card/40 backdrop-blur-xl shadow-[0_8px_30px_-12px_hsl(var(--primary)/0.3)] transition-all duration-300 hover:-translate-y-2 hover:border-primary/50 hover:shadow-[0_20px_50px_-12px_hsl(var(--primary)/0.55)]"
     >
-      <div className="relative aspect-[4/3] bg-gradient-glow grid place-items-center overflow-hidden">
-        <div className="text-5xl font-display font-bold text-gradient-brand opacity-30 select-none">
+      {/* Image area */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+        <div className="absolute inset-0 grid place-items-center text-6xl font-display font-bold text-gradient-brand opacity-20 select-none">
           {p.title.slice(0, 2).toUpperCase()}
         </div>
-        <div className="absolute top-2 left-2 flex flex-wrap gap-1">
-          {p.is_new_arrival && (
-            <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-secondary-foreground">NEW</span>
-          )}
+
+        {/* top-left badges */}
+        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
           {p.is_best_seller && (
-            <span className="rounded-full bg-gradient-brand px-2 py-0.5 text-[10px] font-bold text-primary-foreground">BEST</span>
+            <span className="rounded-full bg-gradient-brand px-2.5 py-1 text-[10px] font-bold text-primary-foreground shadow-glow">BEST</span>
+          )}
+          {p.is_new_arrival && (
+            <span className="rounded-full bg-secondary/90 backdrop-blur px-2.5 py-1 text-[10px] font-bold text-secondary-foreground">NEW</span>
+          )}
+          {isVariant && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-background/70 backdrop-blur px-2.5 py-1 text-[10px] font-bold text-foreground border border-primary/30">
+              <Layers className="h-3 w-3" /> Variants
+            </span>
           )}
         </div>
-        {hasDiscount && (
-          <span className="absolute top-2 right-2 rounded-full bg-destructive px-2 py-0.5 text-[10px] font-bold text-destructive-foreground">
-            -{off}%
+
+        {/* discount badge */}
+        {hasDiscount && !isVariant && (
+          <span className="absolute bottom-3 left-3 rounded-full bg-destructive px-2.5 py-1 text-[10px] font-bold text-destructive-foreground shadow">
+            -{Math.round((1 - Number(p.offer_price) / Number(p.regular_price)) * 100)}%
           </span>
         )}
-      </div>
-      <div className="p-4">
-        <h3 className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">{p.title}</h3>
-        {p.short_description && (
-          <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{p.short_description}</p>
-        )}
-        <div className="mt-3 flex items-center justify-between">
-          <div className="flex items-baseline gap-2">
-            <span className="font-display font-bold text-lg text-gradient-brand">{formatBDT(price)}</span>
-            {hasDiscount && (
-              <span className="text-xs text-muted-foreground line-through">{formatBDT(p.regular_price)}</span>
-            )}
-          </div>
-          {p.average_rating ? (
-            <span className="inline-flex items-center gap-1 text-xs">
-              <Star className="h-3 w-3 fill-primary text-primary" />
-              <span className="font-semibold">{Number(p.average_rating).toFixed(1)}</span>
-            </span>
+
+        {/* views */}
+        <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-background/60 backdrop-blur px-2 py-1 text-[10px] font-semibold text-foreground/80 border border-border/50">
+          <Eye className="h-3 w-3" /> {views}
+        </span>
+
+        {/* seller avatar top-right */}
+        <div className="absolute top-3 right-3 h-9 w-9 rounded-full overflow-hidden border-2 border-background/80 shadow-lg bg-gradient-brand grid place-items-center text-[10px] font-bold text-primary-foreground">
+          {sellerLogo ? (
+            <img src={sellerLogo} alt={sellerName ?? "seller"} className="h-full w-full object-cover" />
           ) : (
-            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <Zap className="h-3 w-3 text-primary" />
-              অটো
-            </span>
+            initials
           )}
         </div>
       </div>
+
+      {/* Info */}
+      <div className="p-4">
+        <h3 className="font-display font-bold text-base leading-tight line-clamp-1 group-hover:text-primary transition-colors">
+          {p.title}
+        </h3>
+        {sellerName && (
+          <p className="mt-0.5 text-xs text-muted-foreground/80">by {sellerName}</p>
+        )}
+        {p.short_description && (
+          <p className="mt-2 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+            {p.short_description}
+          </p>
+        )}
+
+        {/* Price + CTA */}
+        <div className="mt-4 flex items-center justify-between gap-2">
+          <div className="rounded-full bg-background/60 backdrop-blur border border-border/60 px-3 py-1.5">
+            {isVariant && variantMin != null && variantMax != null && variantMin !== variantMax ? (
+              <span className="font-display font-bold text-sm text-gradient-brand">
+                {formatBDT(variantMin)} - {formatBDT(variantMax)}
+              </span>
+            ) : (
+              <span className="flex items-baseline gap-1.5">
+                <span className="font-display font-bold text-base text-gradient-brand">{formatBDT(price)}</span>
+                {hasDiscount && (
+                  <span className="text-[10px] text-muted-foreground line-through">{formatBDT(p.regular_price)}</span>
+                )}
+              </span>
+            )}
+          </div>
+
+          <span className="relative inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-bold text-white shadow-glow bg-[linear-gradient(135deg,#ff7a18,#8b5cf6)] bg-[length:200%_200%] bg-left transition-[background-position,transform] duration-500 group-hover:bg-right group-hover:scale-105">
+            Shop Now
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </span>
+        </div>
+      </div>
+
+      {/* hover glow ring */}
+      <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-primary/0 group-hover:ring-primary/30 transition" />
     </Link>
   );
 }
