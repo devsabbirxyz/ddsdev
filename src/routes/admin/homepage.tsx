@@ -226,6 +226,10 @@ function SlideCRUD({ kind, slides, title }: { kind: "hero" | "offer" | "review";
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.image_url) {
+      toast.error("❌ আগে একটা ছবি upload করুন");
+      return;
+    }
     try {
       await save({ data: {
         kind, id: form.id || undefined,
@@ -235,17 +239,18 @@ function SlideCRUD({ kind, slides, title }: { kind: "hero" | "offer" | "review";
         sort_order: Number(form.sort_order) || 0,
         is_active: form.is_active,
       }});
-      toast.success("সংরক্ষিত");
+      toast.success(form.id ? "✅ সফলভাবে আপডেট হয়েছে" : "✅ সফলভাবে যোগ হয়েছে");
       setForm({ id: "", image_url: "", link_url: "", alt_text: "", sort_order: 0, is_active: true });
       qc.invalidateQueries({ queryKey: ["admin", "homepage-cms"] });
       qc.invalidateQueries({ queryKey: ["offer_banner_first"] });
+      qc.invalidateQueries({ queryKey: ["offer_slides_active"] });
       qc.invalidateQueries({ queryKey: ["review_slides"] });
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) { toast.error("❌ " + (e.message || "সমস্যা হয়েছে")); }
   };
   const remove = async (id: string) => {
-    if (!confirm("Delete?")) return;
-    try { await del({ data: { kind, id } }); toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["admin", "homepage-cms"] }); }
-    catch (e: any) { toast.error(e.message); }
+    if (!confirm("⚠️ আপনি কি নিশ্চিত? এই ছবিটি ডিলিট হয়ে যাবে।")) return;
+    try { await del({ data: { kind, id } }); toast.success("✅ ডিলিট হয়েছে"); qc.invalidateQueries({ queryKey: ["admin", "homepage-cms"] }); qc.invalidateQueries({ queryKey: ["offer_slides_active"] }); }
+    catch (e: any) { toast.error("❌ " + (e.message || "সমস্যা হয়েছে")); }
   };
 
   return (
