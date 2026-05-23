@@ -95,7 +95,11 @@ function HomePage() {
             <Link to="/shop" className="rounded-2xl bg-gradient-brand px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-glow hover:scale-105 transition inline-flex items-center gap-2">
               {ctaPrimary} <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/dashboard" className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">{ctaSecondary}</Link>
+            {ctaSecondaryLink.startsWith("http") ? (
+              <a href={ctaSecondaryLink} target="_blank" rel="noopener noreferrer" className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">{ctaSecondary}</a>
+            ) : (
+              <Link to={ctaSecondaryLink as any} className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">{ctaSecondary}</Link>
+            )}
           </div>
         </div>
       </section>
