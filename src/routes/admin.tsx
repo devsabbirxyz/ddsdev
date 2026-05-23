@@ -1,11 +1,11 @@
-import { createFileRoute, Outlet, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useQuery, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, ShoppingBag, Store, Users, Package, Wallet,
   Tag, Image as ImageIcon, Settings, Home, CreditCard, Ticket, LifeBuoy,
-  Sparkles, ShieldCheck, Mail, PanelBottom,
+  Sparkles, ShieldCheck, Mail, PanelBottom, Menu, X,
 } from "lucide-react";
 
 const adminAuthQuery = queryOptions({
@@ -55,12 +55,17 @@ const nav = [
 function AdminLayout() {
   const navigate = useNavigate();
   const { data, isLoading } = useQuery(adminAuthQuery);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
     if (!isLoading && data && !data.ok) {
       navigate({ to: "/admin-login" });
     }
   }, [isLoading, data, navigate]);
+
+  // Close drawer on route change
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   if (isLoading) {
     return (
@@ -71,29 +76,73 @@ function AdminLayout() {
   }
   if (!data?.ok) return null;
 
+  const navItems = nav.filter((it) => !it.superOnly || data.isSuper);
+
+  const SidebarContent = (
+    <>
+      <div className="px-2 pb-3 mb-3 border-b border-border flex items-center justify-between">
+        <div>
+          <div className="text-xs text-muted-foreground">Admin Panel</div>
+          <div className="font-display font-bold">DDS-Digital</div>
+        </div>
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="lg:hidden rounded-lg p-1.5 hover:bg-accent"
+          aria-label="Close menu"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+      <nav className="space-y-1">
+        {navItems.map((it) => (
+          <Link
+            key={it.to}
+            to={it.to as any}
+            activeOptions={{ exact: it.exact ?? false }}
+            activeProps={{ className: "bg-gradient-brand text-primary-foreground shadow-glow" }}
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-accent transition"
+          >
+            <it.icon className="h-4 w-4" /> {it.label}
+          </Link>
+        ))}
+      </nav>
+    </>
+  );
+
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 lg:py-8">
+      {/* Mobile top bar */}
+      <div className="lg:hidden flex items-center justify-between mb-4 glass-card rounded-xl px-3 py-2">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="rounded-lg p-2 hover:bg-accent inline-flex items-center gap-2 text-sm font-medium"
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" /> মেনু
+        </button>
+        <div className="font-display font-bold text-sm">DDS-Digital Admin</div>
+      </div>
+
       <div className="grid lg:grid-cols-[240px_1fr] gap-6">
-        <aside className="glass-card rounded-2xl p-4 h-fit lg:sticky lg:top-24">
-          <div className="px-2 pb-3 mb-3 border-b border-border">
-            <div className="text-xs text-muted-foreground">Admin Panel</div>
-            <div className="font-display font-bold">DDS-Digital</div>
-          </div>
-          <nav className="space-y-1">
-            {nav.filter((it) => !it.superOnly || data.isSuper).map((it) => (
-              <Link
-                key={it.to}
-                to={it.to as any}
-                activeOptions={{ exact: it.exact ?? false }}
-                activeProps={{ className: "bg-gradient-brand text-primary-foreground shadow-glow" }}
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-accent transition"
-              >
-                <it.icon className="h-4 w-4" /> {it.label}
-              </Link>
-            ))}
-          </nav>
+        {/* Desktop sidebar */}
+        <aside className="hidden lg:block glass-card rounded-2xl p-4 h-fit lg:sticky lg:top-24">
+          {SidebarContent}
         </aside>
-        <div><Outlet /></div>
+
+        {/* Mobile drawer */}
+        {mobileOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 flex">
+            <div
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+              onClick={() => setMobileOpen(false)}
+            />
+            <aside className="relative w-72 max-w-[85vw] h-full overflow-y-auto bg-card border-r border-border p-4 shadow-2xl animate-in slide-in-from-left">
+              {SidebarContent}
+            </aside>
+          </div>
+        )}
+
+        <div className="min-w-0"><Outlet /></div>
       </div>
     </div>
   );
