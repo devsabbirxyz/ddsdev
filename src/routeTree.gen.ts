@@ -49,10 +49,12 @@ import { Route as AdminSellersRouteImport } from './routes/admin/sellers'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
+import { Route as AdminOffersRouteImport } from './routes/admin/offers'
 import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
 import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminAffiliatesRouteImport } from './routes/admin/affiliates'
+import { Route as AdminAdminsRouteImport } from './routes/admin/admins'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AdminTicketsIndexRouteImport } from './routes/admin/tickets.index'
@@ -272,6 +274,11 @@ const AdminOrdersRoute = AdminOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminOffersRoute = AdminOffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminHomepageRoute = AdminHomepageRouteImport.update({
   id: '/homepage',
   path: '/homepage',
@@ -290,6 +297,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
 const AdminAffiliatesRoute = AdminAffiliatesRouteImport.update({
   id: '/affiliates',
   path: '/affiliates',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAdminsRoute = AdminAdminsRouteImport.update({
+  id: '/admins',
+  path: '/admins',
   getParentRoute: () => AdminRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -420,10 +432,12 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/offers': typeof AdminOffersRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/products': typeof AdminProductsRouteWithChildren
@@ -480,10 +494,12 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/offers': typeof AdminOffersRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/sellers': typeof AdminSellersRoute
@@ -544,10 +560,12 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/offers': typeof AdminOffersRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/products': typeof AdminProductsRouteWithChildren
@@ -610,10 +628,12 @@ export interface FileRouteTypes {
     | '/terms'
     | '/checkout'
     | '/dashboard'
+    | '/admin/admins'
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
     | '/admin/homepage'
+    | '/admin/offers'
     | '/admin/orders'
     | '/admin/payments'
     | '/admin/products'
@@ -670,10 +690,12 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms'
     | '/checkout'
+    | '/admin/admins'
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
     | '/admin/homepage'
+    | '/admin/offers'
     | '/admin/orders'
     | '/admin/payments'
     | '/admin/sellers'
@@ -733,10 +755,12 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/checkout'
     | '/_authenticated/dashboard'
+    | '/admin/admins'
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
     | '/admin/homepage'
+    | '/admin/offers'
     | '/admin/orders'
     | '/admin/payments'
     | '/admin/products'
@@ -1082,6 +1106,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/offers': {
+      id: '/admin/offers'
+      path: '/offers'
+      fullPath: '/admin/offers'
+      preLoaderRoute: typeof AdminOffersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/homepage': {
       id: '/admin/homepage'
       path: '/homepage'
@@ -1108,6 +1139,13 @@ declare module '@tanstack/react-router' {
       path: '/affiliates'
       fullPath: '/admin/affiliates'
       preLoaderRoute: typeof AdminAffiliatesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/admins': {
+      id: '/admin/admins'
+      path: '/admins'
+      fullPath: '/admin/admins'
+      preLoaderRoute: typeof AdminAdminsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/_authenticated/dashboard': {
@@ -1334,10 +1372,12 @@ const AdminTicketsRouteWithChildren = AdminTicketsRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminAdminsRoute: typeof AdminAdminsRoute
   AdminAffiliatesRoute: typeof AdminAffiliatesRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminCouponsRoute: typeof AdminCouponsRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
+  AdminOffersRoute: typeof AdminOffersRoute
   AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminProductsRoute: typeof AdminProductsRouteWithChildren
@@ -1350,10 +1390,12 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAdminsRoute: AdminAdminsRoute,
   AdminAffiliatesRoute: AdminAffiliatesRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminCouponsRoute: AdminCouponsRoute,
   AdminHomepageRoute: AdminHomepageRoute,
+  AdminOffersRoute: AdminOffersRoute,
   AdminOrdersRoute: AdminOrdersRouteWithChildren,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminProductsRoute: AdminProductsRouteWithChildren,
@@ -1453,13 +1495,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
