@@ -89,10 +89,10 @@ function HeroTab({ settings, slides }: { settings: Record<string, string>; slide
       await saveB({ data: {
         items: Object.entries(form).map(([key, value]) => ({ key, value: String(value ?? ""), group_name: "hero" })),
       }});
-      toast.success("সংরক্ষিত");
+      toast.success("✅ সফলভাবে সংরক্ষিত হয়েছে");
       qc.invalidateQueries({ queryKey: ["admin", "homepage-cms"] });
       qc.invalidateQueries({ queryKey: ["site_settings"] });
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) { toast.error("❌ " + (e.message || "সমস্যা হয়েছে")); }
   };
 
   return (
