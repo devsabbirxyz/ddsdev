@@ -186,40 +186,9 @@ function ReviewTab({ slides }: { slides: any[] }) {
   return <SlideCRUD kind="review" slides={slides} title="Review Slides (কাস্টমার রিভিউ স্ক্রিনশট)" />;
 }
 
-/* ============ FOOTER TAB ============ */
-function FooterTab({ settings }: { settings: Record<string, string> }) {
-  const qc = useQueryClient();
-  const saveB = useServerFn(saveSettingsBulk);
-  const [form, setForm] = useState({
-    footer_about: settings[HOMEPAGE_KEYS.footer_about] ?? "",
-    footer_copyright: settings[HOMEPAGE_KEYS.footer_copyright] ?? "© DDS-Digital. All rights reserved.",
-    newsletter_heading: settings[HOMEPAGE_KEYS.newsletter_heading] ?? "Newsletter",
-    newsletter_sub: settings[HOMEPAGE_KEYS.newsletter_sub] ?? "",
-  });
+/* Footer + Newsletter moved to /admin/footer and /admin/newsletter */
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await saveB({ data: { items: Object.entries(form).map(([key, value]) => ({ key, value: String(value ?? ""), group_name: "footer" })) }});
-      toast.success("✅ সফলভাবে সংরক্ষিত হয়েছে");
-      qc.invalidateQueries({ queryKey: ["admin", "homepage-cms"] });
-      qc.invalidateQueries({ queryKey: ["site_settings"] });
-    } catch (e: any) { toast.error("❌ " + (e.message || "সমস্যা হয়েছে")); }
-  };
 
-  return (
-    <form onSubmit={submit} className="glass-card rounded-2xl p-5 space-y-3">
-      <h2 className="font-bold text-lg">Footer + Newsletter</h2>
-      <div className="grid sm:grid-cols-2 gap-3">
-        <div className="sm:col-span-2"><label className="text-xs text-muted-foreground">About / Footer Text</label><textarea className="ip" rows={3} value={form.footer_about} onChange={(e) => setForm({...form, footer_about: e.target.value})} /></div>
-        <div><label className="text-xs text-muted-foreground">Copyright Text</label><input className="ip" value={form.footer_copyright} onChange={(e) => setForm({...form, footer_copyright: e.target.value})} /></div>
-        <div><label className="text-xs text-muted-foreground">Newsletter Heading</label><input className="ip" value={form.newsletter_heading} onChange={(e) => setForm({...form, newsletter_heading: e.target.value})} /></div>
-        <div className="sm:col-span-2"><label className="text-xs text-muted-foreground">Newsletter Subtitle</label><input className="ip" value={form.newsletter_sub} onChange={(e) => setForm({...form, newsletter_sub: e.target.value})} /></div>
-      </div>
-      <button className="btn bg-gradient-brand text-primary-foreground shadow-glow"><Save className="h-4 w-4" /> Save</button>
-    </form>
-  );
-}
 
 /* ============ Slide CRUD subcomponent ============ */
 function SlideCRUD({ kind, slides, title }: { kind: "hero" | "offer" | "review"; slides: any[]; title: string }) {
