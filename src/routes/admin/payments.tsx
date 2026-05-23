@@ -4,19 +4,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Plus, Trash2, Save, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { savePaymentMethod, deletePaymentMethod } from "@/lib/admin.functions";
+import { savePaymentMethod, deletePaymentMethod, listPaymentMethodsAdmin } from "@/lib/admin.functions";
 
 const pmQuery = queryOptions({
   queryKey: ["admin", "payment-methods"],
-  queryFn: async () => {
-    const { data, error } = await supabase
-      .from("payment_methods")
-      .select("*")
-      .order("sort_order", { ascending: true });
-    if (error) throw error;
-    return data ?? [];
-  },
+  queryFn: async () => await listPaymentMethodsAdmin(),
 });
 
 export const Route = createFileRoute("/admin/payments")({
