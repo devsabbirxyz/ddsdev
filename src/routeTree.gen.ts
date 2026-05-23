@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as SellerRouteImport } from './routes/seller'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -84,6 +85,11 @@ import { Route as AuthenticatedDashboardTicketsIdRouteImport } from './routes/_a
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopRoute = ShopRouteImport.update({
@@ -465,6 +471,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/seller': typeof SellerRouteWithChildren
   '/shop': typeof ShopRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
@@ -534,6 +541,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/admin/admins': typeof AdminAdminsRoute
@@ -605,6 +613,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/seller': typeof SellerRouteWithChildren
   '/shop': typeof ShopRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
@@ -679,6 +688,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/seller'
     | '/shop'
+    | '/sitemap.xml'
     | '/terms'
     | '/checkout'
     | '/dashboard'
@@ -748,6 +758,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/shop'
+    | '/sitemap.xml'
     | '/terms'
     | '/checkout'
     | '/admin/admins'
@@ -818,6 +829,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/seller'
     | '/shop'
+    | '/sitemap.xml'
     | '/terms'
     | '/_authenticated/checkout'
     | '/_authenticated/dashboard'
@@ -892,6 +904,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SellerRoute: typeof SellerRouteWithChildren
   ShopRoute: typeof ShopRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ProductSlugRoute: typeof ProductSlugRoute
 }
@@ -903,6 +916,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shop': {
@@ -1615,6 +1635,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SellerRoute: SellerRouteWithChildren,
   ShopRoute: ShopRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ProductSlugRoute: ProductSlugRoute,
 }
