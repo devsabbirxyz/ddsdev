@@ -4,6 +4,7 @@ import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { saveSetting } from "@/lib/admin.functions";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { toast } from "sonner";
 import { ShieldCheck, ArrowRight } from "lucide-react";
 
@@ -28,6 +29,12 @@ const FIELDS = [
   { key: "footer_about", label: "Footer About Text", group: "general" },
 ];
 
+const LOGO_KEYS = [
+  { key: "site_logo_url", label: "সাইট Logo (Navbar)", group: "branding" },
+  { key: "footer_logo_url", label: "Footer Logo", group: "branding" },
+  { key: "site_favicon_url", label: "Favicon", group: "branding" },
+];
+
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({ meta: [{ title: "Settings — Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminSettings,
@@ -38,6 +45,7 @@ function AdminSettings() {
   const qc = useQueryClient();
   const save = useServerFn(saveSetting);
   const [values, setValues] = useState<Record<string, string>>({});
+  const [savingLogo, setSavingLogo] = useState<string | null>(null);
 
   useEffect(() => {
     if (!data) return;
@@ -59,6 +67,18 @@ function AdminSettings() {
     } catch (e: any) { toast.error(e.message); }
   };
 
+  const saveLogo = async (key: string, group: string, url: string) => {
+    setValues((v) => ({ ...v, [key]: url }));
+    setSavingLogo(key);
+    try {
+      await save({ data: { key, value: url, group_name: group } });
+      toast.success("Logo আপডেট হয়েছে ✅");
+      qc.invalidateQueries({ queryKey: ["admin", "settings"] });
+      qc.invalidateQueries({ queryKey: ["site_settings"] });
+    } catch (e: any) { toast.error(e.message); }
+    finally { setSavingLogo(null); }
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="font-display font-bold text-2xl">সাইট সেটিংস</h1>
@@ -78,6 +98,27 @@ function AdminSettings() {
         </div>
         <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
       </Link>
+
+      <div className="glass-card rounded-2xl p-6 space-y-5">
+        <div>
+          <h2 className="font-bold text-lg">Branding / Logo</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Navbar ও Footer-এ দেখানো Logo পরিবর্তন করুন</p>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {LOGO_KEYS.map((l) => (
+            <div key={l.key} className={savingLogo === l.key ? "opacity-60 pointer-events-none" : ""}>
+              <ImageUpload
+                label={l.label}
+                value={values[l.key] ?? ""}
+                onChange={(url) => saveLogo(l.key, l.group, url)}
+                bucket="admin-uploads"
+                folder="branding"
+                maxSizeMB={2}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
 
       <form onSubmit={submit} className="glass-card rounded-2xl p-6 space-y-4">
         {FIELDS.map((f) => (
