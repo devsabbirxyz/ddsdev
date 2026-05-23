@@ -58,7 +58,7 @@ function ProductPage() {
   const images = (product.product_images ?? []).sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
   const variants = (product.product_variants ?? []).filter((v: any) => v.is_active);
   const selectedVariant = variants.find((v: any) => v.id === variantId);
-  const price = selectedVariant?.price ?? product.offer_price ?? product.regular_price;
+  const price = selectedVariant?.offer_price ?? selectedVariant?.regular_price ?? product.offer_price ?? product.regular_price;
   const hasDiscount = product.offer_price != null && product.regular_price != null && product.offer_price < product.regular_price;
 
   return (
@@ -140,7 +140,7 @@ function ProductPage() {
                       onClick={() => setVariantId(v.id)}
                       className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${variantId === v.id ? "bg-gradient-brand text-primary-foreground shadow-glow" : "glass hover:bg-accent"}`}
                     >
-                      {v.name} · {formatBDT(v.price)}
+                      {v.label} · {formatBDT(v.offer_price ?? v.regular_price)}
                     </button>
                   ))}
                 </div>
