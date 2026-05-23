@@ -8,6 +8,9 @@ export const productsQuery = (opts?: {
   sort?: "new" | "best" | "price_asc" | "price_desc";
   featured?: boolean;
   limit?: number;
+  minPrice?: number | null;
+  maxPrice?: number | null;
+  badge?: "new" | "best" | "featured" | null;
 }) =>
   queryOptions({
     queryKey: ["products", opts ?? {}],
@@ -19,11 +22,16 @@ export const productsQuery = (opts?: {
         .eq("status", "approved");
 
       if (opts?.featured) q = q.eq("is_featured", true);
+      if (opts?.badge === "new") q = q.eq("is_new_arrival", true);
+      if (opts?.badge === "best") q = q.eq("is_best_seller", true);
+      if (opts?.badge === "featured") q = q.eq("is_featured", true);
       if (opts?.category) {
         const { data: cat } = await supabase.from("categories").select("id").eq("slug", opts.category).maybeSingle();
         if (cat) q = q.eq("category_id", cat.id);
       }
       if (opts?.search) q = q.ilike("title", `%${opts.search}%`);
+      if (typeof opts?.minPrice === "number") q = q.gte("offer_price", opts.minPrice);
+      if (typeof opts?.maxPrice === "number") q = q.lte("offer_price", opts.maxPrice);
 
       switch (opts?.sort) {
         case "best": q = q.order("total_sales", { ascending: false }); break;
