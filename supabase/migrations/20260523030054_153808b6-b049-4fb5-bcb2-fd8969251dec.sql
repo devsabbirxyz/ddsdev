@@ -1,0 +1,1 @@
+REVOKE SELECT (api_key) ON public.payment_methods FROM anon, authenticated;
