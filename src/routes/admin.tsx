@@ -45,6 +45,7 @@ const nav = [
   { to: "/admin/coupons", label: "কুপন", icon: Ticket },
   { to: "/admin/slides", label: "স্লাইড", icon: ImageIcon },
   { to: "/admin/offers", label: "অফার", icon: Sparkles },
+  { to: "/admin/popup", label: "Offer Popup", icon: Sparkles },
   { to: "/admin/settings", label: "সেটিংস", icon: Settings },
   { to: "/admin/admins", label: "অ্যাডমিন ম্যানেজমেন্ট", icon: ShieldCheck, superOnly: true },
 ] as Array<{ to: string; label: string; icon: any; exact?: boolean; superOnly?: boolean }>;

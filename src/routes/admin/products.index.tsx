@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { deleteProduct, saveProduct } from "@/lib/admin.functions";
+import { deleteProduct } from "@/lib/admin.functions";
 import { formatBDT } from "@/lib/storefront";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Star, Eye, EyeOff } from "lucide-react";
@@ -30,7 +30,6 @@ function AdminProducts() {
   const { data, isLoading } = useQuery(productsQuery);
   const qc = useQueryClient();
   const nav = useNavigate();
-  const save = useServerFn(saveProduct);
   const del = useServerFn(deleteProduct);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [search, setSearch] = useState("");
@@ -41,12 +40,8 @@ function AdminProducts() {
     .filter((p) => filter === "all" || p.status === filter)
     .filter((p) => !search || p.title.toLowerCase().includes(search.toLowerCase()));
 
-  const createNew = async () => {
-    try {
-      const r = await save({ data: { title: "নতুন প্রোডাক্ট", delivery_type: "instant_text", status: "approved", is_active: false } });
-      qc.invalidateQueries({ queryKey: ["admin", "products"] });
-      nav({ to: "/admin/products/$id" as any, params: { id: r.id } as any });
-    } catch (e: any) { toast.error(e.message); }
+  const createNew = () => {
+    nav({ to: "/admin/products/new" as any });
   };
 
   const onDelete = async (id: string) => {
