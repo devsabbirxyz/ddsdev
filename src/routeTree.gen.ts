@@ -54,6 +54,7 @@ import { Route as AdminOffersRouteImport } from './routes/admin/offers'
 import { Route as AdminNewsletterRouteImport } from './routes/admin/newsletter'
 import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
 import { Route as AdminFooterRouteImport } from './routes/admin/footer'
+import { Route as AdminCustomersRouteImport } from './routes/admin/customers'
 import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminAffiliatesRouteImport } from './routes/admin/affiliates'
@@ -303,6 +304,11 @@ const AdminFooterRoute = AdminFooterRouteImport.update({
   path: '/footer',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCustomersRoute = AdminCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCouponsRoute = AdminCouponsRouteImport.update({
   id: '/coupons',
   path: '/coupons',
@@ -460,6 +466,7 @@ export interface FileRoutesByFullPath {
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
+  '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/newsletter': typeof AdminNewsletterRoute
@@ -526,6 +533,7 @@ export interface FileRoutesByTo {
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
+  '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/newsletter': typeof AdminNewsletterRoute
@@ -596,6 +604,7 @@ export interface FileRoutesById {
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
+  '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/newsletter': typeof AdminNewsletterRoute
@@ -668,6 +677,7 @@ export interface FileRouteTypes {
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
+    | '/admin/customers'
     | '/admin/footer'
     | '/admin/homepage'
     | '/admin/newsletter'
@@ -734,6 +744,7 @@ export interface FileRouteTypes {
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
+    | '/admin/customers'
     | '/admin/footer'
     | '/admin/homepage'
     | '/admin/newsletter'
@@ -803,6 +814,7 @@ export interface FileRouteTypes {
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
+    | '/admin/customers'
     | '/admin/footer'
     | '/admin/homepage'
     | '/admin/newsletter'
@@ -1189,6 +1201,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFooterRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/customers': {
+      id: '/admin/customers'
+      path: '/customers'
+      fullPath: '/admin/customers'
+      preLoaderRoute: typeof AdminCustomersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/coupons': {
       id: '/admin/coupons'
       path: '/coupons'
@@ -1454,6 +1473,7 @@ interface AdminRouteChildren {
   AdminAffiliatesRoute: typeof AdminAffiliatesRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminCouponsRoute: typeof AdminCouponsRoute
+  AdminCustomersRoute: typeof AdminCustomersRoute
   AdminFooterRoute: typeof AdminFooterRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
   AdminNewsletterRoute: typeof AdminNewsletterRoute
@@ -1475,6 +1495,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAffiliatesRoute: AdminAffiliatesRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminCouponsRoute: AdminCouponsRoute,
+  AdminCustomersRoute: AdminCustomersRoute,
   AdminFooterRoute: AdminFooterRoute,
   AdminHomepageRoute: AdminHomepageRoute,
   AdminNewsletterRoute: AdminNewsletterRoute,
