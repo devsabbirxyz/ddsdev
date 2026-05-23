@@ -140,7 +140,7 @@ function ProductPage() {
                       onClick={() => setVariantId(v.id)}
                       className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${variantId === v.id ? "bg-gradient-brand text-primary-foreground shadow-glow" : "glass hover:bg-accent"}`}
                     >
-                      {v.name} · {formatBDT(v.price)}
+                      {v.label} · {formatBDT(v.offer_price ?? v.regular_price)}
                     </button>
                   ))}
                 </div>
