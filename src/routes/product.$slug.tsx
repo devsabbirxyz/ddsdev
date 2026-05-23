@@ -53,8 +53,11 @@ export const Route = createFileRoute("/product/$slug")({
 function ProductPage() {
   const { product } = Route.useLoaderData();
   const [variantId, setVariantId] = useState<string | null>(product?.product_variants?.[0]?.id ?? null);
+  const [qty, setQty] = useState(1);
   const { data: reviews = [] } = useQuery(productReviewsQuery(product?.id));
   const { data: related = [] } = useQuery(productsQuery({ limit: 4 }));
+  const { addItem } = useCart();
+  const navigate = useNavigate();
 
   if (!product) return null;
   const images = (product.product_images ?? []).sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
