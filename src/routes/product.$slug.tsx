@@ -1,9 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Star, Zap, ShieldCheck, Headphones, Heart, ShoppingCart } from "lucide-react";
+import { Star, Zap, ShieldCheck, Headphones, Heart, ShoppingCart, Eye } from "lucide-react";
 import { productBySlugQuery, productReviewsQuery, productsQuery, formatBDT } from "@/lib/storefront";
 import { ProductCard } from "@/components/storefront/ProductCard";
+import { ProductViewTracker } from "@/components/storefront/ProductViewTracker";
 
 export const Route = createFileRoute("/product/$slug")({
   loader: async ({ context, params }) => {
@@ -62,6 +63,7 @@ function ProductPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+      <ProductViewTracker productId={product.id} />
       <nav className="text-xs text-muted-foreground mb-6">
         <Link to="/" className="hover:text-foreground">হোম</Link>
         <span className="mx-2">/</span>
@@ -109,6 +111,11 @@ function ProductPage() {
             </span>
             <span className="text-muted-foreground">·</span>
             <span className="text-muted-foreground">{product.total_sales ?? 0} বিক্রি</span>
+            <span className="text-muted-foreground">·</span>
+            <span className="inline-flex items-center gap-1 text-muted-foreground">
+              <Eye className="h-3.5 w-3.5" />
+              {product.view_count ?? 0} ভিউ
+            </span>
           </div>
 
           {product.short_description && (
