@@ -1,11 +1,11 @@
-import { createFileRoute, Outlet, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useQuery, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, ShoppingBag, Store, Users, Package, Wallet,
   Tag, Image as ImageIcon, Settings, Home, CreditCard, Ticket, LifeBuoy,
-  Sparkles, ShieldCheck, Mail, PanelBottom,
+  Sparkles, ShieldCheck, Mail, PanelBottom, Menu, X,
 } from "lucide-react";
 
 const adminAuthQuery = queryOptions({
