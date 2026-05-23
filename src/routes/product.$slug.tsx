@@ -152,17 +152,56 @@ function ProductPage() {
               </div>
             )}
 
+            <div className="mt-5 flex items-center gap-3">
+              <span className="text-xs font-semibold">পরিমাণ</span>
+              <div className="inline-flex items-center rounded-xl glass">
+                <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2 hover:bg-accent rounded-l-xl" aria-label="কমান">−</button>
+                <span className="px-4 py-2 text-sm font-semibold min-w-[2.5rem] text-center">{qty}</span>
+                <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2 hover:bg-accent rounded-r-xl" aria-label="বাড়ান">+</button>
+              </div>
+            </div>
+
             <div className="mt-6 flex flex-wrap gap-3">
-              <button className="flex-1 min-w-[180px] rounded-2xl bg-gradient-brand px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition inline-flex items-center justify-center gap-2">
+              <button
+                onClick={() => {
+                  addItem({
+                    productId: product.id,
+                    slug: product.slug,
+                    title: product.title,
+                    price: Number(price ?? 0),
+                    image: images[0]?.image_url ?? null,
+                    variantId: selectedVariant?.id ?? null,
+                    variantLabel: selectedVariant?.label ?? null,
+                    quantity: qty,
+                  });
+                  navigate({ to: "/checkout" });
+                }}
+                className="flex-1 min-w-[180px] rounded-2xl bg-gradient-brand px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition inline-flex items-center justify-center gap-2"
+              >
                 <ShoppingCart className="h-4 w-4" /> এখনই কিনুন
+              </button>
+              <button
+                onClick={() => {
+                  addItem({
+                    productId: product.id,
+                    slug: product.slug,
+                    title: product.title,
+                    price: Number(price ?? 0),
+                    image: images[0]?.image_url ?? null,
+                    variantId: selectedVariant?.id ?? null,
+                    variantLabel: selectedVariant?.label ?? null,
+                    quantity: qty,
+                  });
+                  toast.success("কার্টে যোগ হয়েছে");
+                }}
+                className="rounded-2xl glass-card px-5 py-3.5 text-sm font-semibold hover:bg-accent transition inline-flex items-center gap-2"
+              >
+                <ShoppingCart className="h-4 w-4" /> কার্টে যোগ
               </button>
               <button className="rounded-2xl glass-card px-4 py-3.5 hover:bg-accent transition" aria-label="Wishlist">
                 <Heart className="h-4 w-4" />
               </button>
             </div>
-            <p className="mt-3 text-xs text-muted-foreground text-center">
-              চেকআউট ও কার্ট ফ্লো Phase 3 এ আসছে
-            </p>
           </div>
 
           <div className="mt-6 grid grid-cols-3 gap-3">
