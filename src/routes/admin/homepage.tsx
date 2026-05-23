@@ -64,7 +64,9 @@ function HomepageCMS() {
       {tab === "offer" && <OfferTab slides={data.offer} />}
       {tab === "trust" && <TrustTab settings={data.settings} />}
       {tab === "reviews" && <ReviewTab slides={data.review} />}
-      {tab === "footer" && <FooterTab settings={data.settings} />}
+      <div className="text-xs text-muted-foreground">
+        💡 Footer ও Newsletter এখন আলাদা পেজে — <a href="/admin/footer" className="text-primary underline">/admin/footer</a> এবং <a href="/admin/newsletter" className="text-primary underline">/admin/newsletter</a>
+      </div>
       <style>{`.ip{width:100%;border-radius:0.75rem;border:1px solid hsl(var(--border));background:transparent;padding:0.6rem 0.85rem;font-size:0.875rem}.btn{display:inline-flex;align-items:center;gap:0.4rem;border-radius:0.75rem;padding:0.5rem 1rem;font-weight:600;font-size:0.875rem}`}</style>
     </div>
   );
