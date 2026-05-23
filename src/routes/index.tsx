@@ -287,9 +287,11 @@ function HomePage() {
       )}
 
       {/* NEWSLETTER */}
-      <section className="mx-auto max-w-4xl px-4 sm:px-6 pb-20">
-        <Newsletter />
-      </section>
+      {settings[HOMEPAGE_KEYS.newsletter_enabled] !== "false" && (
+        <section className="mx-auto max-w-4xl px-4 sm:px-6 pb-20">
+          <Newsletter heading={settings[HOMEPAGE_KEYS.newsletter_heading]} sub={settings[HOMEPAGE_KEYS.newsletter_sub]} />
+        </section>
+      )}
     </>
   );
 }
