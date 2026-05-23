@@ -19,7 +19,7 @@ const popupQuery = queryOptions({
   },
 });
 
-const KEY = "dds_popup_seen_v1";
+const KEY = "dds_popup_seen_v2";
 
 export function OfferPopup() {
   const { lang } = useI18n();
@@ -29,13 +29,16 @@ export function OfferPopup() {
 
   useEffect(() => {
     if (!p) return;
-    try {
-      const raw = sessionStorage.getItem(KEY);
-      if (raw === p.id) return;
-      const days = Number(p.repeat_after_days ?? 3);
-      const lastSeen = localStorage.getItem(`${KEY}_${p.id}`);
-      if (lastSeen && Date.now() - Number(lastSeen) < days * 86400_000) return;
-    } catch {}
+    const preview = typeof window !== "undefined" && window.location.search.includes("preview=popup");
+    if (!preview) {
+      try {
+        const raw = sessionStorage.getItem(KEY);
+        if (raw === p.id) return;
+        const days = Number(p.repeat_after_days ?? 3);
+        const lastSeen = localStorage.getItem(`${KEY}_${p.id}`);
+        if (lastSeen && Date.now() - Number(lastSeen) < days * 86400_000) return;
+      } catch {}
+    }
     const t = setTimeout(() => setOpen(true), Math.max(0, (p.show_delay_seconds ?? 5) * 1000));
     return () => clearTimeout(t);
   }, [p]);
