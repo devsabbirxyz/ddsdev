@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, queryOptions } from "@tanstack/react-query";
-import { CheckCircle2, Clock, Package, Download } from "lucide-react";
+import { CheckCircle2, Clock, Package, Download, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBDT } from "@/lib/storefront";
+import { downloadInvoicePDF } from "@/lib/invoice";
 
 const orderQuery = (id: string) =>
   queryOptions({
