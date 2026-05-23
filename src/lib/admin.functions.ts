@@ -741,3 +741,219 @@ export const deleteCoupon = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ============ OFFERS (special offers cards) ============
+export const listOffers = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin.from("offers").select("*").order("sort_order");
+    if (error) throw new Error(error.message);
+    return { offers: data ?? [] };
+  });
+
+export const saveOffer = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({
+      id: z.string().uuid().optional(),
+      title: z.string().min(1).max(200),
+      title_en: z.string().max(200).optional().nullable(),
+      image_url: z.string().url().max(1000),
+      link_url: z.string().max(500).optional().nullable(),
+      is_active: z.boolean().optional(),
+      sort_order: z.number().int().min(0).optional(),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const payload = {
+      title: data.title,
+      title_en: data.title_en ?? null,
+      image_url: data.image_url,
+      link_url: data.link_url ?? null,
+      is_active: data.is_active ?? true,
+      sort_order: data.sort_order ?? 0,
+    };
+    if (data.id) {
+      const { error } = await supabaseAdmin.from("offers").update(payload).eq("id", data.id);
+      if (error) throw new Error(error.message);
+      return { ok: true, id: data.id };
+    }
+    const { data: ins, error } = await supabaseAdmin.from("offers").insert(payload).select("id").single();
+    if (error) throw new Error(error.message);
+    return { ok: true, id: ins!.id };
+  });
+
+export const deleteOffer = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("offers").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ============ ADMIN MANAGEMENT (super_admin gated) ============
+const requireSuperAdmin = createMiddleware({ type: "function" })
+  .middleware([requireSupabaseAuth])
+  .server(async ({ next, context }) => {
+    const { userId } = context;
+    const { data } = await supabaseAdmin
+      .from("user_roles")
+      .select("role,is_active")
+      .eq("user_id", userId)
+      .eq("role", "super_admin")
+      .eq("is_active", true)
+      .maybeSingle();
+    if (!data) throw new Error("Forbidden: super_admin required");
+    return next({ context: { adminId: userId } });
+  });
+
+export const listAdmins = createServerFn({ method: "GET" })
+  .middleware([requireSuperAdmin])
+  .handler(async () => {
+    const { data: roles, error } = await supabaseAdmin
+      .from("user_roles")
+      .select("id,user_id,role,is_active,created_at")
+      .in("role", ["admin", "super_admin", "moderator"])
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    const userIds = Array.from(new Set((roles ?? []).map((r) => r.user_id).filter(Boolean))) as string[];
+    let usersMap: Record<string, { email: string; full_name: string | null }> = {};
+    if (userIds.length) {
+      const { data: us } = await supabaseAdmin.from("users").select("id,email,full_name").in("id", userIds);
+      for (const u of us ?? []) usersMap[u.id] = { email: u.email ?? "", full_name: u.full_name };
+    }
+    return {
+      admins: (roles ?? []).map((r) => ({
+        ...r,
+        email: usersMap[r.user_id ?? ""]?.email ?? "",
+        full_name: usersMap[r.user_id ?? ""]?.full_name ?? null,
+      })),
+    };
+  });
+
+export const inviteAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSuperAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({
+      email: z.string().email(),
+      password: z.string().min(8).max(100),
+      full_name: z.string().min(1).max(100),
+      role: z.enum(["admin", "super_admin", "moderator"]),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { data: created, error: e1 } = await supabaseAdmin.auth.admin.createUser({
+      email: data.email,
+      password: data.password,
+      email_confirm: true,
+      user_metadata: { full_name: data.full_name },
+    });
+    if (e1) throw new Error(e1.message);
+    const uid = created.user!.id;
+    // user record is created by handle_new_user trigger; ensure role row
+    const { error: e2 } = await supabaseAdmin
+      .from("user_roles")
+      .insert({ user_id: uid, role: data.role as any, is_active: true });
+    if (e2) throw new Error(e2.message);
+    return { ok: true, user_id: uid };
+  });
+
+export const updateAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSuperAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({
+      role_id: z.string().uuid(),
+      role: z.enum(["admin", "super_admin", "moderator"]).optional(),
+      is_active: z.boolean().optional(),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const patch: any = {};
+    if (data.role) patch.role = data.role;
+    if (typeof data.is_active === "boolean") patch.is_active = data.is_active;
+    const { error } = await supabaseAdmin.from("user_roles").update(patch).eq("id", data.role_id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const removeAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSuperAdmin])
+  .inputValidator((i: unknown) => z.object({ role_id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("user_roles").delete().eq("id", data.role_id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ============ DASHBOARD STATS (admin) ============
+export const getOverviewStats = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const now = new Date();
+    const start30 = new Date(now);
+    start30.setDate(start30.getDate() - 29);
+    start30.setHours(0, 0, 0, 0);
+
+    const [ordersAll, ordersRange, sellers, affiliates, products, users, pendingOrders, pendingSellers, pendingAffiliates, pendingProducts, pendingWS, pendingWA] = await Promise.all([
+      supabaseAdmin.from("orders").select("total_price,status"),
+      supabaseAdmin.from("orders").select("created_at,total_price,status,delivery_type:payment_method").gte("created_at", start30.toISOString()),
+      supabaseAdmin.from("sellers").select("id", { count: "exact", head: true }).eq("status", "approved"),
+      supabaseAdmin.from("affiliates").select("id", { count: "exact", head: true }).eq("status", "approved"),
+      supabaseAdmin.from("products").select("id", { count: "exact", head: true }).eq("status", "approved"),
+      supabaseAdmin.from("users").select("id", { count: "exact", head: true }),
+      supabaseAdmin.from("orders").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      supabaseAdmin.from("seller_applications").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      supabaseAdmin.from("affiliate_applications").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      supabaseAdmin.from("products").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      supabaseAdmin.from("seller_withdrawals").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      supabaseAdmin.from("affiliate_withdrawals").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    ]);
+
+    const revenue = (ordersAll.data ?? [])
+      .filter((o: any) => o.status === "approved")
+      .reduce((s: number, o: any) => s + Number(o.total_price ?? 0), 0);
+
+    // Build 30-day buckets
+    const byDay: Record<string, { date: string; orders: number; revenue: number }> = {};
+    for (let i = 0; i < 30; i++) {
+      const d = new Date(start30);
+      d.setDate(start30.getDate() + i);
+      const key = d.toISOString().slice(0, 10);
+      byDay[key] = { date: key, orders: 0, revenue: 0 };
+    }
+    for (const o of ordersRange.data ?? []) {
+      const key = (o.created_at as string).slice(0, 10);
+      if (byDay[key]) {
+        byDay[key].orders += 1;
+        if ((o as any).status === "approved") byDay[key].revenue += Number((o as any).total_price ?? 0);
+      }
+    }
+
+    // Top products
+    const { data: top } = await supabaseAdmin
+      .from("products")
+      .select("title,total_sales,view_count")
+      .order("total_sales", { ascending: false })
+      .limit(5);
+
+    return {
+      kpis: {
+        revenue,
+        orderCount: ordersAll.data?.length ?? 0,
+        sellerCount: sellers.count ?? 0,
+        affiliateCount: affiliates.count ?? 0,
+        productCount: products.count ?? 0,
+        userCount: users.count ?? 0,
+      },
+      pending: {
+        orders: pendingOrders.count ?? 0,
+        sellers: pendingSellers.count ?? 0,
+        affiliates: pendingAffiliates.count ?? 0,
+        products: pendingProducts.count ?? 0,
+        withdrawals: (pendingWS.count ?? 0) + (pendingWA.count ?? 0),
+      },
+      series: Object.values(byDay),
+      topProducts: top ?? [],
+    };
+  });
