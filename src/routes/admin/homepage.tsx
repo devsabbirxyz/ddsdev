@@ -81,6 +81,7 @@ function HeroTab({ settings, slides }: { settings: Record<string, string>; slide
     hero_tagline: settings[HOMEPAGE_KEYS.hero_tagline] ?? "",
     hero_cta_primary: settings[HOMEPAGE_KEYS.hero_cta_primary] ?? "Shop Now",
     hero_cta_secondary: settings[HOMEPAGE_KEYS.hero_cta_secondary] ?? "আরও জানুন",
+    hero_cta_secondary_link: settings[HOMEPAGE_KEYS.hero_cta_secondary_link] ?? "/dashboard",
     announcement_text: settings[HOMEPAGE_KEYS.announcement] ?? "",
   });
 
@@ -104,8 +105,10 @@ function HeroTab({ settings, slides }: { settings: Record<string, string>; slide
           <div><label className="text-xs text-muted-foreground">Hero Badge</label><input className="ip" value={form.hero_badge} onChange={(e) => setForm({...form, hero_badge: e.target.value})} /></div>
           <div><label className="text-xs text-muted-foreground">Announcement Bar</label><input className="ip" value={form.announcement_text} onChange={(e) => setForm({...form, announcement_text: e.target.value})} /></div>
           <div className="sm:col-span-2"><label className="text-xs text-muted-foreground">Tagline / Description</label><textarea className="ip" rows={3} value={form.hero_tagline} onChange={(e) => setForm({...form, hero_tagline: e.target.value})} /></div>
-          <div><label className="text-xs text-muted-foreground">Primary CTA</label><input className="ip" value={form.hero_cta_primary} onChange={(e) => setForm({...form, hero_cta_primary: e.target.value})} /></div>
-          <div><label className="text-xs text-muted-foreground">Secondary CTA</label><input className="ip" value={form.hero_cta_secondary} onChange={(e) => setForm({...form, hero_cta_secondary: e.target.value})} /></div>
+          <div><label className="text-xs text-muted-foreground">Primary CTA Text</label><input className="ip" value={form.hero_cta_primary} onChange={(e) => setForm({...form, hero_cta_primary: e.target.value})} /></div>
+          <div></div>
+          <div><label className="text-xs text-muted-foreground">Secondary CTA Text</label><input className="ip" placeholder="আরও জানুন" value={form.hero_cta_secondary} onChange={(e) => setForm({...form, hero_cta_secondary: e.target.value})} /></div>
+          <div><label className="text-xs text-muted-foreground">Secondary CTA Link</label><input className="ip" placeholder="/dashboard বা https://..." value={form.hero_cta_secondary_link} onChange={(e) => setForm({...form, hero_cta_secondary_link: e.target.value})} /></div>
         </div>
         <button className="btn bg-gradient-brand text-primary-foreground shadow-glow"><Save className="h-4 w-4" /> Save</button>
       </form>
