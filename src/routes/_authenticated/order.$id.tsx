@@ -69,6 +69,12 @@ function OrderPage() {
       )}
 
       <div className="mt-6 flex flex-wrap gap-3 justify-center">
+        <button
+          onClick={() => downloadInvoicePDF(order as any)}
+          className="rounded-xl glass-card px-5 py-2.5 text-sm font-semibold hover:bg-accent inline-flex items-center gap-2"
+        >
+          <FileText className="h-4 w-4" /> ইনভয়েস ডাউনলোড
+        </button>
         <Link to="/dashboard/orders" className="rounded-xl glass-card px-5 py-2.5 text-sm font-semibold hover:bg-accent">সব অর্ডার দেখুন</Link>
         <Link to="/shop" className="rounded-xl bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow">আরো শপিং করুন</Link>
       </div>
