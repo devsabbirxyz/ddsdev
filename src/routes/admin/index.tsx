@@ -213,16 +213,24 @@ function AdminOverview() {
   );
 }
 
-function KpiCard({ icon: Icon, label, value, sub, gradient, iconColor }: { icon: any; label: string; value: React.ReactNode; sub?: string; gradient: string; iconColor: string }) {
+function KpiCard({ icon: Icon, label, value, sub, tint }: { icon: any; label: string; value: React.ReactNode; sub?: string; tint: "rose" | "violet" | "pink" | "cyan" | "amber" }) {
+  const tints: Record<string, { ring: string; bg: string; icon: string; glow: string }> = {
+    rose:   { ring: "ring-rose-500/30",   bg: "bg-gradient-to-br from-rose-500 to-rose-700",     icon: "text-white", glow: "shadow-[0_10px_30px_-10px_rgba(244,63,94,0.6)]" },
+    violet: { ring: "ring-violet-500/30", bg: "bg-gradient-to-br from-violet-500 to-violet-700", icon: "text-white", glow: "shadow-[0_10px_30px_-10px_rgba(139,92,246,0.6)]" },
+    pink:   { ring: "ring-pink-500/30",   bg: "bg-gradient-to-br from-pink-500 to-fuchsia-700",  icon: "text-white", glow: "shadow-[0_10px_30px_-10px_rgba(236,72,153,0.6)]" },
+    cyan:   { ring: "ring-cyan-500/30",   bg: "bg-gradient-to-br from-cyan-500 to-sky-700",      icon: "text-white", glow: "shadow-[0_10px_30px_-10px_rgba(6,182,212,0.6)]" },
+    amber:  { ring: "ring-amber-500/30",  bg: "bg-gradient-to-br from-amber-500 to-orange-600",  icon: "text-white", glow: "shadow-[0_10px_30px_-10px_rgba(245,158,11,0.6)]" },
+  };
+  const t = tints[tint];
   return (
-    <div className={`relative glass-card rounded-2xl p-5 overflow-hidden bg-gradient-to-br ${gradient}`}>
-      <div className="flex items-start justify-between">
-        <div className="flex-1 min-w-0">
-          <div className="text-xs text-muted-foreground">{label}</div>
-          <div className="text-2xl font-display font-bold mt-1 truncate">{value}</div>
-          {sub && <div className="text-[11px] text-muted-foreground mt-1 truncate">{sub}</div>}
-        </div>
-        <Icon className={`h-8 w-8 ${iconColor} opacity-80`} />
+    <div className="glass-card rounded-2xl p-5 flex flex-col gap-4 hover:scale-[1.02] transition">
+      <div className={`grid h-12 w-12 place-items-center rounded-2xl ${t.bg} ${t.glow}`}>
+        <Icon className={`h-6 w-6 ${t.icon}`} />
+      </div>
+      <div>
+        <div className="text-2xl font-display font-bold leading-tight truncate">{value}</div>
+        <div className="text-xs text-muted-foreground mt-1">{label}</div>
+        {sub && <div className="text-[11px] text-muted-foreground/80 mt-1 truncate">{sub}</div>}
       </div>
     </div>
   );
