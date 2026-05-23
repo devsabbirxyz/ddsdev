@@ -65,6 +65,7 @@ function HomePage() {
   const heroTagline = settings[HOMEPAGE_KEYS.hero_tagline] || `${t("tagline")} — সাবস্ক্রিপশন, সফটওয়্যার, অ্যাকাউন্ট, ডাউনলোডেবল প্রোডাক্ট সবকিছু এক জায়গায়। ইনস্ট্যান্ট অটো ডেলিভারি।`;
   const ctaPrimary = settings[HOMEPAGE_KEYS.hero_cta_primary] || t("shop_now");
   const ctaSecondary = settings[HOMEPAGE_KEYS.hero_cta_secondary] || "আরও জানুন";
+  const ctaSecondaryLink = settings[HOMEPAGE_KEYS.hero_cta_secondary_link] || "/dashboard";
   const announcement = settings[HOMEPAGE_KEYS.announcement] || "🎉 লঞ্চিং অফার — প্রথম ১০০ অর্ডারে ১৫% ছাড়, কুপন কোড: DDS15";
 
   return (
