@@ -11,6 +11,7 @@ import { useEffect } from "react";
 
 import { AppProviders } from "@/components/providers/AppProviders";
 import { Navbar } from "@/components/layout/Navbar";
+import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Footer } from "@/components/layout/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import appCss from "../styles.css?url";
@@ -124,6 +125,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AppProviders>
         <div className="flex min-h-screen flex-col bg-background">
+          <AnnouncementBar />
           <Navbar />
           <main className="flex-1">
             <Outlet />
