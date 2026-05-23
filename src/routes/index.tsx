@@ -91,12 +91,13 @@ function HomePage() {
 
           {/* Offer banner — auto-sliding carousel with top spotlight glow */}
           <div className="relative mt-8">
-            {/* Spotlight glow above banner */}
-            <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-56 w-[90%] rounded-[100%] bg-primary/60 blur-[80px] opacity-70" />
-            <div aria-hidden className="pointer-events-none absolute -top-16 left-1/3 h-40 w-1/3 rounded-full bg-secondary/60 blur-[70px] opacity-60" />
-            <div aria-hidden className="pointer-events-none absolute -top-16 right-1/4 h-40 w-1/4 rounded-full bg-primary-glow/60 blur-[70px] opacity-60" />
+            {/* Spotlight glow above banner — matches banner image colors (orange/red/yellow) */}
+            <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-56 w-[90%] rounded-[100%] blur-[80px] opacity-80" style={{ background: "#ff5a2e" }} />
+            <div aria-hidden className="pointer-events-none absolute -top-16 left-1/4 h-40 w-1/3 rounded-full blur-[70px] opacity-70" style={{ background: "#ffb020" }} />
+            <div aria-hidden className="pointer-events-none absolute -top-16 right-1/4 h-40 w-1/3 rounded-full blur-[70px] opacity-70" style={{ background: "#ff2e6b" }} />
             {/* Glow ring outline */}
-            <div aria-hidden className="pointer-events-none absolute -inset-px rounded-3xl bg-gradient-to-b from-primary/40 via-secondary/20 to-transparent blur-md" />
+            <div aria-hidden className="pointer-events-none absolute -inset-px rounded-3xl blur-md" style={{ background: "linear-gradient(to bottom, rgba(255,90,46,0.45), rgba(255,46,107,0.25), transparent)" }} />
+
             <div className="relative rounded-3xl shadow-glow">
               <OfferBannerSlider />
             </div>
