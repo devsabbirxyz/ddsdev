@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { saveSetting } from "@/lib/admin.functions";
 import { toast } from "sonner";
+import { ShieldCheck, ArrowRight } from "lucide-react";
 
 const settingsQuery = queryOptions({
   queryKey: ["admin", "settings"],
@@ -61,6 +62,23 @@ function AdminSettings() {
   return (
     <div className="space-y-6">
       <h1 className="font-display font-bold text-2xl">সাইট সেটিংস</h1>
+
+      <Link
+        to="/admin/admins"
+        className="glass-card rounded-2xl p-5 flex items-center justify-between hover:shadow-glow transition-all group"
+      >
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-xl bg-gradient-brand flex items-center justify-center shadow-glow">
+            <ShieldCheck className="h-6 w-6 text-primary-foreground" />
+          </div>
+          <div>
+            <div className="font-bold">Admin Role Management</div>
+            <div className="text-xs text-muted-foreground mt-0.5">Admins, Super Admins, Moderators যোগ ও পরিচালনা করুন</div>
+          </div>
+        </div>
+        <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+      </Link>
+
       <form onSubmit={submit} className="glass-card rounded-2xl p-6 space-y-4">
         {FIELDS.map((f) => (
           <div key={f.key}>
