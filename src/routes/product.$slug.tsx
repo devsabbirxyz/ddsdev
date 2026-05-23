@@ -1,10 +1,12 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Star, Zap, ShieldCheck, Headphones, Heart, ShoppingCart, Eye } from "lucide-react";
 import { productBySlugQuery, productReviewsQuery, productsQuery, formatBDT } from "@/lib/storefront";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { ProductViewTracker } from "@/components/storefront/ProductViewTracker";
+import { useCart } from "@/lib/cart";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$slug")({
   loader: async ({ context, params }) => {
