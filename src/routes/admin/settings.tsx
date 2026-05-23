@@ -79,6 +79,24 @@ function AdminSettings() {
     finally { setSavingLogo(null); }
   };
 
+  const saveField = async (key: string, value: string, group = "announcement") => {
+    setValues((v) => ({ ...v, [key]: value }));
+    try {
+      await save({ data: { key, value, group_name: group } });
+      qc.invalidateQueries({ queryKey: ["admin", "settings"] });
+      qc.invalidateQueries({ queryKey: ["site_settings"] });
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  const ann = {
+    enabled: (values.announcement_enabled ?? "1") === "1",
+    text: values.announcement_text ?? "",
+    link: values.announcement_link ?? "",
+    bg: values.announcement_bg || "#7c3aed",
+    color: values.announcement_color || "#ffffff",
+    scroll: (values.announcement_scroll ?? "1") === "1",
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="font-display font-bold text-2xl">সাইট সেটিংস</h1>
