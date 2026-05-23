@@ -39,6 +39,7 @@ const nav = [
   { to: "/admin/tickets", label: "সাপোর্ট টিকেট", icon: LifeBuoy },
   { to: "/admin/sellers", label: "সেলার", icon: Store },
   { to: "/admin/affiliates", label: "অ্যাফিলিয়েট", icon: Users },
+  { to: "/admin/customers", label: "কাস্টমার", icon: Users },
   { to: "/admin/products", label: "প্রোডাক্ট", icon: Package },
   { to: "/admin/withdrawals", label: "উইথড্র", icon: Wallet },
   { to: "/admin/categories", label: "ক্যাটাগরি", icon: Tag },
