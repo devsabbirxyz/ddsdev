@@ -138,6 +138,66 @@ function AdminSettings() {
         </div>
       </div>
 
+      <div className="glass-card rounded-2xl p-6 space-y-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="font-bold text-lg">Announcement Bar</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">সাইটের উপরে দেখানো নোটিস বার</p>
+          </div>
+          <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
+            <input
+              type="checkbox"
+              checked={ann.enabled}
+              onChange={(e) => saveField("announcement_enabled", e.target.checked ? "1" : "0")}
+              className="h-4 w-4"
+            />
+            শো করুন
+          </label>
+        </div>
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">Announcement টেক্সট</label>
+          <input
+            className="ip"
+            value={ann.text}
+            onChange={(e) => setValues({ ...values, announcement_text: e.target.value })}
+            onBlur={(e) => saveField("announcement_text", e.target.value)}
+            placeholder="যেমন: 🎉 সব প্রোডাক্টে ১০% ছাড়!"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">লিংক (ঐচ্ছিক)</label>
+          <input
+            className="ip"
+            value={ann.link}
+            onChange={(e) => setValues({ ...values, announcement_link: e.target.value })}
+            onBlur={(e) => saveField("announcement_link", e.target.value)}
+            placeholder="/shop বা https://..."
+          />
+        </div>
+        <div className="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">ব্যাকগ্রাউন্ড রঙ</label>
+            <input type="color" className="h-10 w-full rounded-xl border border-border bg-transparent" value={ann.bg}
+              onChange={(e) => saveField("announcement_bg", e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">টেক্সট রঙ</label>
+            <input type="color" className="h-10 w-full rounded-xl border border-border bg-transparent" value={ann.color}
+              onChange={(e) => saveField("announcement_color", e.target.value)} />
+          </div>
+          <div className="flex items-end">
+            <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
+              <input type="checkbox" checked={ann.scroll} className="h-4 w-4"
+                onChange={(e) => saveField("announcement_scroll", e.target.checked ? "1" : "0")} />
+              স্ক্রলিং অ্যানিমেশন
+            </label>
+          </div>
+        </div>
+        <div className="rounded-xl p-3 text-sm" style={{ background: ann.bg, color: ann.color }}>
+          প্রিভিউ: {ann.text || "(কোনো টেক্সট নেই)"}
+        </div>
+      </div>
+
       <form onSubmit={submit} className="glass-card rounded-2xl p-6 space-y-4">
         {FIELDS.map((f) => (
           <div key={f.key}>
