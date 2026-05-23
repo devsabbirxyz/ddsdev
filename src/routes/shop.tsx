@@ -25,11 +25,25 @@ function ShopPage() {
   const [category, setCategory] = useState<string | null>(null);
   const [sort, setSort] = useState<SortKey>("new");
   const [mobileFilters, setMobileFilters] = useState(false);
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [maxPrice, setMaxPrice] = useState<string>("");
+  const [badge, setBadge] = useState<"new" | "best" | "featured" | null>(null);
 
   const { data: cats = [] } = useQuery(categoriesQuery());
   const { data: products = [], isLoading } = useQuery(
-    productsQuery({ category, search: search || null, sort })
+    productsQuery({
+      category,
+      search: search || null,
+      sort,
+      minPrice: minPrice ? Number(minPrice) : null,
+      maxPrice: maxPrice ? Number(maxPrice) : null,
+      badge,
+    })
   );
+
+  const resetFilters = () => {
+    setSearch(""); setCategory(null); setMinPrice(""); setMaxPrice(""); setBadge(null); setSort("new");
+  };
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
