@@ -28,6 +28,19 @@ export const offerBannerQuery = queryOptions({
   },
 });
 
+export const offerSlidesQuery = queryOptions({
+  queryKey: ["offer_slides_active"],
+  staleTime: 60_000,
+  queryFn: async () => {
+    const { data } = await supabase
+      .from("offer_slides")
+      .select("id,image_url,link_url,alt_text")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true });
+    return data ?? [];
+  },
+});
+
 export const HOMEPAGE_KEYS = {
   hero_badge: "hero_badge",
   hero_tagline: "hero_tagline",
