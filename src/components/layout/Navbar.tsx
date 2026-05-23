@@ -31,17 +31,16 @@ export function Navbar() {
           </div>
           <div className="leading-tight">
             <div className="font-display font-bold text-base bg-clip-text text-transparent bg-gradient-brand">DDS-Digital</div>
-            <div className="text-[10px] text-muted-foreground tracking-wide">{t("brand_sub")}</div>
           </div>
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-6">
+        {/* Nav links — visible on mobile too (horizontal scroll) */}
+        <nav className="flex items-center gap-4 sm:gap-6 overflow-x-auto flex-1 justify-center px-2 no-scrollbar">
           {navItems.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+              className="text-xs sm:text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap"
               activeProps={{ className: "text-foreground" }}
             >
               {item.label}
