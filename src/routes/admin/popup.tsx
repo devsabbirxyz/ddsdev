@@ -156,7 +156,7 @@ function PopupAdmin() {
   );
 }
 
-function Field({ label, value, onChange, type = "text", textarea = false, placeholder }: any) {
+function Field({ label, value, onChange, type = "text", textarea = false, placeholder }: { label: string; value: any; onChange: (v: any) => void; type?: string; textarea?: boolean; placeholder?: string }) {
   return (
     <div>
       <label className="text-sm font-medium mb-1.5 block">{label}</label>

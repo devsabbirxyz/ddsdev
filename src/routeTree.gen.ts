@@ -47,6 +47,7 @@ import { Route as AdminSlidesRouteImport } from './routes/admin/slides'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminSellersRouteImport } from './routes/admin/sellers'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
+import { Route as AdminPopupRouteImport } from './routes/admin/popup'
 import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
 import { Route as AdminOffersRouteImport } from './routes/admin/offers'
@@ -65,6 +66,7 @@ import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authe
 import { Route as SellerProductsNewRouteImport } from './routes/seller.products.new'
 import { Route as SellerProductsIdRouteImport } from './routes/seller.products.$id'
 import { Route as AdminTicketsIdRouteImport } from './routes/admin/tickets.$id'
+import { Route as AdminProductsNewRouteImport } from './routes/admin/products.new'
 import { Route as AdminProductsIdRouteImport } from './routes/admin/products.$id'
 import { Route as AdminOrdersIdRouteImport } from './routes/admin/orders.$id'
 import { Route as AuthenticatedOrderIdRouteImport } from './routes/_authenticated/order.$id'
@@ -266,6 +268,11 @@ const AdminProductsRoute = AdminProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPopupRoute = AdminPopupRouteImport.update({
+  id: '/popup',
+  path: '/popup',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
   id: '/payments',
   path: '/payments',
@@ -356,6 +363,11 @@ const AdminTicketsIdRoute = AdminTicketsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AdminTicketsRoute,
+} as any)
+const AdminProductsNewRoute = AdminProductsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminProductsRoute,
 } as any)
 const AdminProductsIdRoute = AdminProductsIdRouteImport.update({
   id: '/$id',
@@ -454,6 +466,7 @@ export interface FileRoutesByFullPath {
   '/admin/offers': typeof AdminOffersRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
+  '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRouteWithChildren
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -481,6 +494,7 @@ export interface FileRoutesByFullPath {
   '/order/$id': typeof AuthenticatedOrderIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/tickets/$id': typeof AdminTicketsIdRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
@@ -518,6 +532,7 @@ export interface FileRoutesByTo {
   '/admin/offers': typeof AdminOffersRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
+  '/admin/popup': typeof AdminPopupRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -543,6 +558,7 @@ export interface FileRoutesByTo {
   '/order/$id': typeof AuthenticatedOrderIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/tickets/$id': typeof AdminTicketsIdRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
@@ -586,6 +602,7 @@ export interface FileRoutesById {
   '/admin/offers': typeof AdminOffersRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
+  '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRouteWithChildren
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -613,6 +630,7 @@ export interface FileRoutesById {
   '/_authenticated/order/$id': typeof AuthenticatedOrderIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/tickets/$id': typeof AdminTicketsIdRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
@@ -656,6 +674,7 @@ export interface FileRouteTypes {
     | '/admin/offers'
     | '/admin/orders'
     | '/admin/payments'
+    | '/admin/popup'
     | '/admin/products'
     | '/admin/sellers'
     | '/admin/settings'
@@ -683,6 +702,7 @@ export interface FileRouteTypes {
     | '/order/$id'
     | '/admin/orders/$id'
     | '/admin/products/$id'
+    | '/admin/products/new'
     | '/admin/tickets/$id'
     | '/seller/products/$id'
     | '/seller/products/new'
@@ -720,6 +740,7 @@ export interface FileRouteTypes {
     | '/admin/offers'
     | '/admin/orders'
     | '/admin/payments'
+    | '/admin/popup'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/slides'
@@ -745,6 +766,7 @@ export interface FileRouteTypes {
     | '/order/$id'
     | '/admin/orders/$id'
     | '/admin/products/$id'
+    | '/admin/products/new'
     | '/admin/tickets/$id'
     | '/seller/products/$id'
     | '/seller/products/new'
@@ -787,6 +809,7 @@ export interface FileRouteTypes {
     | '/admin/offers'
     | '/admin/orders'
     | '/admin/payments'
+    | '/admin/popup'
     | '/admin/products'
     | '/admin/sellers'
     | '/admin/settings'
@@ -814,6 +837,7 @@ export interface FileRouteTypes {
     | '/_authenticated/order/$id'
     | '/admin/orders/$id'
     | '/admin/products/$id'
+    | '/admin/products/new'
     | '/admin/tickets/$id'
     | '/seller/products/$id'
     | '/seller/products/new'
@@ -1116,6 +1140,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/popup': {
+      id: '/admin/popup'
+      path: '/popup'
+      fullPath: '/admin/popup'
+      preLoaderRoute: typeof AdminPopupRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/payments': {
       id: '/admin/payments'
       path: '/payments'
@@ -1241,6 +1272,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/tickets/$id'
       preLoaderRoute: typeof AdminTicketsIdRouteImport
       parentRoute: typeof AdminTicketsRoute
+    }
+    '/admin/products/new': {
+      id: '/admin/products/new'
+      path: '/new'
+      fullPath: '/admin/products/new'
+      preLoaderRoute: typeof AdminProductsNewRouteImport
+      parentRoute: typeof AdminProductsRoute
     }
     '/admin/products/$id': {
       id: '/admin/products/$id'
@@ -1383,11 +1421,13 @@ const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
 
 interface AdminProductsRouteChildren {
   AdminProductsIdRoute: typeof AdminProductsIdRoute
+  AdminProductsNewRoute: typeof AdminProductsNewRoute
   AdminProductsIndexRoute: typeof AdminProductsIndexRoute
 }
 
 const AdminProductsRouteChildren: AdminProductsRouteChildren = {
   AdminProductsIdRoute: AdminProductsIdRoute,
+  AdminProductsNewRoute: AdminProductsNewRoute,
   AdminProductsIndexRoute: AdminProductsIndexRoute,
 }
 
@@ -1420,6 +1460,7 @@ interface AdminRouteChildren {
   AdminOffersRoute: typeof AdminOffersRoute
   AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
   AdminPaymentsRoute: typeof AdminPaymentsRoute
+  AdminPopupRoute: typeof AdminPopupRoute
   AdminProductsRoute: typeof AdminProductsRouteWithChildren
   AdminSellersRoute: typeof AdminSellersRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -1440,6 +1481,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOffersRoute: AdminOffersRoute,
   AdminOrdersRoute: AdminOrdersRouteWithChildren,
   AdminPaymentsRoute: AdminPaymentsRoute,
+  AdminPopupRoute: AdminPopupRoute,
   AdminProductsRoute: AdminProductsRouteWithChildren,
   AdminSellersRoute: AdminSellersRoute,
   AdminSettingsRoute: AdminSettingsRoute,
