@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { saveSetting } from "@/lib/admin.functions";
 import { toast } from "sonner";
+import { ShieldCheck, ArrowRight } from "lucide-react";
 
 const settingsQuery = queryOptions({
   queryKey: ["admin", "settings"],
