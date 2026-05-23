@@ -1,10 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { Menu, Moon, Sun, X, ShoppingCart, User, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/lib/theme";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
+import { siteSettingsQuery } from "@/lib/site-settings";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -12,6 +14,9 @@ export function Navbar() {
   const { isAuthenticated, signOut } = useAuth();
   const { count } = useCart();
   const [open, setOpen] = useState(false);
+  const { data: settings } = useQuery(siteSettingsQuery);
+  const logoUrl = settings?.site_logo_url;
+  const siteName = settings?.site_name;
 
   const navItems: { to: string; label: string }[] = [
     { to: "/", label: t("nav_home") },
