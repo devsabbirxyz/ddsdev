@@ -141,10 +141,10 @@ function TrustTab({ settings }: { settings: Record<string, string> }) {
   const save = async () => {
     try {
       await saveB({ data: { items: [{ key: HOMEPAGE_KEYS.trust_bar, value: JSON.stringify(items), group_name: "homepage" }] }});
-      toast.success("সংরক্ষিত");
+      toast.success("✅ সফলভাবে সংরক্ষিত হয়েছে");
       qc.invalidateQueries({ queryKey: ["admin", "homepage-cms"] });
       qc.invalidateQueries({ queryKey: ["site_settings"] });
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) { toast.error("❌ " + (e.message || "সমস্যা হয়েছে")); }
   };
 
   const update = (i: number, patch: Partial<TrustItem>) => setItems(items.map((it, idx) => idx === i ? { ...it, ...patch } : it));
