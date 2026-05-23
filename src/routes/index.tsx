@@ -296,7 +296,7 @@ function HomePage() {
   );
 }
 
-function Newsletter() {
+function Newsletter({ heading, sub }: { heading?: string; sub?: string }) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "loading" | "ok" | "err">("idle");
   const [msg, setMsg] = useState("");
@@ -325,8 +325,9 @@ function Newsletter() {
         <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-brand grid place-items-center shadow-glow mb-4">
           <Mail className="h-7 w-7 text-primary-foreground" />
         </div>
-        <h2 className="font-display font-bold text-2xl sm:text-3xl">নতুন অফারের আপডেট পেতে চান?</h2>
-        <p className="mt-2 text-sm text-muted-foreground">আমাদের নিউজলেটার সাবস্ক্রাইব করুন — সব নতুন প্রোডাক্ট ও স্পেশাল অফার সবার আগে।</p>
+        <h2 className="font-display font-bold text-2xl sm:text-3xl">{heading || "নতুন অফারের আপডেট পেতে চান?"}</h2>
+        <p className="mt-2 text-sm text-muted-foreground">{sub || "আমাদের নিউজলেটার সাবস্ক্রাইব করুন — সব নতুন প্রোডাক্ট ও স্পেশাল অফার সবার আগে।"}</p>
+
 
         <form onSubmit={submit} className="mt-6 flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
           <input
