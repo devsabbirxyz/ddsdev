@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, ShoppingBag, Store, Users, Package, Wallet,
   Tag, Image as ImageIcon, Settings, Home, CreditCard, Ticket, LifeBuoy,
+  Sparkles, ShieldCheck,
 } from "lucide-react";
 
 const adminAuthQuery = queryOptions({
@@ -13,12 +14,14 @@ const adminAuthQuery = queryOptions({
   gcTime: 30 * 60 * 1000,
   queryFn: async () => {
     const { data: sess } = await supabase.auth.getSession();
-    if (!sess.session) return { ok: false as const };
-    const { data: isAdmin } = await supabase.rpc("has_role", {
-      _user_id: sess.session.user.id,
-      _role: "admin",
-    });
-    return { ok: Boolean(isAdmin) };
+    if (!sess.session) return { ok: false as const, isSuper: false };
+    const uid = sess.session.user.id;
+    const [a, s, m] = await Promise.all([
+      supabase.rpc("has_role", { _user_id: uid, _role: "admin" }),
+      supabase.rpc("has_role", { _user_id: uid, _role: "super_admin" }),
+      supabase.rpc("has_role", { _user_id: uid, _role: "moderator" }),
+    ]);
+    return { ok: Boolean(a.data || s.data || m.data), isSuper: Boolean(s.data) };
   },
 });
 
@@ -39,8 +42,10 @@ const nav = [
   { to: "/admin/categories", label: "ক্যাটাগরি", icon: Tag },
   { to: "/admin/coupons", label: "কুপন", icon: Ticket },
   { to: "/admin/slides", label: "স্লাইড", icon: ImageIcon },
+  { to: "/admin/offers", label: "অফার", icon: Sparkles },
   { to: "/admin/settings", label: "সেটিংস", icon: Settings },
-];
+  { to: "/admin/admins", label: "অ্যাডমিন ম্যানেজমেন্ট", icon: ShieldCheck, superOnly: true },
+] as const;
 
 
 function AdminLayout() {
