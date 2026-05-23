@@ -645,6 +645,17 @@ export const deleteProductAccount = createServerFn({ method: "POST" })
 
 
 // ----- Payment methods -----
+export const listPaymentMethodsAdmin = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin
+      .from("payment_methods")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
 export const savePaymentMethod = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((i: unknown) =>
