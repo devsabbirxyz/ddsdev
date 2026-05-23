@@ -54,6 +54,7 @@ import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
 import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminAffiliatesRouteImport } from './routes/admin/affiliates'
+import { Route as AdminAdminsRouteImport } from './routes/admin/admins'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AdminTicketsIndexRouteImport } from './routes/admin/tickets.index'
@@ -298,6 +299,11 @@ const AdminAffiliatesRoute = AdminAffiliatesRouteImport.update({
   path: '/affiliates',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAdminsRoute = AdminAdminsRouteImport.update({
+  id: '/admins',
+  path: '/admins',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -426,6 +432,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -487,6 +494,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -552,6 +560,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -619,6 +628,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/checkout'
     | '/dashboard'
+    | '/admin/admins'
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
@@ -680,6 +690,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms'
     | '/checkout'
+    | '/admin/admins'
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
@@ -744,6 +755,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/checkout'
     | '/_authenticated/dashboard'
+    | '/admin/admins'
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
@@ -1129,6 +1141,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAffiliatesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/admins': {
+      id: '/admin/admins'
+      path: '/admins'
+      fullPath: '/admin/admins'
+      preLoaderRoute: typeof AdminAdminsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -1353,6 +1372,7 @@ const AdminTicketsRouteWithChildren = AdminTicketsRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminAdminsRoute: typeof AdminAdminsRoute
   AdminAffiliatesRoute: typeof AdminAffiliatesRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminCouponsRoute: typeof AdminCouponsRoute
@@ -1370,6 +1390,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAdminsRoute: AdminAdminsRoute,
   AdminAffiliatesRoute: AdminAffiliatesRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminCouponsRoute: AdminCouponsRoute,
