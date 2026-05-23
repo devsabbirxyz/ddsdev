@@ -41,12 +41,8 @@ function AdminProducts() {
     .filter((p) => filter === "all" || p.status === filter)
     .filter((p) => !search || p.title.toLowerCase().includes(search.toLowerCase()));
 
-  const createNew = async () => {
-    try {
-      const r = await save({ data: { title: "নতুন প্রোডাক্ট", delivery_type: "instant_text", status: "approved", is_active: false } });
-      qc.invalidateQueries({ queryKey: ["admin", "products"] });
-      nav({ to: "/admin/products/$id" as any, params: { id: r.id } as any });
-    } catch (e: any) { toast.error(e.message); }
+  const createNew = () => {
+    nav({ to: "/admin/products/new" as any });
   };
 
   const onDelete = async (id: string) => {
