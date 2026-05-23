@@ -198,6 +198,25 @@ function AdminSettings() {
         </div>
       </div>
 
+      <div className="glass-card rounded-2xl p-6 space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="font-bold text-lg">WhatsApp Floating Button</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">ডেস্কটপে ডান-নিচে ভাসমান বাটন। মোবাইল বটম নেভিগেশনেও দেখাবে।</p>
+          </div>
+          <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
+            <input
+              type="checkbox"
+              checked={(values.whatsapp_button_enabled ?? "1") === "1"}
+              onChange={(e) => saveField("whatsapp_button_enabled", e.target.checked ? "1" : "0", "contact")}
+              className="h-4 w-4"
+            />
+            শো করুন
+          </label>
+        </div>
+        <p className="text-xs text-muted-foreground">WhatsApp নম্বর নিচের ফর্ম থেকে আপডেট করুন (যেমন: 8801XXXXXXXXX)।</p>
+      </div>
+
       <form onSubmit={submit} className="glass-card rounded-2xl p-6 space-y-4">
         {FIELDS.map((f) => (
           <div key={f.key}>

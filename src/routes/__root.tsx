@@ -13,6 +13,8 @@ import { AppProviders } from "@/components/providers/AppProviders";
 import { Navbar } from "@/components/layout/Navbar";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Footer } from "@/components/layout/Footer";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { supabase } from "@/integrations/supabase/client";
 import appCss from "../styles.css?url";
 
@@ -127,10 +129,12 @@ function RootComponent() {
         <div className="flex min-h-screen flex-col bg-background">
           <AnnouncementBar />
           <Navbar />
-          <main className="flex-1">
+          <main className="flex-1 pb-20 lg:pb-0">
             <Outlet />
           </main>
           <Footer />
+          <MobileBottomNav />
+          <FloatingWhatsApp />
         </div>
       </AppProviders>
     </QueryClientProvider>
