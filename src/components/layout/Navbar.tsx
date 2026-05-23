@@ -29,9 +29,6 @@ export function Navbar() {
           <div className="relative h-9 w-9 rounded-xl bg-gradient-brand grid place-items-center shadow-glow">
             <span className="text-primary-foreground font-display font-bold text-sm">D</span>
           </div>
-          <div className="leading-tight">
-            <div className="font-display font-bold text-base bg-clip-text text-transparent bg-gradient-brand">DDS-Digital</div>
-          </div>
         </Link>
 
         {/* Nav links — visible on mobile too (horizontal scroll) */}
