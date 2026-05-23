@@ -86,18 +86,8 @@ function HomePage() {
             {heroBadge}
           </div>
 
-          {/* Offer banner image (admin-editable via /admin/homepage) */}
-          <div className="mt-8 w-full rounded-3xl overflow-hidden bg-muted/40 border border-glass-border aspect-[16/6] grid place-items-center">
-            {offerBanner?.image_url ? (
-              offerBanner.link_url ? (
-                <a href={offerBanner.link_url} className="block w-full h-full"><img src={offerBanner.image_url} alt={offerBanner.alt_text ?? "offer banner"} className="w-full h-full object-cover" /></a>
-              ) : (
-                <img src={offerBanner.image_url} alt={offerBanner.alt_text ?? "offer banner"} className="w-full h-full object-cover" />
-              )
-            ) : (
-              <span className="text-xs text-muted-foreground">Offer Banner — admin panel থেকে ইমেজ আপলোড করুন</span>
-            )}
-          </div>
+          {/* Offer banner — auto-sliding carousel, admin-editable via /admin/homepage */}
+          <OfferBannerSlider />
 
           <p className="mt-8 mx-auto max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">{heroTagline}</p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
