@@ -120,6 +120,51 @@ function ShopPage() {
                 className="w-full rounded-xl glass pl-10 pr-3 py-2.5 text-sm bg-card"
               />
             </div>
+
+            <h3 className="font-display font-bold text-base mt-6 mb-3">দাম রেঞ্জ (৳)</h3>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                min={0}
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                placeholder="Min"
+                className="w-full rounded-xl glass px-3 py-2 text-sm bg-card"
+              />
+              <input
+                type="number"
+                min={0}
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                placeholder="Max"
+                className="w-full rounded-xl glass px-3 py-2 text-sm bg-card"
+              />
+            </div>
+
+            <h3 className="font-display font-bold text-base mt-6 mb-3">বৈশিষ্ট্য</h3>
+            <div className="flex flex-wrap gap-2">
+              {([
+                { k: null, l: "সব" },
+                { k: "new", l: "নতুন" },
+                { k: "best", l: "বেস্ট সেলিং" },
+                { k: "featured", l: "ফিচারড" },
+              ] as const).map((b) => (
+                <button
+                  key={String(b.k)}
+                  onClick={() => setBadge(b.k as any)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${badge === b.k ? "bg-gradient-brand text-primary-foreground shadow-glow" : "glass hover:bg-accent"}`}
+                >
+                  {b.l}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={resetFilters}
+              className="mt-6 w-full rounded-xl glass px-3 py-2 text-xs font-semibold hover:bg-accent inline-flex items-center justify-center gap-1"
+            >
+              <X className="h-3 w-3" /> ফিল্টার রিসেট
+            </button>
           </div>
         </aside>
 
