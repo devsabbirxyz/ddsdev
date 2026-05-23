@@ -1,0 +1,1 @@
+UPDATE public.popup_settings SET is_active = true, updated_at = now();

@@ -94,9 +94,14 @@ function PopupAdmin() {
           </h1>
           <p className="text-sm text-muted-foreground mt-1">হোমপেজে ভিজিটরদের দেখানো হবে এমন পপ-আপ।</p>
         </div>
-        <button onClick={save} className="rounded-xl bg-gradient-brand text-primary-foreground shadow-glow px-5 py-2.5 text-sm font-bold inline-flex items-center gap-2">
-          <Save className="h-4 w-4" /> সেভ
-        </button>
+        <div className="flex items-center gap-2">
+          <a href="/?preview=popup" target="_blank" rel="noreferrer" className="rounded-xl border border-border px-4 py-2.5 text-sm font-bold hover:bg-accent">
+            👁 প্রিভিউ
+          </a>
+          <button onClick={save} className="rounded-xl bg-gradient-brand text-primary-foreground shadow-glow px-5 py-2.5 text-sm font-bold inline-flex items-center gap-2">
+            <Save className="h-4 w-4" /> সেভ
+          </button>
+        </div>
       </div>
 
       <div className="glass-card rounded-2xl p-5 flex items-center justify-between gap-4">
