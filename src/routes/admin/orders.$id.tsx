@@ -3,10 +3,11 @@ import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, XCircle, Loader2, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBDT } from "@/lib/storefront";
 import { deliverOrder, rejectOrder } from "@/lib/delivery.functions";
+import { downloadInvoicePDF } from "@/lib/invoice";
 
 const orderQuery = (id: string) =>
   queryOptions({
