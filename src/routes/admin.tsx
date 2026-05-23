@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, ShoppingBag, Store, Users, Package, Wallet,
   Tag, Image as ImageIcon, Settings, Home, CreditCard, Ticket, LifeBuoy,
-  Sparkles, ShieldCheck,
+  Sparkles, ShieldCheck, Mail, PanelBottom,
 } from "lucide-react";
 
 const adminAuthQuery = queryOptions({
@@ -32,6 +32,8 @@ export const Route = createFileRoute("/admin")({
 const nav = [
   { to: "/admin", label: "ওভারভিউ", icon: LayoutDashboard, exact: true },
   { to: "/admin/homepage", label: "হোমপেজ CMS", icon: Home },
+  { to: "/admin/footer", label: "Footer CMS", icon: PanelBottom },
+  { to: "/admin/newsletter", label: "Newsletter", icon: Mail },
   { to: "/admin/orders", label: "অর্ডার", icon: ShoppingBag },
   { to: "/admin/payments", label: "পেমেন্ট মেথড", icon: CreditCard },
   { to: "/admin/tickets", label: "সাপোর্ট টিকেট", icon: LifeBuoy },

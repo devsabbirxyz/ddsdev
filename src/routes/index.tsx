@@ -65,6 +65,7 @@ function HomePage() {
   const heroTagline = settings[HOMEPAGE_KEYS.hero_tagline] || `${t("tagline")} — সাবস্ক্রিপশন, সফটওয়্যার, অ্যাকাউন্ট, ডাউনলোডেবল প্রোডাক্ট সবকিছু এক জায়গায়। ইনস্ট্যান্ট অটো ডেলিভারি।`;
   const ctaPrimary = settings[HOMEPAGE_KEYS.hero_cta_primary] || t("shop_now");
   const ctaSecondary = settings[HOMEPAGE_KEYS.hero_cta_secondary] || "আরও জানুন";
+  const ctaSecondaryLink = settings[HOMEPAGE_KEYS.hero_cta_secondary_link] || "/dashboard";
   const announcement = settings[HOMEPAGE_KEYS.announcement] || "🎉 লঞ্চিং অফার — প্রথম ১০০ অর্ডারে ১৫% ছাড়, কুপন কোড: DDS15";
 
   return (
@@ -94,7 +95,11 @@ function HomePage() {
             <Link to="/shop" className="rounded-2xl bg-gradient-brand px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-glow hover:scale-105 transition inline-flex items-center gap-2">
               {ctaPrimary} <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/dashboard" className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">{ctaSecondary}</Link>
+            {ctaSecondaryLink.startsWith("http") ? (
+              <a href={ctaSecondaryLink} target="_blank" rel="noopener noreferrer" className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">{ctaSecondary}</a>
+            ) : (
+              <Link to={ctaSecondaryLink as any} className="rounded-2xl glass-card px-7 py-3.5 text-sm font-semibold hover:bg-accent transition">{ctaSecondary}</Link>
+            )}
           </div>
         </div>
       </section>
@@ -282,14 +287,16 @@ function HomePage() {
       )}
 
       {/* NEWSLETTER */}
-      <section className="mx-auto max-w-4xl px-4 sm:px-6 pb-20">
-        <Newsletter />
-      </section>
+      {settings[HOMEPAGE_KEYS.newsletter_enabled] !== "false" && (
+        <section className="mx-auto max-w-4xl px-4 sm:px-6 pb-20">
+          <Newsletter heading={settings[HOMEPAGE_KEYS.newsletter_heading]} sub={settings[HOMEPAGE_KEYS.newsletter_sub]} />
+        </section>
+      )}
     </>
   );
 }
 
-function Newsletter() {
+function Newsletter({ heading, sub }: { heading?: string; sub?: string }) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "loading" | "ok" | "err">("idle");
   const [msg, setMsg] = useState("");
@@ -318,8 +325,9 @@ function Newsletter() {
         <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-brand grid place-items-center shadow-glow mb-4">
           <Mail className="h-7 w-7 text-primary-foreground" />
         </div>
-        <h2 className="font-display font-bold text-2xl sm:text-3xl">নতুন অফারের আপডেট পেতে চান?</h2>
-        <p className="mt-2 text-sm text-muted-foreground">আমাদের নিউজলেটার সাবস্ক্রাইব করুন — সব নতুন প্রোডাক্ট ও স্পেশাল অফার সবার আগে।</p>
+        <h2 className="font-display font-bold text-2xl sm:text-3xl">{heading || "নতুন অফারের আপডেট পেতে চান?"}</h2>
+        <p className="mt-2 text-sm text-muted-foreground">{sub || "আমাদের নিউজলেটার সাবস্ক্রাইব করুন — সব নতুন প্রোডাক্ট ও স্পেশাল অফার সবার আগে।"}</p>
+
 
         <form onSubmit={submit} className="mt-6 flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
           <input

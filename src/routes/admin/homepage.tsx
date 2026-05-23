@@ -39,7 +39,6 @@ const TABS = [
   { id: "offer", label: "Offer Banner" },
   { id: "trust", label: "Trust Bar" },
   { id: "reviews", label: "Review Slides" },
-  { id: "footer", label: "Footer + Newsletter" },
 ] as const;
 type TabId = typeof TABS[number]["id"];
 
@@ -65,7 +64,9 @@ function HomepageCMS() {
       {tab === "offer" && <OfferTab slides={data.offer} />}
       {tab === "trust" && <TrustTab settings={data.settings} />}
       {tab === "reviews" && <ReviewTab slides={data.review} />}
-      {tab === "footer" && <FooterTab settings={data.settings} />}
+      <div className="text-xs text-muted-foreground">
+        💡 Footer ও Newsletter এখন আলাদা পেজে — <a href="/admin/footer" className="text-primary underline">/admin/footer</a> এবং <a href="/admin/newsletter" className="text-primary underline">/admin/newsletter</a>
+      </div>
       <style>{`.ip{width:100%;border-radius:0.75rem;border:1px solid hsl(var(--border));background:transparent;padding:0.6rem 0.85rem;font-size:0.875rem}.btn{display:inline-flex;align-items:center;gap:0.4rem;border-radius:0.75rem;padding:0.5rem 1rem;font-weight:600;font-size:0.875rem}`}</style>
     </div>
   );
@@ -80,6 +81,7 @@ function HeroTab({ settings, slides }: { settings: Record<string, string>; slide
     hero_tagline: settings[HOMEPAGE_KEYS.hero_tagline] ?? "",
     hero_cta_primary: settings[HOMEPAGE_KEYS.hero_cta_primary] ?? "Shop Now",
     hero_cta_secondary: settings[HOMEPAGE_KEYS.hero_cta_secondary] ?? "আরও জানুন",
+    hero_cta_secondary_link: settings[HOMEPAGE_KEYS.hero_cta_secondary_link] ?? "/dashboard",
     announcement_text: settings[HOMEPAGE_KEYS.announcement] ?? "",
   });
 
@@ -103,8 +105,10 @@ function HeroTab({ settings, slides }: { settings: Record<string, string>; slide
           <div><label className="text-xs text-muted-foreground">Hero Badge</label><input className="ip" value={form.hero_badge} onChange={(e) => setForm({...form, hero_badge: e.target.value})} /></div>
           <div><label className="text-xs text-muted-foreground">Announcement Bar</label><input className="ip" value={form.announcement_text} onChange={(e) => setForm({...form, announcement_text: e.target.value})} /></div>
           <div className="sm:col-span-2"><label className="text-xs text-muted-foreground">Tagline / Description</label><textarea className="ip" rows={3} value={form.hero_tagline} onChange={(e) => setForm({...form, hero_tagline: e.target.value})} /></div>
-          <div><label className="text-xs text-muted-foreground">Primary CTA</label><input className="ip" value={form.hero_cta_primary} onChange={(e) => setForm({...form, hero_cta_primary: e.target.value})} /></div>
-          <div><label className="text-xs text-muted-foreground">Secondary CTA</label><input className="ip" value={form.hero_cta_secondary} onChange={(e) => setForm({...form, hero_cta_secondary: e.target.value})} /></div>
+          <div><label className="text-xs text-muted-foreground">Primary CTA Text</label><input className="ip" value={form.hero_cta_primary} onChange={(e) => setForm({...form, hero_cta_primary: e.target.value})} /></div>
+          <div></div>
+          <div><label className="text-xs text-muted-foreground">Secondary CTA Text</label><input className="ip" placeholder="আরও জানুন" value={form.hero_cta_secondary} onChange={(e) => setForm({...form, hero_cta_secondary: e.target.value})} /></div>
+          <div><label className="text-xs text-muted-foreground">Secondary CTA Link</label><input className="ip" placeholder="/dashboard বা https://..." value={form.hero_cta_secondary_link} onChange={(e) => setForm({...form, hero_cta_secondary_link: e.target.value})} /></div>
         </div>
         <button className="btn bg-gradient-brand text-primary-foreground shadow-glow"><Save className="h-4 w-4" /> Save</button>
       </form>
@@ -182,40 +186,9 @@ function ReviewTab({ slides }: { slides: any[] }) {
   return <SlideCRUD kind="review" slides={slides} title="Review Slides (কাস্টমার রিভিউ স্ক্রিনশট)" />;
 }
 
-/* ============ FOOTER TAB ============ */
-function FooterTab({ settings }: { settings: Record<string, string> }) {
-  const qc = useQueryClient();
-  const saveB = useServerFn(saveSettingsBulk);
-  const [form, setForm] = useState({
-    footer_about: settings[HOMEPAGE_KEYS.footer_about] ?? "",
-    footer_copyright: settings[HOMEPAGE_KEYS.footer_copyright] ?? "© DDS-Digital. All rights reserved.",
-    newsletter_heading: settings[HOMEPAGE_KEYS.newsletter_heading] ?? "Newsletter",
-    newsletter_sub: settings[HOMEPAGE_KEYS.newsletter_sub] ?? "",
-  });
+/* Footer + Newsletter moved to /admin/footer and /admin/newsletter */
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await saveB({ data: { items: Object.entries(form).map(([key, value]) => ({ key, value: String(value ?? ""), group_name: "footer" })) }});
-      toast.success("✅ সফলভাবে সংরক্ষিত হয়েছে");
-      qc.invalidateQueries({ queryKey: ["admin", "homepage-cms"] });
-      qc.invalidateQueries({ queryKey: ["site_settings"] });
-    } catch (e: any) { toast.error("❌ " + (e.message || "সমস্যা হয়েছে")); }
-  };
 
-  return (
-    <form onSubmit={submit} className="glass-card rounded-2xl p-5 space-y-3">
-      <h2 className="font-bold text-lg">Footer + Newsletter</h2>
-      <div className="grid sm:grid-cols-2 gap-3">
-        <div className="sm:col-span-2"><label className="text-xs text-muted-foreground">About / Footer Text</label><textarea className="ip" rows={3} value={form.footer_about} onChange={(e) => setForm({...form, footer_about: e.target.value})} /></div>
-        <div><label className="text-xs text-muted-foreground">Copyright Text</label><input className="ip" value={form.footer_copyright} onChange={(e) => setForm({...form, footer_copyright: e.target.value})} /></div>
-        <div><label className="text-xs text-muted-foreground">Newsletter Heading</label><input className="ip" value={form.newsletter_heading} onChange={(e) => setForm({...form, newsletter_heading: e.target.value})} /></div>
-        <div className="sm:col-span-2"><label className="text-xs text-muted-foreground">Newsletter Subtitle</label><input className="ip" value={form.newsletter_sub} onChange={(e) => setForm({...form, newsletter_sub: e.target.value})} /></div>
-      </div>
-      <button className="btn bg-gradient-brand text-primary-foreground shadow-glow"><Save className="h-4 w-4" /> Save</button>
-    </form>
-  );
-}
 
 /* ============ Slide CRUD subcomponent ============ */
 function SlideCRUD({ kind, slides, title }: { kind: "hero" | "offer" | "review"; slides: any[]; title: string }) {

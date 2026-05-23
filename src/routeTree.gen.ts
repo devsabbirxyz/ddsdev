@@ -50,7 +50,9 @@ import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
 import { Route as AdminOffersRouteImport } from './routes/admin/offers'
+import { Route as AdminNewsletterRouteImport } from './routes/admin/newsletter'
 import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
+import { Route as AdminFooterRouteImport } from './routes/admin/footer'
 import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminAffiliatesRouteImport } from './routes/admin/affiliates'
@@ -279,9 +281,19 @@ const AdminOffersRoute = AdminOffersRouteImport.update({
   path: '/offers',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminNewsletterRoute = AdminNewsletterRouteImport.update({
+  id: '/newsletter',
+  path: '/newsletter',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminHomepageRoute = AdminHomepageRouteImport.update({
   id: '/homepage',
   path: '/homepage',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFooterRoute = AdminFooterRouteImport.update({
+  id: '/footer',
+  path: '/footer',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCouponsRoute = AdminCouponsRouteImport.update({
@@ -436,7 +448,9 @@ export interface FileRoutesByFullPath {
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
+  '/admin/footer': typeof AdminFooterRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/newsletter': typeof AdminNewsletterRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
@@ -498,7 +512,9 @@ export interface FileRoutesByTo {
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
+  '/admin/footer': typeof AdminFooterRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/newsletter': typeof AdminNewsletterRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
@@ -564,7 +580,9 @@ export interface FileRoutesById {
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
+  '/admin/footer': typeof AdminFooterRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/newsletter': typeof AdminNewsletterRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/payments': typeof AdminPaymentsRoute
@@ -632,7 +650,9 @@ export interface FileRouteTypes {
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
+    | '/admin/footer'
     | '/admin/homepage'
+    | '/admin/newsletter'
     | '/admin/offers'
     | '/admin/orders'
     | '/admin/payments'
@@ -694,7 +714,9 @@ export interface FileRouteTypes {
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
+    | '/admin/footer'
     | '/admin/homepage'
+    | '/admin/newsletter'
     | '/admin/offers'
     | '/admin/orders'
     | '/admin/payments'
@@ -759,7 +781,9 @@ export interface FileRouteTypes {
     | '/admin/affiliates'
     | '/admin/categories'
     | '/admin/coupons'
+    | '/admin/footer'
     | '/admin/homepage'
+    | '/admin/newsletter'
     | '/admin/offers'
     | '/admin/orders'
     | '/admin/payments'
@@ -1113,11 +1137,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOffersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/newsletter': {
+      id: '/admin/newsletter'
+      path: '/newsletter'
+      fullPath: '/admin/newsletter'
+      preLoaderRoute: typeof AdminNewsletterRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/homepage': {
       id: '/admin/homepage'
       path: '/homepage'
       fullPath: '/admin/homepage'
       preLoaderRoute: typeof AdminHomepageRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/footer': {
+      id: '/admin/footer'
+      path: '/footer'
+      fullPath: '/admin/footer'
+      preLoaderRoute: typeof AdminFooterRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/coupons': {
@@ -1376,7 +1414,9 @@ interface AdminRouteChildren {
   AdminAffiliatesRoute: typeof AdminAffiliatesRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminCouponsRoute: typeof AdminCouponsRoute
+  AdminFooterRoute: typeof AdminFooterRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
+  AdminNewsletterRoute: typeof AdminNewsletterRoute
   AdminOffersRoute: typeof AdminOffersRoute
   AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
   AdminPaymentsRoute: typeof AdminPaymentsRoute
@@ -1394,7 +1434,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAffiliatesRoute: AdminAffiliatesRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminCouponsRoute: AdminCouponsRoute,
+  AdminFooterRoute: AdminFooterRoute,
   AdminHomepageRoute: AdminHomepageRoute,
+  AdminNewsletterRoute: AdminNewsletterRoute,
   AdminOffersRoute: AdminOffersRoute,
   AdminOrdersRoute: AdminOrdersRouteWithChildren,
   AdminPaymentsRoute: AdminPaymentsRoute,
