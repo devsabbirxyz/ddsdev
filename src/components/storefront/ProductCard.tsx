@@ -18,7 +18,7 @@ export interface ProductCardData {
   is_variant?: boolean | null;
   view_count?: number | null;
   sellers?: { store_name?: string | null; store_logo_url?: string | null } | null;
-  product_variants?: Array<{ price: number | null; is_active: boolean | null }> | null;
+  product_variants?: Array<{ regular_price?: number | null; offer_price?: number | null; is_active?: boolean | null }> | null;
 }
 
 export function ProductCard({ p }: { p: ProductCardData }) {
