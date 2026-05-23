@@ -30,10 +30,14 @@ export function Navbar() {
     <header className="sticky top-0 z-50 glass border-b border-glass-border">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="relative h-9 w-9 rounded-xl bg-gradient-brand grid place-items-center shadow-glow">
-            <span className="text-primary-foreground font-display font-bold text-sm">D</span>
-          </div>
+        <Link to="/" className="flex items-center gap-2 group shrink-0">
+          {logoUrl ? (
+            <img src={logoUrl} alt={siteName || "Logo"} className="h-9 w-auto max-w-[140px] object-contain" />
+          ) : (
+            <div className="relative h-9 w-9 rounded-xl bg-gradient-brand grid place-items-center shadow-glow">
+              <span className="text-primary-foreground font-display font-bold text-sm">D</span>
+            </div>
+          )}
         </Link>
 
         {/* Nav links — visible on mobile too (horizontal scroll) */}
