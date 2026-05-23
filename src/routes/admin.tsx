@@ -45,7 +45,7 @@ const nav = [
   { to: "/admin/offers", label: "অফার", icon: Sparkles },
   { to: "/admin/settings", label: "সেটিংস", icon: Settings },
   { to: "/admin/admins", label: "অ্যাডমিন ম্যানেজমেন্ট", icon: ShieldCheck, superOnly: true },
-] as const;
+] as Array<{ to: string; label: string; icon: any; exact?: boolean; superOnly?: boolean }>;
 
 
 function AdminLayout() {
