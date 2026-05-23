@@ -67,6 +67,7 @@ const navGroups: NavGroup[] = [
       { to: "/admin/slides", label: "স্লাইড", icon: ImageIcon },
       { to: "/admin/offers", label: "অফার", icon: Sparkles },
       { to: "/admin/popup", label: "Offer Popup", icon: Sparkles },
+      { to: "/admin/banner-timer", label: "Countdown Banner", icon: Sparkles },
     ],
   },
   {
