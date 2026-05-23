@@ -125,10 +125,10 @@ function AdminOverview() {
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard icon={DollarSign} label="মোট আয়" value={formatBDT(data.revenue)} sub={`${range}: ${formatBDT(data.rangeRevenue)}`} gradient="from-emerald-500/20 to-emerald-500/0" iconColor="text-emerald-400" />
-        <KpiCard icon={ShoppingCart} label="মোট অর্ডার" value={data.orderCount} sub={`${range}: ${data.rangeOrders}`} gradient="from-blue-500/20 to-blue-500/0" iconColor="text-blue-400" />
-        <KpiCard icon={Package} label="অনুমোদিত প্রোডাক্ট" value={data.productCount} gradient="from-violet-500/20 to-violet-500/0" iconColor="text-violet-400" />
-        <KpiCard icon={Users} label="সেলার + অ্যাফিলিয়েট" value={data.sellerCount + data.affiliateCount} sub={`${data.sellerCount} sellers · ${data.affiliateCount} aff.`} gradient="from-amber-500/20 to-amber-500/0" iconColor="text-amber-400" />
+        <KpiCard icon={DollarSign} label="মোট আয়" value={formatBDT(data.revenue)} sub={`${range}: ${formatBDT(data.rangeRevenue)}`} tint="rose" />
+        <KpiCard icon={ShoppingCart} label="মোট অর্ডার" value={data.orderCount} sub={`${range}: ${data.rangeOrders}`} tint="violet" />
+        <KpiCard icon={Package} label="প্রোডাক্ট" value={data.productCount} tint="pink" />
+        <KpiCard icon={Users} label="সেলার + অ্যাফিলিয়েট" value={data.sellerCount + data.affiliateCount} sub={`${data.sellerCount} sellers · ${data.affiliateCount} aff.`} tint="cyan" />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
