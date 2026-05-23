@@ -14,7 +14,7 @@ export const productsQuery = (opts?: {
     queryFn: async () => {
       let q = supabase
         .from("products")
-        .select("id,slug,title,title_en,short_description,short_description_en,regular_price,offer_price,average_rating,total_sales,total_reviews,is_featured,is_new_arrival,is_best_seller,category_id,created_at")
+        .select("id,slug,title,title_en,short_description,short_description_en,regular_price,offer_price,average_rating,total_sales,total_reviews,is_featured,is_new_arrival,is_best_seller,is_variant,view_count,category_id,created_at,sellers(store_name,store_logo_url),product_variants(price,is_active)")
         .eq("is_active", true)
         .eq("status", "approved");
 
