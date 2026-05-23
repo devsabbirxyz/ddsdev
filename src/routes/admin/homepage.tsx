@@ -39,7 +39,6 @@ const TABS = [
   { id: "offer", label: "Offer Banner" },
   { id: "trust", label: "Trust Bar" },
   { id: "reviews", label: "Review Slides" },
-  { id: "footer", label: "Footer + Newsletter" },
 ] as const;
 type TabId = typeof TABS[number]["id"];
 
