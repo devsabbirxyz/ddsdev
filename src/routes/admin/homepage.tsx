@@ -7,6 +7,7 @@ import { saveSlide, deleteSlide, saveSettingsBulk } from "@/lib/admin.functions"
 import { HOMEPAGE_KEYS, parseTrustBar, type TrustItem } from "@/lib/site-settings";
 import { toast } from "sonner";
 import { Plus, Trash2, Save } from "lucide-react";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 const cmsQuery = queryOptions({
   queryKey: ["admin", "homepage-cms"],
