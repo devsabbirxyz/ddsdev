@@ -25,9 +25,11 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   const price = p.offer_price ?? p.regular_price;
   const hasDiscount = p.offer_price != null && p.regular_price != null && p.offer_price < p.regular_price;
 
-  const activeVariants = (p.product_variants ?? []).filter((v) => v.is_active && v.price != null);
+  const activeVariants = (p.product_variants ?? []).filter((v) => v.is_active);
   const isVariant = !!p.is_variant && activeVariants.length > 0;
-  const variantPrices = activeVariants.map((v) => Number(v.price));
+  const variantPrices = activeVariants
+    .map((v) => Number(v.offer_price ?? v.regular_price ?? 0))
+    .filter((n) => n > 0);
   const variantMin = variantPrices.length ? Math.min(...variantPrices) : null;
   const variantMax = variantPrices.length ? Math.max(...variantPrices) : null;
 
