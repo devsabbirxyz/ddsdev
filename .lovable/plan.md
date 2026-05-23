@@ -1,52 +1,55 @@
-# Admin Panel — Full CMS Plan
+এত বড় scope একসাথে করলে quality drop হবে। আমি ৪টা phase এ ভাগ করেছি — প্রতিটা phase শেষে test করে পরেরটায় যাব।
 
-আপনার পুরো স্পেক একটা complete CMS — এটা একসাথে এক turn-এ বানানো সম্ভব না (কয়েক হাজার লাইন কোড, ২৫+ নতুন route, ১৫+ নতুন DB টেবিল)। তাই আমি **phase করে** বানাবো। আগে loading bug fix + foundation, তারপর প্রতি phase-এ আপনি confirm করলে এগোবো।
+## Phase 1 — Dashboard + Hero/Offer/Review Save & Toast (#1, #3, #4, #5)
 
-## Phase 0 — Loading Bug Fix (এই turn-এ)
-- `src/routes/admin.tsx` এর `beforeLoad` সম্পূর্ণ remove করে component-এ auth check সরাবো (React Query দিয়ে cached)। এতে প্রতি navigation-এ re-check হবে না, sidebar click instant হবে।
-- প্রতিটা admin sub-route এর query-তে `staleTime` দেবো।
+- **Overview filter**: 7d/30d/90d + **Lifetime** option যোগ। `overviewQuery` কে time range এর সাথে react করাবো।
+- **Hero / Offer / Review CMS**:
+  - প্রতিটা form এর নিচে explicit **Save** button (already mutation আছে, শুধু UI feedback polish)
+  - Save → `toast.success("✅ Saved Successfully")` (২ সেকেন্ড)
+  - Delete → confirmation dialog (shadcn `AlertDialog`) → `toast.success("⚠️ Deleted")`
+  - Add → `toast.success("✅ Added Successfully")`
+  - Error → `toast.error("❌ Something went wrong")`
+- **Offer Banner auto-slide**: সাইটের homepage এ Offer Banner section এ ৫ সেকেন্ডে auto-slide (embla autoplay), multiple offer support।
 
-## Phase 1 — Homepage Content CMS (Navbar/Hero/Trust/Offer/HowToBuy/Reviews/Newsletter/Footer)
-নতুন টেবিল: `site_content` (key-value JSON), `trust_items`, `review_slides`, `how_to_buy`, `newsletter_subscribers`, `footer_links`, `payment_logos`।
-Admin pages: `/admin/homepage` (tabs: Hero, Trust Bar, Offer Slider, How to Buy, Reviews, Newsletter, Footer)।
-Frontend `index.tsx` এই tables থেকে data fetch করবে।
+## Phase 2 — Homepage CMS Polish + Footer/Newsletter Split (#2, #6)
 
-## Phase 2 — Products full CRUD
-- Media: multi-image upload + main image checkbox + video URL
-- Variants toggle (regular vs variant pricing)
-- 5 delivery types: subscription / downloadable / method / account stock / text-link / **invite link (২ বার ব্যবহার)**
-- Featured star (max 12), publish/hide, discount auto-calc
-- Storage bucket: `product-media`
-- নতুন টেবিল: `product_variants`, `product_media`, `product_delivery_config`, `product_account_stock`, `invite_link_usage`
+- **Hero Secondary CTA**: site_settings এ `hero_cta_secondary_text` + `hero_cta_secondary_link` field যোগ। CMS এ দুটো input।
+- **Footer ও Newsletter আলাদা section**:
+  - `/admin/newsletter` — heading edit, subscriber list, CSV export, show/hide toggle
+  - `/admin/footer` — logo upload, description, social links (Facebook/Instagram/WhatsApp/Telegram/YouTube), My Account links (JSON list), Useful Links (JSON list), payment logos (bKash/Nagad/Rocket/Upay), copyright
+  - Settings থেকে social links remove করে Footer এ move
+  - প্রতিটা subsection এ আলাদা Save button
 
-## Phase 3 — Orders + Customers + Payments
-- Order management (filter/search/CSV/status change/manual approve-reject)
-- Customer list (ban/unban/CSV/order history)
-- Payment settings: Bkash/Nagad/Rocket/Upay — Automatic API key + Manual (account number, type, instruction)
-- Customer checkout flow with method picker + manual TxID submit
-- নতুন টেবিল: `payment_methods`, `manual_payments`, `customer_bans`
+## Phase 3 — Product Type Flow + Offer Popup (#7, #8)
 
-## Phase 4 — Coupons + Categories + General Settings + Pages
-- Coupon CRUD with scope (all/product/category), usage limits, dates, auto-generate
-- Category CRUD with drag-drop order, navbar auto-sync
-- General settings (site name/logo/favicon/SEO/currency/maintenance mode/social)
-- Page Manager: About/Privacy/Refund/Terms/FAQ/Contact/Developer — rich text editor
+- **Product Add flow**: `/admin/products/new` এ প্রথমে **type selection screen** (Regular vs Variant card)
+  - Regular → existing form (Regular Price + Offer Price)
+  - Variant → Price fields hide, dynamic variant rows (Name, Regular Price, Offer Price, Delivery Info per variant), Add/Delete variant
+  - DB তে `products.product_type` enum + `product_variants` table extend (already আছে কিনা check করব)
+- **Offer Popup System**:
+  - `site_settings` এ `offer_popup_enabled` (boolean) + `offer_popup_image` + `offer_popup_link`
+  - Frontend এ ৫ সেকেন্ড delay এর পর center modal, close button, একবার দেখানোর জন্য `sessionStorage` flag
+  - Admin এ big toggle + image upload + link
 
-## Phase 5 — Dashboard + Reports + Notifications
-- Dashboard: time filter, 8 stats cards, 4 charts, recent orders, pending manual, top products
-- Notification bell (orders/payments/affiliates/withdrawals/stock alerts)
-- Reports: sales/orders/products/customers/affiliates/coupons + CSV/PDF export
+## Phase 4 — Customer List + UI Redesign Pass (#9, #10, #11)
 
-## Phase 6 — Emails (Resend) + Support Tickets + Admin Profile
-- 8 email templates with admin-editable subject/body, Resend API key field
-- Support ticket system (customer side + admin reply)
-- Admin profile + password change + login history
+- **Customer List** (`/admin/customers`): users table থেকে list, search, ban toggle (`users.is_banned` column)
+- **Admin Management**: already shipped at `/admin/admins` ✅ — শুধু Settings থেকে link verify
+- **UI Redesign pass** (reference image অনুযায়ী):
+  - Sidebar polish (cleaner spacing, section labels)
+  - Top bar এ search + notification bell + profile dropdown
+  - Stat cards এ percentage change indicator (↑ green / ↓ red)
+  - Dark theme contrast audit — সব form/modal/dropdown visibility fix
+  - Mobile responsive sidebar (drawer on small screens)
+  - Skeleton loading states
+
+## Technical Details
+
+- DB migrations: 2-3 migration (popup settings, footer settings keys, product_type enum if missing, users.is_banned)
+- New files: ~6 (newsletter route, footer route, customers route, popup component, ProductTypeSelector, ConfirmDialog helper)
+- Reusable: একটা `<ConfirmDialog>` helper বানাবো যাতে সব delete-confirmation একই UX পায়
+- সব toast Bengali তে: "✅ সফলভাবে সংরক্ষিত হয়েছে" — নাকি English রাখব? (তুমি যেটা চাও)
 
 ---
 
-## What I'll do **right now** in this reply:
-**শুধু Phase 0 (loading fix)।** এটা confirm হলে আপনি বলবেন কোন Phase আগে চান — আমি একটা একটা করে বানাবো। সব phase একসাথে চাইলে এটা **৬-৮টা আলাদা request** হিসেবে আসবে কারণ প্রতি phase-এ অনেক files + migrations লাগবে।
-
-## প্রশ্ন
-1. Phase 0 (just loading fix) এখন apply করি?
-2. তারপর কোন Phase দিয়ে শুরু করব — **Phase 2 (Products)** নাকি **Phase 1 (Homepage CMS)**?
+**আমি Phase 1 দিয়ে শুরু করব?** নাকি অন্য কোনো phase আগে চাও (যেমন Product Type Flow #7 priority high মনে হচ্ছে)?

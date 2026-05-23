@@ -5,8 +5,9 @@ import * as LucideIcons from "lucide-react";
 import { Zap, ShieldCheck, Headphones, Users, BadgeCheck, ArrowRight, Star, Mail, CheckCircle2, Download } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { productsQuery, blogPostsQuery, reviewSlidesQuery } from "@/lib/storefront";
-import { siteSettingsQuery, offerBannerQuery, parseTrustBar, HOMEPAGE_KEYS } from "@/lib/site-settings";
+import { siteSettingsQuery, parseTrustBar, HOMEPAGE_KEYS } from "@/lib/site-settings";
 import { ProductCard } from "@/components/storefront/ProductCard";
+import { OfferBannerSlider } from "@/components/storefront/OfferBannerSlider";
 import { supabase } from "@/integrations/supabase/client";
 
 
@@ -42,7 +43,6 @@ function HomePage() {
   const { data: posts = [] } = useQuery(blogPostsQuery(3));
   const { data: slides = [] } = useQuery(reviewSlidesQuery());
   const { data: settings = {} } = useQuery(siteSettingsQuery);
-  const { data: offerBanner } = useQuery(offerBannerQuery);
 
   const products = featured.length > 0 ? featured : latest;
 
@@ -86,18 +86,8 @@ function HomePage() {
             {heroBadge}
           </div>
 
-          {/* Offer banner image (admin-editable via /admin/homepage) */}
-          <div className="mt-8 w-full rounded-3xl overflow-hidden bg-muted/40 border border-glass-border aspect-[16/6] grid place-items-center">
-            {offerBanner?.image_url ? (
-              offerBanner.link_url ? (
-                <a href={offerBanner.link_url} className="block w-full h-full"><img src={offerBanner.image_url} alt={offerBanner.alt_text ?? "offer banner"} className="w-full h-full object-cover" /></a>
-              ) : (
-                <img src={offerBanner.image_url} alt={offerBanner.alt_text ?? "offer banner"} className="w-full h-full object-cover" />
-              )
-            ) : (
-              <span className="text-xs text-muted-foreground">Offer Banner — admin panel থেকে ইমেজ আপলোড করুন</span>
-            )}
-          </div>
+          {/* Offer banner — auto-sliding carousel, admin-editable via /admin/homepage */}
+          <OfferBannerSlider />
 
           <p className="mt-8 mx-auto max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">{heroTagline}</p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
