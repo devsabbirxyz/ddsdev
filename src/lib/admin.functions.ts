@@ -872,6 +872,19 @@ export const updateAdmin = createServerFn({ method: "POST" })
     const patch: any = {};
     if (data.role) patch.role = data.role;
     if (typeof data.is_active === "boolean") patch.is_active = data.is_active;
+
+    if (data.role) {
+      const { data: current } = await supabaseAdmin
+        .from("user_roles").select("user_id, role").eq("id", data.role_id).maybeSingle();
+      if (!current) throw new Error("Role not found");
+      if (current.role !== data.role) {
+        const { data: dup } = await supabaseAdmin
+          .from("user_roles").select("id")
+          .eq("user_id", current.user_id).eq("role", data.role).maybeSingle();
+        if (dup) await supabaseAdmin.from("user_roles").delete().eq("id", dup.id);
+      }
+    }
+
     const { error } = await supabaseAdmin.from("user_roles").update(patch).eq("id", data.role_id);
     if (error) throw new Error(error.message);
     return { ok: true };
