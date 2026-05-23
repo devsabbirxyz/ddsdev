@@ -6,14 +6,14 @@ import { LineChart, Line, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tool
 import { TrendingUp, ShoppingCart, Users, Package, DollarSign, Clock, AlertCircle, Award } from "lucide-react";
 import { useState } from "react";
 
-type Range = "7d" | "30d" | "90d";
+type Range = "7d" | "30d" | "90d" | "all";
 
 const overviewQuery = (range: Range) =>
   queryOptions({
     queryKey: ["admin", "overview", range],
     staleTime: 60_000,
     queryFn: async () => {
-      const days = range === "7d" ? 7 : range === "30d" ? 30 : 90;
+      const days = range === "7d" ? 7 : range === "30d" ? 30 : range === "90d" ? 90 : 3650;
       const since = new Date(Date.now() - days * 86400_000).toISOString();
 
       const [allOrders, rangeOrders, sellers, affiliates, products, pendingOrders, pendingSellers, pendingAffiliates, pendingProducts, pendingWithdrawalsS, pendingWithdrawalsA] = await Promise.all([
