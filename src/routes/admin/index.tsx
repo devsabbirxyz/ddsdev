@@ -96,7 +96,7 @@ function AdminOverview() {
           <p className="text-sm text-muted-foreground mt-1">Real-time business insights</p>
         </div>
         <div className="inline-flex rounded-xl border border-border bg-card p-1">
-          {(["7d", "30d", "90d"] as const).map((r) => (
+          {(["7d", "30d", "90d", "all"] as const).map((r) => (
             <button
               key={r}
               onClick={() => setRange(r)}
@@ -104,7 +104,7 @@ function AdminOverview() {
                 range === r ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              {r === "7d" ? "৭ দিন" : r === "30d" ? "৩০ দিন" : "৯০ দিন"}
+              {r === "7d" ? "৭ দিন" : r === "30d" ? "৩০ দিন" : r === "90d" ? "৯০ দিন" : "Lifetime"}
             </button>
           ))}
         </div>
