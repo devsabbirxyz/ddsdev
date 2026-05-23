@@ -86,7 +86,21 @@ function AdminOverview() {
   const [range, setRange] = useState<Range>("30d");
   const { data, isLoading } = useQuery(overviewQuery(range));
 
-  if (isLoading || !data) return <div className="text-muted-foreground">Loading...</div>;
+  if (isLoading || !data) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="h-8 w-56 rounded-lg bg-muted" />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[0,1,2,3].map((i) => <div key={i} className="h-28 rounded-2xl bg-muted/60" />)}
+        </div>
+        <div className="grid lg:grid-cols-3 gap-4">
+          <div className="h-72 rounded-2xl bg-muted/60 lg:col-span-2" />
+          <div className="h-72 rounded-2xl bg-muted/60" />
+        </div>
+        <div className="h-52 rounded-2xl bg-muted/60" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
