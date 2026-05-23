@@ -5,8 +5,9 @@ import * as LucideIcons from "lucide-react";
 import { Zap, ShieldCheck, Headphones, Users, BadgeCheck, ArrowRight, Star, Mail, CheckCircle2, Download } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { productsQuery, blogPostsQuery, reviewSlidesQuery } from "@/lib/storefront";
-import { siteSettingsQuery, offerBannerQuery, parseTrustBar, HOMEPAGE_KEYS } from "@/lib/site-settings";
+import { siteSettingsQuery, parseTrustBar, HOMEPAGE_KEYS } from "@/lib/site-settings";
 import { ProductCard } from "@/components/storefront/ProductCard";
+import { OfferBannerSlider } from "@/components/storefront/OfferBannerSlider";
 import { supabase } from "@/integrations/supabase/client";
 
 
