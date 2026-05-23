@@ -76,7 +76,7 @@ function AdminLayout() {
             <div className="font-display font-bold">DDS-Digital</div>
           </div>
           <nav className="space-y-1">
-            {nav.map((it) => (
+            {nav.filter((it) => !it.superOnly || data.isSuper).map((it) => (
               <Link
                 key={it.to}
                 to={it.to as any}
