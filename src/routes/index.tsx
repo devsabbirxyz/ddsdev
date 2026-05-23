@@ -97,7 +97,7 @@ function HomePage() {
             <div aria-hidden className="pointer-events-none absolute -top-16 right-1/4 h-40 w-1/4 rounded-full bg-primary-glow/60 blur-[70px] opacity-60" />
             {/* Glow ring outline */}
             <div aria-hidden className="pointer-events-none absolute -inset-px rounded-3xl bg-gradient-to-b from-primary/40 via-secondary/20 to-transparent blur-md" />
-            <div className="relative rounded-3xl shadow-[0_30px_120px_-20px_hsl(var(--primary)/0.55)]">
+            <div className="relative rounded-3xl shadow-glow">
               <OfferBannerSlider />
             </div>
           </div>
