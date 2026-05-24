@@ -1035,7 +1035,7 @@ export type Database = {
           total_price: number
           transaction_id: string | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
           variant_id: string | null
           variant_label: string | null
         }
@@ -1070,7 +1070,7 @@ export type Database = {
           total_price: number
           transaction_id?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
           variant_id?: string | null
           variant_label?: string | null
         }
@@ -1105,7 +1105,7 @@ export type Database = {
           total_price?: number
           transaction_id?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
           variant_id?: string | null
           variant_label?: string | null
         }
