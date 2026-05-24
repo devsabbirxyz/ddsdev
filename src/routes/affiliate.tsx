@@ -4,14 +4,14 @@ import { LayoutDashboard, Users, Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/affiliate")({
   beforeLoad: async ({ location }) => {
-    const { data: sess } = await supabase.auth.getSession();
-    if (!sess.session) {
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData.user) {
       throw redirect({ to: "/login", search: { redirect: location.href } as never });
     }
     const { data: aff } = await supabase
       .from("affiliates")
       .select("id,status")
-      .eq("user_id", sess.session.user.id)
+      .eq("user_id", userData.user.id)
       .maybeSingle();
     if (!aff || aff.status !== "approved") {
       throw redirect({ to: "/apply-affiliate" });
