@@ -10,7 +10,7 @@ import { siteSettingsQuery } from "@/lib/site-settings";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
-  const { lang, setLang, t } = useI18n();
+  const { t } = useI18n();
   const { isAuthenticated, signOut } = useAuth();
   const { count } = useCart();
   const [open, setOpen] = useState(false);
