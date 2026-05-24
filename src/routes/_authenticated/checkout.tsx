@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { CheckCircle2, Tag, Loader2, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { formatBDT } from "@/lib/storefront";
@@ -42,6 +43,8 @@ function CheckoutPage() {
   const [couponCode, setCouponCode] = useState("");
   const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
 
   const method = methods.find((m) => m.id === methodId);
   const discount = coupon?.discount ?? 0;
@@ -111,11 +114,10 @@ function CheckoutPage() {
       }));
       const { data, error } = await supabase.from("orders").insert(rows).select("id,order_number").limit(1);
       if (error) throw error;
-      const firstOrderId = data?.[0]?.id;
+      const firstOrderId = data?.[0]?.id ?? null;
       clear();
-      toast.success("অর্ডার সফল! অ্যাডমিন verify করার পর deliver হবে।");
-      if (firstOrderId) nav({ to: "/order/$id", params: { id: firstOrderId } });
-      else nav({ to: "/dashboard/orders" });
+      setSuccessOrderId(firstOrderId);
+      setSuccessOpen(true);
     } catch (e: any) {
       console.error("Order create failed:", e);
       toast.error(e?.message ?? "অর্ডার তৈরি ব্যর্থ");
@@ -239,6 +241,28 @@ function CheckoutPage() {
           <p className="text-[11px] text-center text-muted-foreground">অ্যাডমিন verify করার পর প্রোডাক্ট deliver হবে।</p>
         </aside>
       </div>
+
+      <Dialog open={successOpen} onOpenChange={(o) => { if (!o) { setSuccessOpen(false); nav({ to: "/dashboard/orders" }); } }}>
+        <DialogContent className="sm:max-w-md text-center">
+          <DialogHeader>
+            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-brand shadow-glow">
+              <CheckCircle2 className="h-9 w-9 text-primary-foreground" />
+            </div>
+            <DialogTitle className="font-display text-2xl text-center">আপনার অর্ডার সফলভাবে সাবমিট হয়েছে! ✅</DialogTitle>
+            <DialogDescription className="text-center">
+              অ্যাডমিন verify করার পর প্রোডাক্ট deliver হবে। ড্যাশবোর্ড থেকে অর্ডারের বর্তমান অবস্থা (Pending / Processing / Delivered) দেখতে পারবেন।
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <button
+              onClick={() => { setSuccessOpen(false); nav({ to: "/dashboard/orders" }); }}
+              className="w-full rounded-xl bg-gradient-brand px-6 py-3 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition"
+            >
+              ড্যাশবোর্ড দেখুন →
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
