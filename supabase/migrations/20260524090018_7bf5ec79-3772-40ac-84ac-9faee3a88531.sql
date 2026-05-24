@@ -1,0 +1,1 @@
+DELETE FROM products WHERE id = '3649a057-c419-41e4-a4e5-94940c2aecdc';
