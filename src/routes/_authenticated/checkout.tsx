@@ -114,11 +114,10 @@ function CheckoutPage() {
       }));
       const { data, error } = await supabase.from("orders").insert(rows).select("id,order_number").limit(1);
       if (error) throw error;
-      const firstOrderId = data?.[0]?.id;
+      const firstOrderId = data?.[0]?.id ?? null;
       clear();
-      toast.success("অর্ডার সফল! অ্যাডমিন verify করার পর deliver হবে।");
-      if (firstOrderId) nav({ to: "/order/$id", params: { id: firstOrderId } });
-      else nav({ to: "/dashboard/orders" });
+      setSuccessOrderId(firstOrderId);
+      setSuccessOpen(true);
     } catch (e: any) {
       console.error("Order create failed:", e);
       toast.error(e?.message ?? "অর্ডার তৈরি ব্যর্থ");
