@@ -115,12 +115,6 @@ export function Navbar() {
             ))}
             <div className="flex items-center gap-2 pt-2">
               <button
-                onClick={() => setLang(lang === "bn" ? "en" : "bn")}
-                className="flex-1 rounded-lg px-3 py-2 text-xs font-semibold glass"
-              >
-                {lang === "bn" ? "English" : "বাংলা"}
-              </button>
-              <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="flex-1 rounded-lg px-3 py-2 text-xs font-semibold glass flex items-center justify-center gap-2"
               >
@@ -128,6 +122,7 @@ export function Navbar() {
                 {theme === "dark" ? "Light" : "Dark"}
               </button>
             </div>
+
             {isAuthenticated ? (
               <button
                 onClick={() => { signOut(); setOpen(false); }}
