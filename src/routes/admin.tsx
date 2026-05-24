@@ -13,9 +13,9 @@ const adminAuthQuery = queryOptions({
   staleTime: 10 * 60 * 1000,
   gcTime: 30 * 60 * 1000,
   queryFn: async () => {
-    const { data: sess } = await supabase.auth.getSession();
-    if (!sess.session) return { ok: false as const, isSuper: false, email: "" };
-    const uid = sess.session.user.id;
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData.user) return { ok: false as const, isSuper: false, email: "" };
+    const uid = userData.user.id;
     const [a, s, m] = await Promise.all([
       supabase.rpc("has_role", { _user_id: uid, _role: "admin" }),
       supabase.rpc("has_role", { _user_id: uid, _role: "super_admin" }),
@@ -24,7 +24,7 @@ const adminAuthQuery = queryOptions({
     return {
       ok: Boolean(a.data || s.data || m.data),
       isSuper: Boolean(s.data),
-      email: sess.session.user.email ?? "",
+      email: userData.user.email ?? "",
     };
   },
 });

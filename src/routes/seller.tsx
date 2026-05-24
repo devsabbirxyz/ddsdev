@@ -4,14 +4,14 @@ import { Store, Package, ShoppingBag, Wallet, Settings } from "lucide-react";
 
 export const Route = createFileRoute("/seller")({
   beforeLoad: async ({ location }) => {
-    const { data: sess } = await supabase.auth.getSession();
-    if (!sess.session) {
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData.user) {
       throw redirect({ to: "/login", search: { redirect: location.href } as never });
     }
     const { data: seller } = await supabase
       .from("sellers")
       .select("id,status")
-      .eq("user_id", sess.session.user.id)
+      .eq("user_id", userData.user.id)
       .maybeSingle();
     if (!seller || seller.status !== "approved") {
       throw redirect({ to: "/apply-seller" });
