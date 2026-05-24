@@ -10,7 +10,7 @@ import { siteSettingsQuery } from "@/lib/site-settings";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
-  const { lang, setLang, t } = useI18n();
+  const { t } = useI18n();
   const { isAuthenticated, signOut } = useAuth();
   const { count } = useCart();
   const [open, setOpen] = useState(false);
@@ -56,13 +56,7 @@ export function Navbar() {
 
         {/* Right cluster */}
         <div className="hidden lg:flex items-center gap-2">
-          <button
-            onClick={() => setLang(lang === "bn" ? "en" : "bn")}
-            className="rounded-lg px-3 py-1.5 text-xs font-semibold glass hover:bg-accent transition"
-            aria-label="Toggle language"
-          >
-            {lang === "bn" ? "EN" : "বাংলা"}
-          </button>
+
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="rounded-lg p-2 glass hover:bg-accent transition"
@@ -121,12 +115,6 @@ export function Navbar() {
             ))}
             <div className="flex items-center gap-2 pt-2">
               <button
-                onClick={() => setLang(lang === "bn" ? "en" : "bn")}
-                className="flex-1 rounded-lg px-3 py-2 text-xs font-semibold glass"
-              >
-                {lang === "bn" ? "English" : "বাংলা"}
-              </button>
-              <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="flex-1 rounded-lg px-3 py-2 text-xs font-semibold glass flex items-center justify-center gap-2"
               >
@@ -134,6 +122,7 @@ export function Navbar() {
                 {theme === "dark" ? "Light" : "Dark"}
               </button>
             </div>
+
             {isAuthenticated ? (
               <button
                 onClick={() => { signOut(); setOpen(false); }}

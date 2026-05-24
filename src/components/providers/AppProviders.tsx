@@ -25,17 +25,13 @@ export function AppProviders({ children }: { children: ReactNode }) {
     if (typeof window !== "undefined") localStorage.setItem("dds-theme", t);
   }, []);
 
-  // ---- Language (Bangla default) ----
-  const [lang, setLangState] = useState<Lang>("bn");
-  useEffect(() => {
-    const stored = (typeof window !== "undefined" && localStorage.getItem("dds-lang")) as Lang | null;
-    if (stored === "en" || stored === "bn") setLangState(stored);
+  // ---- Language (Bangla only — English version removed) ----
+  const lang: Lang = "bn";
+  const setLang = useCallback((_l: Lang) => {
+    // English is disabled site-wide; language is locked to Bangla.
   }, []);
-  const setLang = useCallback((l: Lang) => {
-    setLangState(l);
-    if (typeof window !== "undefined") localStorage.setItem("dds-lang", l);
-  }, []);
-  const t = useCallback((k: TKey) => translations[lang][k] ?? translations.bn[k] ?? String(k), [lang]);
+  const t = useCallback((k: TKey) => translations.bn[k] ?? String(k), []);
+
 
   // ---- Auth ----
   const [user, setUser] = useState<AuthUser | null>(null);
