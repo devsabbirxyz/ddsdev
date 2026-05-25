@@ -393,9 +393,22 @@ function PaymentSelect({
           </button>
 
           <div className="text-center mb-6">
+            <div className="mx-auto mb-3 inline-flex items-center justify-center rounded-2xl bg-white shadow-lg px-4 py-3">
+              {logoFor(selectedMethod.name) ? (
+                <img
+                  src={logoFor(selectedMethod.name)!}
+                  alt={appName}
+                  loading="lazy"
+                  width={512}
+                  height={512}
+                  className="h-10 w-auto object-contain"
+                />
+              ) : (
+                <span className="font-display font-extrabold text-xl" style={{ color: btnBg }}>{appName}</span>
+              )}
+            </div>
             <h1 className="font-display font-extrabold text-2xl sm:text-3xl">ট্রানজেকশন আইডি দিন</h1>
             <p className="text-sm opacity-90 mt-1">{appName} পেমেন্ট</p>
-          </div>
 
           <input
             type="text"
