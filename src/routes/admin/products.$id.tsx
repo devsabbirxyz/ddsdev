@@ -12,8 +12,9 @@ import {
 import { toast } from "sonner";
 import {
   ArrowLeft, Save, Trash2, Plus, Star, ImagePlus,
-  Package, Image as ImageIcon, Layers, Database, Search,
+  Package, Image as ImageIcon, Layers, Database, Search, CheckCircle2, Loader2,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/admin/products/$id")({
   head: () => ({ meta: [{ title: "Edit Product — Admin" }, { name: "robots", content: "noindex" }] }),
@@ -73,7 +74,11 @@ function ProductEditor() {
 
   const set = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }));
 
+  const [saving, setSaving] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const onSave = async () => {
+    setSaving(true);
     try {
       const regularPrice = form.regular_price != null ? Number(form.regular_price) : null;
       const offerPriceRaw = form.offer_price != null ? Number(form.offer_price) : null;
@@ -107,10 +112,14 @@ function ProductEditor() {
           status: form.status,
         },
       });
-      toast.success("সেভ হয়েছে");
       qc.invalidateQueries({ queryKey: ["admin", "product", id] });
       qc.invalidateQueries({ queryKey: ["admin", "products"] });
-    } catch (e: any) { toast.error(e.message); }
+      setShowSuccess(true);
+    } catch (e: any) {
+      toast.error(e.message || "সেভ ব্যর্থ হয়েছে");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const onDelete = async () => {
@@ -147,11 +156,40 @@ function ProductEditor() {
           <button onClick={onDelete} className="rounded-xl border border-destructive/40 text-destructive hover:bg-destructive/10 px-3 py-2 text-sm font-bold inline-flex items-center gap-2">
             <Trash2 className="h-4 w-4" /> ডিলিট
           </button>
-          <button onClick={onSave} className="rounded-xl bg-gradient-brand text-primary-foreground shadow-glow px-4 py-2 text-sm font-bold inline-flex items-center gap-2">
-            <Save className="h-4 w-4" /> সেভ
+          <button onClick={onSave} disabled={saving} className="rounded-xl bg-gradient-brand text-primary-foreground shadow-glow px-4 py-2 text-sm font-bold inline-flex items-center gap-2 disabled:opacity-60">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {saving ? "সেভ হচ্ছে..." : "সেভ"}
           </button>
         </div>
       </div>
+
+      <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto mb-2 grid h-16 w-16 place-items-center rounded-full bg-green-500/10">
+              <CheckCircle2 className="h-10 w-10 text-green-500" />
+            </div>
+            <DialogTitle className="text-center text-xl">✅ সফলভাবে সেভ হয়েছে!</DialogTitle>
+            <DialogDescription className="text-center">
+              আপনার প্রোডাক্টের পরিবর্তন সফলভাবে সেভ হয়েছে।
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center gap-2">
+            <button
+              onClick={() => setShowSuccess(false)}
+              className="rounded-xl border border-border px-4 py-2 text-sm font-semibold hover:bg-accent"
+            >
+              এখানেই থাকুন
+            </button>
+            <button
+              onClick={() => { setShowSuccess(false); nav({ to: "/admin/products" }); }}
+              className="rounded-xl bg-gradient-brand text-primary-foreground shadow-glow px-4 py-2 text-sm font-bold"
+            >
+              প্রোডাক্ট লিস্টে যান
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="flex gap-2 border-b border-border overflow-x-auto">
         {tabs.map((t) => (
