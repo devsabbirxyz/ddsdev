@@ -81,7 +81,10 @@ function CheckoutPage() {
       { key: "name", label: "পূর্ণ নাম", value: name },
       { key: "phone", label: "ফোন নম্বর", value: phone },
       { key: "email", label: "ইমেইল", value: email, validate: (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
-      { key: "customerInput", label: "প্রোডাক্টের জন্য তথ্য", value: customerInput },
+    ];
+    void customerInput;
+    const _unused = [
+
     ];
     const newErrors: Record<string, boolean> = {};
     let firstInvalid: string | null = null;
