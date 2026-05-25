@@ -216,6 +216,8 @@ function CheckoutPage() {
       methods={methods}
       methodId={methodId}
       setMethodId={setMethodId}
+      trxId={trxId}
+      setTrxId={setTrxId}
       total={total}
       submitting={submitting}
       onBack={() => setStep(1)}
