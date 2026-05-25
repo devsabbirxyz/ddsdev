@@ -474,3 +474,12 @@ function Field({ label, value, onChange, placeholder, type = "text", id, error }
     </div>
   );
 }
+
+function Step({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <li className="flex gap-3">
+      <span className="shrink-0 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-bold">{n}</span>
+      <span className="flex-1 leading-relaxed">{children}</span>
+    </li>
+  );
+}
