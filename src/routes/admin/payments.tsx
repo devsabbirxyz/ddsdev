@@ -151,7 +151,6 @@ function AdminPayments() {
                 Manual পেমেন্ট অ্যাক্টিভ
               </label>
             </div>
-            </div>
 
             <div className="flex gap-2 justify-end pt-2 border-t border-border">
               <button onClick={() => setEditing(null)} className="rounded-xl glass px-4 py-2 text-sm hover:bg-accent">বাতিল</button>
