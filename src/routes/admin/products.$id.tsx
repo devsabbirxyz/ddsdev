@@ -175,9 +175,8 @@ function ProductEditor() {
               </select>
             </div>
             <Field label="শর্ট ডেসক্রিপশন (বাংলা)" value={form.short_description} onChange={(v) => set("short_description", v)} textarea />
-            <Field label="Short Description (English)" value={form.short_description_en} onChange={(v) => set("short_description_en", v)} textarea />
             <Field label="বিস্তারিত বিবরণ (বাংলা)" value={form.long_description} onChange={(v) => set("long_description", v)} textarea rows={6} />
-            <Field label="Long Description (English)" value={form.long_description_en} onChange={(v) => set("long_description_en", v)} textarea rows={6} />
+
             <Field label="ভিডিও URL (YouTube/Vimeo)" value={form.video_url} onChange={(v) => set("video_url", v)} />
           </div>
 
