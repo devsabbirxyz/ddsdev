@@ -212,6 +212,40 @@ function AdminOrderDetail() {
           </div>
         </div>
       )}
+
+      <div className="glass-card rounded-2xl p-6 space-y-3">
+        <div>
+          <h3 className="font-display font-bold">Customer কে মেসেজ পাঠান</h3>
+          <p className="text-xs text-muted-foreground mt-1">এই মেসেজ Customer এর Dashboard → Notifications এ দেখাবে।</p>
+        </div>
+        <textarea
+          value={customMsg}
+          onChange={(e) => setCustomMsg(e.target.value)}
+          rows={3}
+          placeholder="যেমন: আপনার অর্ডার প্রস্তুত হচ্ছে, শীঘ্রই পেয়ে যাবেন।"
+          className="w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+        />
+        <button
+          onClick={async () => {
+            if (!customMsg.trim()) { toast.error("মেসেজ লিখুন"); return; }
+            setSendingMsg(true);
+            try {
+              await sendMsg({ data: { orderId: order.id, message: customMsg.trim() } });
+              toast.success("মেসেজ পাঠানো হয়েছে ✅");
+              setCustomMsg("");
+            } catch (e: any) {
+              toast.error(e?.message ?? "Failed");
+            } finally {
+              setSendingMsg(false);
+            }
+          }}
+          disabled={sendingMsg}
+          className="w-full rounded-xl bg-gradient-brand px-6 py-2.5 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.01] transition disabled:opacity-60 inline-flex items-center justify-center gap-2"
+        >
+          {sendingMsg ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          মেসেজ পাঠান
+        </button>
+      </div>
     </div>
   );
 }
