@@ -39,6 +39,7 @@ const empty: PM = {
   send_type: "send_money",
   account_number: "",
   instructions: "",
+  api_key: "",
   has_automatic: false,
   is_manual_active: true,
   is_automatic_active: false,
