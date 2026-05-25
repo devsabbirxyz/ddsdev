@@ -296,9 +296,9 @@ function CheckoutPage() {
 type PaymentMethod = {
   id: string;
   name: string;
-  is_manual_active: boolean;
-  is_automatic_active: boolean;
-  has_automatic: boolean;
+  is_manual_active: boolean | null;
+  is_automatic_active: boolean | null;
+  has_automatic: boolean | null;
 };
 
 function PaymentSelect({
