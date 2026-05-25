@@ -53,7 +53,7 @@ function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [customerInput, setCustomerInput] = useState("");
   const [methodId, setMethodId] = useState<string>("");
-  const [trxId] = useState("");
+  const [trxId, setTrxId] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
