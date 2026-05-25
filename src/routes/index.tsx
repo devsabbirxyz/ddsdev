@@ -5,7 +5,7 @@ import * as LucideIcons from "lucide-react";
 import { Zap, ShieldCheck, Headphones, Users, BadgeCheck, ArrowRight, Star, Mail, CheckCircle2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { productsQuery, blogPostsQuery, reviewSlidesQuery } from "@/lib/storefront";
-import { siteSettingsQuery, parseTrustBar, HOMEPAGE_KEYS } from "@/lib/site-settings";
+import { siteSettingsQuery, parseTrustBar, parsePromoSection, HOMEPAGE_KEYS } from "@/lib/site-settings";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { OfferBannerSlider } from "@/components/storefront/OfferBannerSlider";
 import { OfferPopup } from "@/components/storefront/OfferPopup";
@@ -191,37 +191,50 @@ function HomePage() {
       </section>
 
       {/* SPECIAL OFFER */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-16">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-brand p-8 sm:p-12 text-primary-foreground">
-          <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
-          <div className="relative grid md:grid-cols-2 gap-6 items-center">
-            <div>
-              <div className="inline-block rounded-full bg-white/20 backdrop-blur px-3 py-1 text-xs font-bold mb-3">🔥 লিমিটেড টাইম অফার</div>
-              <h2 className="font-display font-bold text-3xl sm:text-4xl leading-tight">
-                সব প্রোডাক্টে ১৫% পর্যন্ত ছাড় চলছে!
-              </h2>
-              <p className="mt-3 opacity-90 text-sm sm:text-base">
-                কুপন কোড <span className="font-bold bg-white/20 px-2 py-0.5 rounded">DDS15</span> ব্যবহার করে এখনই কিনুন।
-              </p>
-              <Link to="/shop" className="mt-6 inline-block rounded-2xl bg-white text-primary px-6 py-3 text-sm font-bold hover:scale-105 transition">
-                অফার দেখুন →
-              </Link>
-            </div>
-            <div className="grid grid-cols-3 gap-3 text-center">
-              {[
-                { v: "১৫%", l: "ডিসকাউন্ট" },
-                { v: "৫০০+", l: "প্রোডাক্ট" },
-                { v: "২৪/৭", l: "সাপোর্ট" },
-              ].map((s) => (
-                <div key={s.l} className="rounded-2xl bg-white/15 backdrop-blur p-4">
-                  <div className="font-display font-bold text-2xl sm:text-3xl">{s.v}</div>
-                  <div className="text-xs opacity-90 mt-1">{s.l}</div>
+      {(() => {
+        const promo = parsePromoSection(settings[HOMEPAGE_KEYS.promo_section]);
+        if (!promo.enabled) return null;
+        const descParts = promo.description.split("{coupon}");
+        return (
+          <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-16">
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-brand p-8 sm:p-12 text-primary-foreground">
+              <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
+              <div className="relative grid md:grid-cols-2 gap-6 items-center">
+                <div>
+                  {promo.badge && (
+                    <div className="inline-block rounded-full bg-white/20 backdrop-blur px-3 py-1 text-xs font-bold mb-3">{promo.badge}</div>
+                  )}
+                  <h2 className="font-display font-bold text-3xl sm:text-4xl leading-tight">{promo.heading}</h2>
+                  {promo.description && (
+                    <p className="mt-3 opacity-90 text-sm sm:text-base">
+                      {descParts[0]}
+                      {descParts.length > 1 && promo.coupon_code && (
+                        <span className="font-bold bg-white/20 px-2 py-0.5 rounded">{promo.coupon_code}</span>
+                      )}
+                      {descParts.slice(1).join("{coupon}")}
+                    </p>
+                  )}
+                  {promo.button_text && (
+                    <Link to={promo.button_link || "/shop"} className="mt-6 inline-block rounded-2xl bg-white text-primary px-6 py-3 text-sm font-bold hover:scale-105 transition">
+                      {promo.button_text}
+                    </Link>
+                  )}
                 </div>
-              ))}
+                {promo.stats.length > 0 && (
+                  <div className="grid grid-cols-3 gap-3 text-center">
+                    {promo.stats.slice(0, 3).map((s, i) => (
+                      <div key={i} className="rounded-2xl bg-white/15 backdrop-blur p-4">
+                        <div className="font-display font-bold text-2xl sm:text-3xl">{s.value}</div>
+                        <div className="text-xs opacity-90 mt-1">{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
+        );
+      })()}
 
       {/* REVIEWS */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-16">

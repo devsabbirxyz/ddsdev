@@ -4,7 +4,7 @@ import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { saveSlide, deleteSlide, saveSettingsBulk } from "@/lib/admin.functions";
-import { HOMEPAGE_KEYS, parseTrustBar, type TrustItem } from "@/lib/site-settings";
+import { HOMEPAGE_KEYS, parseTrustBar, parsePromoSection, DEFAULT_PROMO, type TrustItem, type PromoSection, type PromoStat } from "@/lib/site-settings";
 import { toast } from "sonner";
 import { Plus, Trash2, Save } from "lucide-react";
 import { ImageUpload } from "@/components/admin/ImageUpload";
@@ -37,6 +37,7 @@ export const Route = createFileRoute("/admin/homepage")({
 const TABS = [
   { id: "hero", label: "Navbar + Hero" },
   { id: "offer", label: "Offer Banner" },
+  { id: "promo", label: "Promo Section" },
   { id: "trust", label: "Trust Bar" },
   { id: "reviews", label: "Review Slides" },
 ] as const;
@@ -62,6 +63,7 @@ function HomepageCMS() {
 
       {tab === "hero" && <HeroTab settings={data.settings} slides={data.hero} />}
       {tab === "offer" && <OfferTab slides={data.offer} />}
+      {tab === "promo" && <PromoTab settings={data.settings} />}
       {tab === "trust" && <TrustTab settings={data.settings} />}
       {tab === "reviews" && <ReviewTab slides={data.review} />}
       <div className="text-xs text-muted-foreground">
@@ -184,6 +186,69 @@ function TrustTab({ settings }: { settings: Record<string, string> }) {
 /* ============ REVIEW TAB ============ */
 function ReviewTab({ slides }: { slides: any[] }) {
   return <SlideCRUD kind="review" slides={slides} title="Review Slides (কাস্টমার রিভিউ স্ক্রিনশট)" />;
+}
+
+/* ============ PROMO SECTION TAB ============ */
+function PromoTab({ settings }: { settings: Record<string, string> }) {
+  const qc = useQueryClient();
+  const saveB = useServerFn(saveSettingsBulk);
+  const initial = useMemo<PromoSection>(() => parsePromoSection(settings[HOMEPAGE_KEYS.promo_section]), [settings]);
+  const [p, setP] = useState<PromoSection>(initial);
+
+  const save = async () => {
+    try {
+      await saveB({ data: { items: [{ key: HOMEPAGE_KEYS.promo_section, value: JSON.stringify(p), group_name: "homepage" }] }});
+      toast.success("✅ সফলভাবে সংরক্ষিত হয়েছে");
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-cms"] });
+      qc.invalidateQueries({ queryKey: ["site_settings"] });
+    } catch (e: any) { toast.error("❌ " + (e.message || "সমস্যা হয়েছে")); }
+  };
+
+  const reset = () => setP(DEFAULT_PROMO);
+  const updateStat = (i: number, patch: Partial<PromoStat>) =>
+    setP({ ...p, stats: p.stats.map((s, idx) => idx === i ? { ...s, ...patch } : s) });
+  const removeStat = (i: number) => setP({ ...p, stats: p.stats.filter((_, idx) => idx !== i) });
+  const addStat = () => setP({ ...p, stats: [...p.stats, { value: "", label: "" }] });
+
+  return (
+    <div className="glass-card rounded-2xl p-5 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h2 className="font-bold text-lg">Promo Section (লিমিটেড টাইম অফার ব্যানার)</h2>
+        <label className="flex items-center gap-2 text-sm font-semibold">
+          <input type="checkbox" checked={p.enabled} onChange={(e) => setP({ ...p, enabled: e.target.checked })} />
+          {p.enabled ? "✅ সচল (Visible)" : "⛔ বন্ধ (Hidden)"}
+        </label>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div><label className="text-xs text-muted-foreground">Badge (উপরের ছোট লেবেল)</label><input className="ip" value={p.badge} onChange={(e) => setP({ ...p, badge: e.target.value })} /></div>
+        <div><label className="text-xs text-muted-foreground">Coupon Code</label><input className="ip" value={p.coupon_code} onChange={(e) => setP({ ...p, coupon_code: e.target.value })} /></div>
+        <div className="sm:col-span-2"><label className="text-xs text-muted-foreground">Heading (বড় টাইটেল)</label><input className="ip" value={p.heading} onChange={(e) => setP({ ...p, heading: e.target.value })} /></div>
+        <div className="sm:col-span-2"><label className="text-xs text-muted-foreground">Description (কুপন কোডের জায়গায় <code>{"{coupon}"}</code> লিখুন)</label><textarea className="ip" rows={2} value={p.description} onChange={(e) => setP({ ...p, description: e.target.value })} /></div>
+        <div><label className="text-xs text-muted-foreground">Button Text</label><input className="ip" value={p.button_text} onChange={(e) => setP({ ...p, button_text: e.target.value })} /></div>
+        <div><label className="text-xs text-muted-foreground">Button Link</label><input className="ip" value={p.button_link} onChange={(e) => setP({ ...p, button_link: e.target.value })} /></div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-sm">Stats (সর্বোচ্চ ৩টা)</h3>
+          {p.stats.length < 3 && <button onClick={addStat} className="btn glass-card"><Plus className="h-4 w-4" /> Add Stat</button>}
+        </div>
+        {p.stats.map((s, i) => (
+          <div key={i} className="grid grid-cols-12 gap-2 items-center">
+            <input className="ip col-span-5" placeholder="Value (যেমন ১৫%)" value={s.value} onChange={(e) => updateStat(i, { value: e.target.value })} />
+            <input className="ip col-span-6" placeholder="Label (যেমন ডিসকাউন্ট)" value={s.label} onChange={(e) => updateStat(i, { label: e.target.value })} />
+            <button onClick={() => removeStat(i)} className="col-span-1 rounded-xl border border-destructive/40 p-2 text-destructive"><Trash2 className="h-4 w-4" /></button>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex gap-2 pt-2 border-t border-border">
+        <button onClick={save} className="btn bg-gradient-brand text-primary-foreground shadow-glow"><Save className="h-4 w-4" /> Save</button>
+        <button onClick={reset} className="btn glass-card">Reset to Default</button>
+      </div>
+    </div>
+  );
 }
 
 /* Footer + Newsletter moved to /admin/footer and /admin/newsletter */
