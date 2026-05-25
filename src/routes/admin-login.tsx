@@ -44,12 +44,13 @@ function AdminLoginPage() {
       setError("ভুল ইউজারনেম বা পাসওয়ার্ড");
       return;
     }
-    const { data: isAdmin, error: rpcErr } = await supabase.rpc("has_role", {
-      _user_id: data.user.id,
-      _role: "admin",
-    });
+    const { data: roles, error: rpcErr } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", data.user.id)
+      .in("role", ["admin", "super_admin"]);
     setLoading(false);
-    if (rpcErr || !isAdmin) {
+    if (rpcErr || !roles || roles.length === 0) {
       await supabase.auth.signOut();
       setError("এই অ্যাকাউন্টে এডমিন অ্যাক্সেস নেই");
       return;
