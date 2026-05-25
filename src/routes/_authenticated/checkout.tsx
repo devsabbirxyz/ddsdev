@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { CheckCircle2, Tag, Loader2, Check } from "lucide-react";
+import { CheckCircle2, Tag, Loader2, Copy, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
@@ -53,7 +53,7 @@ function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [customerInput, setCustomerInput] = useState("");
   const [methodId, setMethodId] = useState<string>("");
-  const [trxId] = useState("");
+  const [trxId, setTrxId] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -216,6 +216,8 @@ function CheckoutPage() {
       methods={methods}
       methodId={methodId}
       setMethodId={setMethodId}
+      trxId={trxId}
+      setTrxId={setTrxId}
       total={total}
       submitting={submitting}
       onBack={() => setStep(1)}
@@ -293,17 +295,35 @@ function CheckoutPage() {
 type PaymentMethod = {
   id: string;
   name: string;
+  account_number: string | null;
+  instructions: string | null;
   is_manual_active: boolean | null;
   is_automatic_active: boolean | null;
   has_automatic: boolean | null;
 };
 
+// Method theme: brand color box + Bengali app/USSD line for step 1
+const METHOD_THEME: Record<string, { app: string; ussd: string | null; bg: string; btn: string; textOnBox: string; ring: string }> = {
+  bkash:  { app: "bKash",  ussd: "*247#", bg: "#E2136E", btn: "#E2136E", textOnBox: "#ffffff", ring: "#E2136E" },
+  nagad:  { app: "Nagad",  ussd: "*167#", bg: "#F37021", btn: "#F37021", textOnBox: "#ffffff", ring: "#F37021" },
+  rocket: { app: "Rocket", ussd: "*322#", bg: "#8C3494", btn: "#8C3494", textOnBox: "#ffffff", ring: "#8C3494" },
+  upay:   { app: "Upay",   ussd: null,    bg: "#FFCB05", btn: "#111111", textOnBox: "#111111", ring: "#FFCB05" },
+};
+function themeFor(name?: string | null) {
+  if (!name) return null;
+  const k = name.toLowerCase().replace(/\s+/g, "");
+  for (const key of Object.keys(METHOD_THEME)) if (k.includes(key)) return METHOD_THEME[key];
+  return null;
+}
+
 function PaymentSelect({
-  methods, methodId, setMethodId, total, submitting, onBack, onSubmit,
+  methods, methodId, setMethodId, trxId, setTrxId, total, submitting, onBack, onSubmit,
 }: {
   methods: PaymentMethod[];
   methodId: string;
   setMethodId: (id: string) => void;
+  trxId: string;
+  setTrxId: (v: string) => void;
   total: number;
   submitting: boolean;
   onBack: () => void;
@@ -313,6 +333,111 @@ function PaymentSelect({
   const logoUrl = settings?.site_logo_url;
   const siteName = settings?.site_name || "DDS-Digital";
 
+  const selectedMethod = methods.find((m) => m.id === methodId);
+
+  // ===== Payment Instructions Screen =====
+  if (selectedMethod) {
+    const theme = themeFor(selectedMethod.name);
+    const brand = brandFor(selectedMethod.name);
+    const adminNumber = selectedMethod.account_number || "—";
+    const appName = theme?.app ?? brand?.label ?? selectedMethod.name;
+    const ussd = theme?.ussd;
+    const boxBg = theme?.bg ?? "#111";
+    const textColor = theme?.textOnBox ?? "#fff";
+    const btnBg = theme?.btn ?? "#111";
+
+    const copyNumber = async () => {
+      try {
+        await navigator.clipboard.writeText(adminNumber);
+        toast.success("নম্বর কপি হয়েছে");
+      } catch {
+        toast.error("কপি করা যায়নি");
+      }
+    };
+
+    const handleVerify = () => {
+      if (!trxId.trim()) {
+        toast.error("⚠️ ট্রানজেকশন আইডি দিন!");
+        return;
+      }
+      onSubmit();
+    };
+
+    return (
+      <div className="relative min-h-[calc(100vh-4rem)]" style={{ backgroundColor: boxBg }}>
+        <div className="mx-auto max-w-xl px-4 sm:px-6 pt-6 pb-32" style={{ color: textColor }}>
+          <button
+            type="button"
+            onClick={() => setMethodId("")}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold opacity-90 hover:opacity-100 mb-6"
+            style={{ color: textColor }}
+          >
+            <ArrowLeft className="h-4 w-4" /> ফিরে যান
+          </button>
+
+          <div className="text-center mb-6">
+            <h1 className="font-display font-extrabold text-2xl sm:text-3xl">ট্রানজেকশন আইডি দিন</h1>
+            <p className="text-sm opacity-90 mt-1">{appName} পেমেন্ট</p>
+          </div>
+
+          <input
+            type="text"
+            value={trxId}
+            onChange={(e) => setTrxId(e.target.value)}
+            placeholder="ট্রানজেকশন আইডি লিখুন"
+            className="w-full rounded-2xl bg-white text-black px-5 py-4 text-base font-semibold outline-none focus:ring-4 focus:ring-white/40 placeholder:text-black/40 shadow-lg"
+          />
+
+          <ol className="mt-6 space-y-3 text-sm sm:text-base">
+            <Step n={1}>
+              {appName} অ্যাপ খুলুন{ussd ? <> অথবা <span className="font-bold">{ussd}</span> ডায়াল করুন</> : null}
+            </Step>
+            <Step n={2}>"Send Money" সিলেক্ট করুন</Step>
+            <Step n={3}>
+              নম্বরটি দিন:{" "}
+              <span className="font-bold">{adminNumber}</span>
+              <button
+                type="button"
+                onClick={copyNumber}
+                className="ml-2 inline-flex items-center gap-1 rounded-md bg-white/20 px-2 py-0.5 text-xs font-semibold hover:bg-white/30 align-middle"
+              >
+                <Copy className="h-3 w-3" /> কপি
+              </button>
+            </Step>
+            <Step n={4}>
+              পরিমাণ দিন: <span className="font-bold">{formatBDT(total)}</span>
+            </Step>
+            <Step n={5}>Reference এ আপনার নাম লিখুন</Step>
+            <Step n={6}>PIN দিয়ে confirm করুন</Step>
+            <Step n={7}>Confirmation SMS পেলে Transaction ID উপরের বক্সে দিন</Step>
+          </ol>
+
+          <button
+            type="button"
+            onClick={handleVerify}
+            disabled={submitting}
+            className="mt-8 w-full rounded-2xl px-6 py-4 text-base font-extrabold shadow-2xl hover:scale-[1.01] transition disabled:opacity-60 disabled:hover:scale-100 inline-flex items-center justify-center gap-2 bg-white"
+            style={{ color: btnBg }}
+          >
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            যাচাই করুন
+          </button>
+        </div>
+
+        {/* Fixed bottom Pay bar */}
+        <div className="fixed bottom-0 inset-x-0 z-40 border-t border-white/20 backdrop-blur-md" style={{ backgroundColor: `${boxBg}E6` }}>
+          <div className="mx-auto max-w-xl px-4 sm:px-6 py-3 flex items-center justify-between" style={{ color: textColor }}>
+            <span className="text-xs font-semibold uppercase tracking-wider opacity-80">Total</span>
+            <span className="font-display font-extrabold text-2xl">
+              Pay {Math.round(total)} BDT
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ===== Method Picker Grid =====
   return (
     <div className="relative min-h-[calc(100vh-4rem)] bg-gradient-glow">
       <div className="mx-auto max-w-2xl px-4 sm:px-6 pt-10 pb-32">
@@ -332,10 +457,7 @@ function PaymentSelect({
 
         {/* Section header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Mobile Banking
-          </div>
-          <h2 className="font-display font-bold text-xl mt-3">মোবাইল ব্যাংকিং</h2>
+          <h2 className="font-display font-bold text-xl">মোবাইল ব্যাংকিং</h2>
           <p className="text-xs text-muted-foreground mt-1">পেমেন্ট মেথড সিলেক্ট করুন</p>
         </div>
 
@@ -346,25 +468,13 @@ function PaymentSelect({
           <div className="grid grid-cols-2 gap-4">
             {methods.map((m) => {
               const brand = brandFor(m.name);
-              const selected = methodId === m.id;
               return (
                 <button
                   key={m.id}
                   type="button"
                   onClick={() => setMethodId(m.id)}
-                  className={`relative rounded-3xl p-6 transition-all duration-200 backdrop-blur-xl border bg-white/90 hover:bg-white shadow-xl hover:shadow-2xl hover:-translate-y-0.5 ${
-                    selected ? "border-transparent ring-4 scale-[1.02]" : "border-white/40"
-                  }`}
-                  style={selected && brand ? { boxShadow: `0 12px 40px -8px ${brand.color}55`, ["--tw-ring-color" as never]: brand.color } : undefined}
+                  className="relative rounded-3xl p-6 transition-all duration-200 backdrop-blur-xl border border-white/40 bg-white/90 hover:bg-white shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
                 >
-                  {selected && (
-                    <div
-                      className="absolute top-3 right-3 h-6 w-6 rounded-full grid place-items-center shadow-md"
-                      style={{ backgroundColor: brand?.color ?? "#000" }}
-                    >
-                      <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
-                    </div>
-                  )}
                   <div className="aspect-[5/3] grid place-items-center">
                     <span
                       className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight"
@@ -379,22 +489,7 @@ function PaymentSelect({
           </div>
         )}
 
-        {/* Submit button (appears after selection) */}
-        {methodId && (
-          <div className="mt-8 animate-slide-in-bottom">
-            <button
-              type="button"
-              onClick={onSubmit}
-              disabled={submitting}
-              className="w-full rounded-2xl bg-white text-black px-6 py-4 text-base font-bold shadow-xl hover:scale-[1.01] transition disabled:opacity-60 disabled:hover:scale-100 inline-flex items-center justify-center gap-2"
-            >
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              সাবমিট করুন
-            </button>
-          </div>
-        )}
-
-        <div className="text-center mt-6">
+        <div className="text-center mt-8">
           <button
             type="button"
             onClick={onBack}
@@ -415,6 +510,17 @@ function PaymentSelect({
         </div>
       </div>
     </div>
+  );
+}
+
+function Step({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <li className="flex gap-3">
+      <span className="shrink-0 h-7 w-7 rounded-full bg-white/25 grid place-items-center font-bold text-sm">
+        {n}
+      </span>
+      <span className="pt-0.5 leading-relaxed">{children}</span>
+    </li>
   );
 }
 
