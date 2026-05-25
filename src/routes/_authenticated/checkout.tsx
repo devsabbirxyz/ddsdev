@@ -346,6 +346,7 @@ function PaymentSelect({
   onBack: () => void;
   onSubmit: () => void;
 }) {
+  const [payTab, setPayTab] = useState<"automatic" | "manual">("automatic");
   const { data: settings } = useQuery(siteSettingsQuery);
   const logoUrl = settings?.site_logo_url;
   const siteName = settings?.site_name || "DDS-Digital";
