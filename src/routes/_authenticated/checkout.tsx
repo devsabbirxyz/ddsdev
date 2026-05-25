@@ -9,6 +9,23 @@ import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { formatBDT } from "@/lib/storefront";
 import { siteSettingsQuery } from "@/lib/site-settings";
+import logoBkash from "@/assets/pay-bkash.png";
+import logoNagad from "@/assets/pay-nagad.png";
+import logoRocket from "@/assets/pay-rocket.png";
+import logoUpay from "@/assets/pay-upay.png";
+
+const METHOD_LOGO: Record<string, string> = {
+  bkash: logoBkash,
+  nagad: logoNagad,
+  rocket: logoRocket,
+  upay: logoUpay,
+};
+function logoFor(name?: string | null) {
+  if (!name) return null;
+  const k = name.toLowerCase().replace(/\s+/g, "");
+  for (const key of Object.keys(METHOD_LOGO)) if (k.includes(key)) return METHOD_LOGO[key];
+  return null;
+}
 
 const paymentMethodsQuery = queryOptions({
   queryKey: ["payment_methods", "active"],
@@ -18,7 +35,7 @@ const paymentMethodsQuery = queryOptions({
       .select("id,name,name_en,account_type,send_type,account_number,instructions,is_manual_active,is_automatic_active,has_automatic,sort_order")
       .order("sort_order", { ascending: true });
     if (error) throw error;
-    return (data ?? []).filter((m) => m.is_manual_active || m.is_automatic_active);
+    return (data ?? []).filter((m) => m.is_manual_active);
   },
 });
 
@@ -178,7 +195,7 @@ function CheckoutPage() {
         customer_phone: phone.trim(),
         customer_input: customerInput.trim() || null,
         payment_method: method.name,
-        payment_type: method.is_manual_active ? "manual" : "automatic",
+        payment_type: "manual",
         transaction_id: trxId.trim() || null,
         coupon_code: coupon?.code ?? null,
         discount_amount: perItemDiscount,
@@ -376,9 +393,24 @@ function PaymentSelect({
           </button>
 
           <div className="text-center mb-6">
+            <div className="mx-auto mb-3 inline-flex items-center justify-center rounded-2xl bg-white shadow-lg px-4 py-3">
+              {logoFor(selectedMethod.name) ? (
+                <img
+                  src={logoFor(selectedMethod.name)!}
+                  alt={appName}
+                  loading="lazy"
+                  width={512}
+                  height={512}
+                  className="h-10 w-auto object-contain"
+                />
+              ) : (
+                <span className="font-display font-extrabold text-xl" style={{ color: btnBg }}>{appName}</span>
+              )}
+            </div>
             <h1 className="font-display font-extrabold text-2xl sm:text-3xl">ট্রানজেকশন আইডি দিন</h1>
             <p className="text-sm opacity-90 mt-1">{appName} পেমেন্ট</p>
           </div>
+
 
           <input
             type="text"
@@ -467,21 +499,33 @@ function PaymentSelect({
         ) : (
           <div className="grid grid-cols-2 gap-4">
             {methods.map((m) => {
+              const logo = logoFor(m.name);
               const brand = brandFor(m.name);
               return (
                 <button
                   key={m.id}
                   type="button"
                   onClick={() => setMethodId(m.id)}
-                  className="relative rounded-3xl p-6 transition-all duration-200 backdrop-blur-xl border border-white/40 bg-white/90 hover:bg-white shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
+                  className="relative rounded-3xl p-6 transition-all duration-200 backdrop-blur-xl border border-white/40 bg-white/95 hover:bg-white shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
                 >
                   <div className="aspect-[5/3] grid place-items-center">
-                    <span
-                      className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight"
-                      style={{ color: brand?.color ?? "#111" }}
-                    >
-                      {brand?.label ?? m.name}
-                    </span>
+                    {logo ? (
+                      <img
+                        src={logo}
+                        alt={brand?.label ?? m.name}
+                        loading="lazy"
+                        width={512}
+                        height={512}
+                        className="max-h-20 sm:max-h-24 w-auto object-contain"
+                      />
+                    ) : (
+                      <span
+                        className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight"
+                        style={{ color: brand?.color ?? "#111" }}
+                      >
+                        {brand?.label ?? m.name}
+                      </span>
+                    )}
                   </div>
                 </button>
               );

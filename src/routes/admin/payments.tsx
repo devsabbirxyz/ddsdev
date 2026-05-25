@@ -109,9 +109,6 @@ function AdminPayments() {
             <div className="text-sm font-mono">{m.account_number ?? "—"}</div>
             <div className="flex gap-2 text-[11px]">
               <span className={`rounded-full border px-2 py-0.5 ${m.is_manual_active ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" : "glass"}`}>Manual {m.is_manual_active ? "ON" : "OFF"}</span>
-              {m.has_automatic && (
-                <span className={`rounded-full border px-2 py-0.5 ${m.is_automatic_active ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" : "glass"}`}>Auto {m.is_automatic_active ? "ON" : "OFF"}</span>
-              )}
             </div>
           </div>
         ))}
@@ -153,21 +150,6 @@ function AdminPayments() {
                 <input type="checkbox" checked={!!editing.is_manual_active} onChange={(e) => setEditing({ ...editing, is_manual_active: e.target.checked })} />
                 Manual পেমেন্ট অ্যাক্টিভ
               </label>
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={!!editing.has_automatic} onChange={(e) => setEditing({ ...editing, has_automatic: e.target.checked })} />
-                Automatic Gateway সাপোর্ট আছে
-              </label>
-              {editing.has_automatic && (
-                <>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" checked={!!editing.is_automatic_active} onChange={(e) => setEditing({ ...editing, is_automatic_active: e.target.checked })} />
-                    Automatic অ্যাক্টিভ
-                  </label>
-                  <Field label="API Key">
-                    <input className="inp font-mono text-xs" value={editing.api_key ?? ""} onChange={(e) => setEditing({ ...editing, api_key: e.target.value })} />
-                  </Field>
-                </>
-              )}
             </div>
 
             <div className="flex gap-2 justify-end pt-2 border-t border-border">
