@@ -13,13 +13,12 @@ export const Route = createFileRoute("/admin-login")({
   beforeLoad: async () => {
     const { data: sess } = await supabase.auth.getSession();
     if (sess.session) {
-      const { data: role } = await supabase
+      const { data: roles } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", sess.session.user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      if (role) throw redirect({ to: "/admin" });
+        .in("role", ["admin", "super_admin"]);
+      if (roles && roles.length > 0) throw redirect({ to: "/admin" });
     }
   },
   component: AdminLoginPage,
