@@ -165,7 +165,7 @@ function ProductEditor() {
         <div className="grid lg:grid-cols-3 gap-4">
           <div className="glass-card rounded-2xl p-5 space-y-4 lg:col-span-2">
             <Field label="শিরোনাম (বাংলা)" value={form.title} onChange={(v) => set("title", v)} />
-            <Field label="Title (English)" value={form.title_en} onChange={(v) => set("title_en", v)} />
+            
             <Field label="Slug" value={form.slug} onChange={(v) => set("slug", v)} mono />
             <div>
               <label className="text-sm font-medium mb-1.5 block">ক্যাটাগরি</label>
