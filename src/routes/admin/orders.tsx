@@ -95,7 +95,8 @@ function AdminOrdersList() {
                     <Link
                       to="/admin/orders/$id"
                       params={{ id: o.id }}
-                      className="rounded-lg bg-gradient-brand px-3 py-1.5 text-xs font-bold text-primary-foreground shadow-glow"
+                      preload="intent"
+                      className="inline-flex items-center rounded-lg bg-gradient-brand px-3 py-1.5 text-xs font-bold text-primary-foreground shadow-glow hover:scale-[1.03] transition cursor-pointer"
                     >
                       Manage
                     </Link>
