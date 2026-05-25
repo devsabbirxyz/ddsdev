@@ -39,6 +39,7 @@ const empty: PM = {
   send_type: "send_money",
   account_number: "",
   instructions: "",
+  api_key: "",
   has_automatic: false,
   is_manual_active: true,
   is_automatic_active: false,
@@ -107,8 +108,11 @@ function AdminPayments() {
               </div>
             </div>
             <div className="text-sm font-mono">{m.account_number ?? "—"}</div>
-            <div className="flex gap-2 text-[11px]">
+            <div className="flex flex-wrap gap-2 text-[11px]">
               <span className={`rounded-full border px-2 py-0.5 ${m.is_manual_active ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" : "glass"}`}>Manual {m.is_manual_active ? "ON" : "OFF"}</span>
+              {m.has_automatic && (
+                <span className={`rounded-full border px-2 py-0.5 ${m.is_automatic_active ? "bg-sky-500/15 text-sky-300 border-sky-500/30" : "glass"}`}>Auto {m.is_automatic_active ? "ON" : "OFF"}</span>
+              )}
             </div>
           </div>
         ))}
@@ -145,11 +149,26 @@ function AdminPayments() {
               <textarea rows={2} className="inp" value={editing.instructions_en ?? ""} onChange={(e) => setEditing({ ...editing, instructions_en: e.target.value })} />
             </Field>
 
-            <div className="border-t border-border pt-3 space-y-2">
+            <div className="border-t border-border pt-3 space-y-3">
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={!!editing.is_manual_active} onChange={(e) => setEditing({ ...editing, is_manual_active: e.target.checked })} />
                 Manual পেমেন্ট অ্যাক্টিভ
               </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={!!editing.has_automatic} onChange={(e) => setEditing({ ...editing, has_automatic: e.target.checked })} />
+                Automatic পেমেন্ট সাপোর্টেড
+              </label>
+              {editing.has_automatic && (
+                <>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="checkbox" checked={!!editing.is_automatic_active} onChange={(e) => setEditing({ ...editing, is_automatic_active: e.target.checked })} />
+                    Automatic পেমেন্ট অ্যাক্টিভ
+                  </label>
+                  <Field label="API Key / Credentials">
+                    <input className="inp" value={editing.api_key ?? ""} onChange={(e) => setEditing({ ...editing, api_key: e.target.value })} placeholder="Merchant API key" />
+                  </Field>
+                </>
+              )}
             </div>
 
             <div className="flex gap-2 justify-end pt-2 border-t border-border">
