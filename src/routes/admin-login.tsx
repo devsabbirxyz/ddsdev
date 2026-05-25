@@ -13,13 +13,12 @@ export const Route = createFileRoute("/admin-login")({
   beforeLoad: async () => {
     const { data: sess } = await supabase.auth.getSession();
     if (sess.session) {
-      const { data: role } = await supabase
+      const { data: roles } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", sess.session.user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      if (role) throw redirect({ to: "/admin" });
+        .in("role", ["admin", "super_admin"]);
+      if (roles && roles.length > 0) throw redirect({ to: "/admin" });
     }
   },
   component: AdminLoginPage,
@@ -45,12 +44,13 @@ function AdminLoginPage() {
       setError("ভুল ইউজারনেম বা পাসওয়ার্ড");
       return;
     }
-    const { data: isAdmin, error: rpcErr } = await supabase.rpc("has_role", {
-      _user_id: data.user.id,
-      _role: "admin",
-    });
+    const { data: roles, error: rpcErr } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", data.user.id)
+      .in("role", ["admin", "super_admin"]);
     setLoading(false);
-    if (rpcErr || !isAdmin) {
+    if (rpcErr || !roles || roles.length === 0) {
       await supabase.auth.signOut();
       setError("এই অ্যাকাউন্টে এডমিন অ্যাক্সেস নেই");
       return;
