@@ -83,8 +83,6 @@ function CheckoutPage() {
       { key: "email", label: "ইমেইল", value: email, validate: (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
     ];
 
-
-    ];
     const newErrors: Record<string, boolean> = {};
     let firstInvalid: string | null = null;
     let firstLabel = "";
