@@ -47,6 +47,11 @@ function SupportPage() {
       }).select("id").single();
       if (error) throw error;
       await supabase.from("ticket_messages").insert({ ticket_id: t.id, sender_id: user.id, message: message.trim(), is_admin_reply: false });
+      notify.newTicket({
+        name: user.email ?? "অজানা",
+        subject: subject.trim(),
+        message: message.trim(),
+      });
       toast.success("টিকেট তৈরি হয়েছে");
       setSubject(""); setMessage(""); setOpen(false);
       qc.invalidateQueries({ queryKey: ["my-tickets"] });
