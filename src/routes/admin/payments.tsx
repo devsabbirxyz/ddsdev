@@ -150,21 +150,7 @@ function AdminPayments() {
                 <input type="checkbox" checked={!!editing.is_manual_active} onChange={(e) => setEditing({ ...editing, is_manual_active: e.target.checked })} />
                 Manual পেমেন্ট অ্যাক্টিভ
               </label>
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={!!editing.has_automatic} onChange={(e) => setEditing({ ...editing, has_automatic: e.target.checked })} />
-                Automatic Gateway সাপোর্ট আছে
-              </label>
-              {editing.has_automatic && (
-                <>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" checked={!!editing.is_automatic_active} onChange={(e) => setEditing({ ...editing, is_automatic_active: e.target.checked })} />
-                    Automatic অ্যাক্টিভ
-                  </label>
-                  <Field label="API Key">
-                    <input className="inp font-mono text-xs" value={editing.api_key ?? ""} onChange={(e) => setEditing({ ...editing, api_key: e.target.value })} />
-                  </Field>
-                </>
-              )}
+            </div>
             </div>
 
             <div className="flex gap-2 justify-end pt-2 border-t border-border">
