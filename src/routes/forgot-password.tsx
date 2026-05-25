@@ -42,25 +42,25 @@ function ForgotPage() {
   return (
     <AuthShell title={t("reset_password")} subtitle="আপনার ইমেইলে রিসেট লিংক পাঠানো হবে">
       {sent ? (
-        <div className="rounded-xl glass p-4 text-center text-sm">
+        <div className="rounded-2xl border border-white/30 bg-white/10 backdrop-blur p-4 text-center text-sm text-white">
           📧 ইমেইল পাঠানো হয়েছে! ইনবক্স চেক করুন।
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <Field label={t("email")} type="email" value={email} onChange={setEmail} required autoComplete="email" />
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <p className="text-sm text-red-300">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-gradient-brand px-4 py-3 text-sm font-semibold text-primary-foreground shadow-glow hover:scale-[1.02] transition disabled:opacity-60 flex items-center justify-center gap-2"
+            className="w-full rounded-2xl bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 px-4 py-3.5 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(168,85,247,0.7)] hover:scale-[1.02] transition disabled:opacity-60 flex items-center justify-center gap-2 border border-white/20"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {t("send_reset_link")}
           </button>
         </form>
       )}
-      <div className="mt-4 text-center text-xs">
-        <Link to="/login" className="text-primary hover:underline">{t("back_to_login")}</Link>
+      <div className="mt-5 text-center text-xs">
+        <Link to="/login" className="text-white/80 hover:text-white">{t("back_to_login")}</Link>
       </div>
     </AuthShell>
   );
