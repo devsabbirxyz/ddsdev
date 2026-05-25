@@ -5,6 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { saveSlide, deleteSlide } from "@/lib/admin.functions";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/admin/ImageUpload";
+
 
 const slidesQuery = queryOptions({
   queryKey: ["admin", "slides"],
@@ -74,7 +76,17 @@ function AdminSlides() {
 
 
       <form onSubmit={submit} className="glass-card rounded-2xl p-5 grid sm:grid-cols-2 gap-3">
-        <input className="ip sm:col-span-2" placeholder="Image URL *" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} required />
+        <div className="sm:col-span-2">
+          <ImageUpload
+            value={form.image_url}
+            onChange={(url) => setForm({ ...form, image_url: url })}
+            bucket={kind === "hero" ? "hero-slides" : kind === "offer" ? "offer-slides" : "admin-uploads"}
+            label={`${kind} banner image *`}
+            folder={kind}
+          />
+        </div>
+        <input className="ip sm:col-span-2" placeholder="Image URL (auto-filled after upload) *" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} required />
+
         <input className="ip" placeholder="Link URL" value={form.link_url} onChange={(e) => setForm({ ...form, link_url: e.target.value })} />
         <input className="ip" placeholder="Alt text" value={form.alt_text} onChange={(e) => setForm({ ...form, alt_text: e.target.value })} />
         <input className="ip" type="number" placeholder="Sort order" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })} />
