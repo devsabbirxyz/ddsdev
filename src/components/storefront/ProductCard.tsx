@@ -18,6 +18,7 @@ export interface ProductCardData {
   is_variant?: boolean | null;
   view_count?: number | null;
   sellers?: { store_name?: string | null; store_logo_url?: string | null } | null;
+  product_images?: Array<{ image_url: string; is_main?: boolean | null; sort_order?: number | null }> | null;
   product_variants?: Array<{ regular_price?: number | null; offer_price?: number | null; is_active?: boolean | null }> | null;
 }
 
