@@ -74,6 +74,7 @@ const navGroups: NavGroup[] = [
     heading: "Settings",
     items: [
       { to: "/admin/settings", label: "সেটিংস", icon: Settings },
+      { to: "/admin/telegram", label: "টেলিগ্রাম নোটিফিকেশন", icon: MessageCircle },
       { to: "/admin/admins", label: "অ্যাডমিন ম্যানেজমেন্ট", icon: ShieldCheck, superOnly: true },
     ],
   },
