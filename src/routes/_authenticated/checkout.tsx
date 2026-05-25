@@ -215,191 +215,45 @@ function CheckoutPage() {
     );
   }
 
+  // ===== STEP 2: Payment Method Selection =====
+  if (step === 2) {
+    return <PaymentSelect
+      methods={methods}
+      methodId={methodId}
+      setMethodId={setMethodId}
+      total={total}
+      submitting={submitting}
+      onBack={() => setStep(1)}
+      onSubmit={submit}
+    />;
+  }
+
+  // ===== STEP 1: Info + sidebar =====
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display font-bold text-3xl">চেকআউট</h1>
         <div className="flex items-center gap-2 text-xs">
-          <span className={`px-3 py-1.5 rounded-full font-semibold ${step === 1 ? "bg-gradient-brand text-primary-foreground shadow-glow" : "glass text-muted-foreground"}`}>১. তথ্য</span>
+          <span className="px-3 py-1.5 rounded-full font-semibold bg-gradient-brand text-primary-foreground shadow-glow">১. তথ্য</span>
           <span className="text-muted-foreground">→</span>
-          <span className={`px-3 py-1.5 rounded-full font-semibold ${step === 2 ? "bg-gradient-brand text-primary-foreground shadow-glow" : "glass text-muted-foreground"}`}>২. পেমেন্ট</span>
+          <span className="px-3 py-1.5 rounded-full font-semibold glass text-muted-foreground">২. পেমেন্ট</span>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {step === 1 && (
-            <section className="glass-card rounded-2xl p-6">
-              <h2 className="font-display font-bold text-lg mb-4">আপনার তথ্য</h2>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <Field id="field-name" label="পূর্ণ নাম *" value={name} onChange={(v) => { setName(v); if (errors.name) setErrors({ ...errors, name: false }); }} placeholder="Md. Sabbir" error={!!errors.name} />
-                <Field id="field-phone" label="ফোন নম্বর *" value={phone} onChange={(v) => { setPhone(v); if (errors.phone) setErrors({ ...errors, phone: false }); }} placeholder="01XXXXXXXXX" error={!!errors.phone} />
-                <div className="sm:col-span-2"><Field id="field-email" label="ইমেইল *" value={email} onChange={(v) => { setEmail(v); if (errors.email) setErrors({ ...errors, email: false }); }} placeholder="you@example.com" type="email" error={!!errors.email} /></div>
-                <div className="sm:col-span-2">
-                  <label className="text-xs font-semibold mb-1.5 block">প্রোডাক্টের জন্য তথ্য (যেমন ইমেইল/ইউজারনেম) *</label>
-                  <textarea id="field-customerInput" value={customerInput} onChange={(e) => { setCustomerInput(e.target.value); if (errors.customerInput) setErrors({ ...errors, customerInput: false }); }} rows={2} placeholder="যেকোনো অতিরিক্ত তথ্য" className={`w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 ${errors.customerInput ? "border-2 border-destructive ring-2 ring-destructive/30" : ""}`} />
-                </div>
+          <section className="glass-card rounded-2xl p-6">
+            <h2 className="font-display font-bold text-lg mb-4">আপনার তথ্য</h2>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <Field id="field-name" label="পূর্ণ নাম *" value={name} onChange={(v) => { setName(v); if (errors.name) setErrors({ ...errors, name: false }); }} placeholder="Md. Sabbir" error={!!errors.name} />
+              <Field id="field-phone" label="ফোন নম্বর *" value={phone} onChange={(v) => { setPhone(v); if (errors.phone) setErrors({ ...errors, phone: false }); }} placeholder="01XXXXXXXXX" error={!!errors.phone} />
+              <div className="sm:col-span-2"><Field id="field-email" label="ইমেইল *" value={email} onChange={(v) => { setEmail(v); if (errors.email) setErrors({ ...errors, email: false }); }} placeholder="you@example.com" type="email" error={!!errors.email} /></div>
+              <div className="sm:col-span-2">
+                <label className="text-xs font-semibold mb-1.5 block">প্রোডাক্টের জন্য তথ্য (যেমন ইমেইল/ইউজারনেম) *</label>
+                <textarea id="field-customerInput" value={customerInput} onChange={(e) => { setCustomerInput(e.target.value); if (errors.customerInput) setErrors({ ...errors, customerInput: false }); }} rows={2} placeholder="যেকোনো অতিরিক্ত তথ্য" className={`w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 ${errors.customerInput ? "border-2 border-destructive ring-2 ring-destructive/30" : ""}`} />
               </div>
-            </section>
-          )}
-
-          {step === 2 && (
-            <section className="glass-card rounded-2xl p-6">
-              <button onClick={() => setStep(1)} className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="h-3.5 w-3.5" /> তথ্য এডিট করুন
-              </button>
-
-              {/* Method picker */}
-              {!methodId && (
-                <>
-                  <div className="text-center mb-4">
-                    <h2 className="font-display font-bold text-lg">MOBILE BANKING</h2>
-                    <p className="text-xs text-muted-foreground mt-1">পেমেন্ট মেথড সিলেক্ট করুন</p>
-                  </div>
-                  {methods.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center">এখনো কোনো পেমেন্ট মেথড সেটআপ করা হয়নি।</p>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-3">
-                      {methods.map((m) => {
-                        const th = themeFor(m.name);
-                        return (
-                          <button
-                            key={m.id}
-                            type="button"
-                            onClick={() => { setMethodId(m.id); setPaymentTab("manual"); }}
-                            className={`rounded-2xl p-6 text-center transition hover:scale-[1.02] shadow-lg ${th ? th.box : "glass"}`}
-                          >
-                            <div className={`font-display font-bold text-xl ${th?.text ?? ""}`}>{m.name}</div>
-                            <div className={`text-[11px] mt-1 opacity-80 ${th?.text ?? "text-muted-foreground"}`}>Tap to select</div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* Selected method view */}
-              {method && (() => {
-                const th = themeFor(method.name);
-                return (
-                  <div className="space-y-4">
-                    {/* Selected header card */}
-                    <div className={`rounded-2xl p-5 flex items-center justify-between ${th ? th.box : "glass"}`}>
-                      <div>
-                        <div className={`font-display font-bold text-2xl ${th?.text ?? ""}`}>{method.name}</div>
-                        <div className={`text-xs mt-0.5 opacity-80 ${th?.text ?? ""}`}>সিলেক্টেড পেমেন্ট মেথড</div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => { setMethodId(""); setTrxId(""); }}
-                        className={`text-xs rounded-lg px-3 py-1.5 font-semibold ${th?.chip ?? "glass"}`}
-                      >
-                        পরিবর্তন
-                      </button>
-                    </div>
-
-                    {/* Tabs */}
-                    <div className="grid grid-cols-2 gap-2 p-1 rounded-xl glass">
-                      <button
-                        type="button"
-                        onClick={() => setPaymentTab("automatic")}
-                        className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${paymentTab === "automatic" ? "bg-gradient-brand text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-accent"}`}
-                      >
-                        Automatic
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPaymentTab("manual")}
-                        className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${paymentTab === "manual" ? "bg-gradient-brand text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-accent"}`}
-                      >
-                        Manual
-                      </button>
-                    </div>
-
-                    {/* Automatic tab */}
-                    {paymentTab === "automatic" && (
-                      <>
-                        {method.has_automatic && method.is_automatic_active ? (
-                          <div className="rounded-2xl glass p-6 text-center space-y-3">
-                            <p className="text-sm text-muted-foreground">Automatic পেমেন্ট গেটওয়ে শীঘ্রই যুক্ত হচ্ছে।</p>
-                          </div>
-                        ) : (
-                          <div className="rounded-2xl bg-black text-white p-10 text-center">
-                            <div className="font-display font-bold text-3xl">Available নেই</div>
-                            <p className="text-xs mt-2 text-white/60">দয়া করে Manual অপশন ব্যবহার করুন।</p>
-                          </div>
-                        )}
-                      </>
-                    )}
-
-                    {/* Manual tab */}
-                    {paymentTab === "manual" && (
-                      <>
-                        {!method.is_manual_active ? (
-                          <div className="rounded-2xl bg-black text-white p-10 text-center">
-                            <div className="font-display font-bold text-3xl">Available নেই</div>
-                          </div>
-                        ) : (
-                          <div className={`rounded-2xl p-5 sm:p-6 space-y-4 shadow-lg ${th ? th.box : "glass"}`}>
-                            <h3 className={`font-display font-bold text-xl text-center ${th?.text ?? ""}`}>ট্রানজেকশন আইডি দিন</h3>
-                            <input
-                              id="field-trxId"
-                              value={trxId}
-                              onChange={(e) => setTrxId(e.target.value)}
-                              placeholder="ট্রানজেকশন আইডি লিখুন"
-                              className="w-full rounded-xl bg-white text-black px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-white/60 placeholder:text-black/40"
-                            />
-
-                            {method.instructions ? (
-                              <div className={`rounded-xl bg-white/10 p-4 text-sm leading-relaxed whitespace-pre-wrap ${th?.text ?? ""}`}>{method.instructions}</div>
-                            ) : (
-                              <ol className={`space-y-2.5 text-sm ${th?.text ?? ""}`}>
-                                <Step n={1}>
-                                  {th?.app ?? method.name} অ্যাপ খুলুন{th?.ussd ? <> অথবা <strong>{th.ussd}</strong> ডায়াল করুন</> : null}
-                                </Step>
-                                <Step n={2}><strong>"Send Money"</strong> সিলেক্ট করুন</Step>
-                                <Step n={3}>
-                                  Receiver নম্বর দিন:{" "}
-                                  <strong className="font-mono">{method.account_number ?? "—"}</strong>
-                                  {method.account_number && (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        navigator.clipboard?.writeText(method.account_number ?? "");
-                                        toast.success("নম্বর কপি হয়েছে");
-                                      }}
-                                      className={`ml-2 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold ${th?.chip ?? "glass"}`}
-                                    >
-                                      <Copy className="h-3 w-3" /> কপি
-                                    </button>
-                                  )}
-                                </Step>
-                                <Step n={4}>পরিমাণ দিন: <strong className="font-mono">{formatBDT(total)}</strong></Step>
-                                <Step n={5}>Reference এ আপনার নাম লিখুন</Step>
-                                <Step n={6}>PIN দিয়ে confirm করুন</Step>
-                                <Step n={7}>Confirmation SMS পেলে ট্রানজেকশন আইডি উপরের বক্সে দিন এবং <strong>"যাচাই করুন"</strong> বাটনে চাপুন</Step>
-                              </ol>
-                            )}
-
-                            <button
-                              type="button"
-                              onClick={submit}
-                              disabled={submitting}
-                              className={`w-full rounded-xl px-6 py-3.5 text-base font-bold shadow-lg transition hover:scale-[1.01] disabled:opacity-60 disabled:hover:scale-100 inline-flex items-center justify-center gap-2 bg-white ${th?.text ?? "text-black"}`}
-                            >
-                              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                              যাচাই করুন
-                            </button>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                );
-              })()}
-            </section>
-          )}
+            </div>
+          </section>
         </div>
 
         <aside className="glass-card rounded-2xl p-6 h-fit lg:sticky lg:top-24 space-y-4">
@@ -431,36 +285,140 @@ function CheckoutPage() {
             </div>
           </div>
 
-          {step === 1 && (
-            <button onClick={goToPayment} className="w-full rounded-xl bg-gradient-brand px-6 py-3 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition">
-              অর্ডার কনফার্ম করুন →
-            </button>
-          )}
+          <button onClick={goToPayment} className="w-full rounded-xl bg-gradient-brand px-6 py-3 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition">
+            পেমেন্টে এগিয়ে যান →
+          </button>
           <p className="text-[11px] text-center text-muted-foreground">অ্যাডমিন verify করার পর প্রোডাক্ট deliver হবে।</p>
         </aside>
       </div>
+    </div>
+  );
+}
 
-      <Dialog open={successOpen} onOpenChange={(o) => { if (!o) { setSuccessOpen(false); nav({ to: "/dashboard/orders" }); } }}>
-        <DialogContent className="sm:max-w-md text-center">
-          <DialogHeader>
-            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-brand shadow-glow">
-              <CheckCircle2 className="h-9 w-9 text-primary-foreground" />
+type PaymentMethod = {
+  id: string;
+  name: string;
+  is_manual_active: boolean;
+  is_automatic_active: boolean;
+  has_automatic: boolean;
+};
+
+function PaymentSelect({
+  methods, methodId, setMethodId, total, submitting, onBack, onSubmit,
+}: {
+  methods: PaymentMethod[];
+  methodId: string;
+  setMethodId: (id: string) => void;
+  total: number;
+  submitting: boolean;
+  onBack: () => void;
+  onSubmit: () => void;
+}) {
+  const { data: settings } = useQuery(siteSettingsQuery);
+  const logoUrl = settings?.site_logo_url;
+  const siteName = settings?.site_name || "DDS-Digital";
+
+  return (
+    <div className="relative min-h-[calc(100vh-4rem)] bg-gradient-glow">
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 pt-10 pb-32">
+        {/* Logo + name */}
+        <div className="flex flex-col items-center gap-3 mb-8">
+          {logoUrl ? (
+            <img src={logoUrl} alt={siteName} className="h-14 w-auto max-w-[180px] object-contain" />
+          ) : (
+            <div className="h-14 w-14 rounded-2xl bg-gradient-brand grid place-items-center shadow-glow">
+              <span className="text-primary-foreground font-display font-bold text-xl">
+                {siteName.charAt(0)}
+              </span>
             </div>
-            <DialogTitle className="font-display text-2xl text-center">আপনার অর্ডার সফলভাবে সাবমিট হয়েছে! ✅</DialogTitle>
-            <DialogDescription className="text-center">
-              অ্যাডমিন verify করার পর প্রোডাক্ট deliver হবে। ড্যাশবোর্ড থেকে অর্ডারের বর্তমান অবস্থা (Pending / Processing / Delivered) দেখতে পারবেন।
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="sm:justify-center">
+          )}
+          <h1 className="font-display font-bold text-2xl tracking-tight">{siteName}</h1>
+        </div>
+
+        {/* Section header */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Mobile Banking
+          </div>
+          <h2 className="font-display font-bold text-xl mt-3">মোবাইল ব্যাংকিং</h2>
+          <p className="text-xs text-muted-foreground mt-1">পেমেন্ট মেথড সিলেক্ট করুন</p>
+        </div>
+
+        {/* 2x2 method grid */}
+        {methods.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-12">কোনো পেমেন্ট মেথড সেটআপ করা হয়নি।</p>
+        ) : (
+          <div className="grid grid-cols-2 gap-4">
+            {methods.map((m) => {
+              const brand = brandFor(m.name);
+              const selected = methodId === m.id;
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => setMethodId(m.id)}
+                  className={`relative rounded-3xl p-6 transition-all duration-200 backdrop-blur-xl border bg-white/90 hover:bg-white shadow-xl hover:shadow-2xl hover:-translate-y-0.5 ${
+                    selected ? "border-transparent ring-4 scale-[1.02]" : "border-white/40"
+                  }`}
+                  style={selected && brand ? { boxShadow: `0 12px 40px -8px ${brand.color}55`, ["--tw-ring-color" as never]: brand.color } : undefined}
+                >
+                  {selected && (
+                    <div
+                      className="absolute top-3 right-3 h-6 w-6 rounded-full grid place-items-center shadow-md"
+                      style={{ backgroundColor: brand?.color ?? "#000" }}
+                    >
+                      <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
+                    </div>
+                  )}
+                  <div className="aspect-[5/3] grid place-items-center">
+                    <span
+                      className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight"
+                      style={{ color: brand?.color ?? "#111" }}
+                    >
+                      {brand?.label ?? m.name}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Submit button (appears after selection) */}
+        {methodId && (
+          <div className="mt-8 animate-slide-in-bottom">
             <button
-              onClick={() => { setSuccessOpen(false); nav({ to: "/dashboard/orders" }); }}
-              className="w-full rounded-xl bg-gradient-brand px-6 py-3 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition"
+              type="button"
+              onClick={onSubmit}
+              disabled={submitting}
+              className="w-full rounded-2xl bg-white text-black px-6 py-4 text-base font-bold shadow-xl hover:scale-[1.01] transition disabled:opacity-60 disabled:hover:scale-100 inline-flex items-center justify-center gap-2"
             >
-              ড্যাশবোর্ড দেখুন →
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              সাবমিট করুন
             </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+        )}
+
+        <div className="text-center mt-6">
+          <button
+            type="button"
+            onClick={onBack}
+            className="text-xs font-semibold text-muted-foreground hover:text-foreground underline underline-offset-4"
+          >
+            ← তথ্য এডিট করুন
+          </button>
+        </div>
+      </div>
+
+      {/* Fixed bottom Pay bar */}
+      <div className="fixed bottom-0 inset-x-0 z-40 border-t border-glass-border bg-background/80 backdrop-blur-xl">
+        <div className="mx-auto max-w-2xl px-4 sm:px-6 py-4 flex items-center justify-between">
+          <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Total</span>
+          <span className="font-display font-extrabold text-2xl text-gradient-brand">
+            Pay {Math.round(total)} BDT
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -471,14 +429,5 @@ function Field({ label, value, onChange, placeholder, type = "text", id, error }
       <label className="text-xs font-semibold mb-1.5 block">{label}</label>
       <input id={id} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={`w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 ${error ? "border-2 border-destructive ring-2 ring-destructive/30" : ""}`} />
     </div>
-  );
-}
-
-function Step({ n, children }: { n: number; children: React.ReactNode }) {
-  return (
-    <li className="flex gap-3">
-      <span className="shrink-0 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-bold">{n}</span>
-      <span className="flex-1 leading-relaxed">{children}</span>
-    </li>
   );
 }
