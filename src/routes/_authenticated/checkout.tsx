@@ -3,12 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { CheckCircle2, Tag, Loader2, ArrowLeft, Copy } from "lucide-react";
+import { CheckCircle2, Tag, Loader2, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { formatBDT } from "@/lib/storefront";
+import { siteSettingsQuery } from "@/lib/site-settings";
 
 const paymentMethodsQuery = queryOptions({
   queryKey: ["payment_methods", "active"],
@@ -22,18 +22,17 @@ const paymentMethodsQuery = queryOptions({
   },
 });
 
-// Brand theme per mobile-banking method (matched by lowercased name)
-type Theme = { app: string; ussd?: string; box: string; btn: string; text: string; chip: string };
-const METHOD_THEME: Record<string, Theme> = {
-  bkash:  { app: "bKash",  ussd: "*247#", box: "bg-pink-600 text-white",       btn: "bg-pink-600 hover:bg-pink-700 text-white",       text: "text-white",  chip: "bg-white/15 text-white" },
-  nagad:  { app: "Nagad",  ussd: "*167#", box: "bg-orange-500 text-white",     btn: "bg-orange-500 hover:bg-orange-600 text-white",   text: "text-white",  chip: "bg-white/15 text-white" },
-  rocket: { app: "Rocket", ussd: "*322#", box: "bg-purple-600 text-white",     btn: "bg-purple-600 hover:bg-purple-700 text-white",   text: "text-white",  chip: "bg-white/15 text-white" },
-  upay:   { app: "Upay",   ussd: undefined, box: "bg-yellow-400 text-black",   btn: "bg-yellow-400 hover:bg-yellow-500 text-black",   text: "text-black",  chip: "bg-black/15 text-black" },
+// Brand color wordmark per method (matched by lowercased name)
+const METHOD_BRAND: Record<string, { label: string; color: string }> = {
+  bkash:  { label: "bKash",  color: "#E2136E" },
+  nagad:  { label: "Nagad",  color: "#EC1C24" },
+  rocket: { label: "Rocket", color: "#8C3494" },
+  upay:   { label: "Upay",   color: "#E5B700" },
 };
-function themeFor(name?: string | null): Theme | null {
+function brandFor(name?: string | null) {
   if (!name) return null;
   const k = name.toLowerCase().replace(/\s+/g, "");
-  for (const key of Object.keys(METHOD_THEME)) if (k.includes(key)) return METHOD_THEME[key];
+  for (const key of Object.keys(METHOD_BRAND)) if (k.includes(key)) return METHOD_BRAND[key];
   return null;
 }
 
