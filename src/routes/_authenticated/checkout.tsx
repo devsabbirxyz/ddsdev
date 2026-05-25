@@ -432,14 +432,9 @@ function CheckoutPage() {
             </div>
           </div>
 
-          {step === 1 ? (
+          {step === 1 && (
             <button onClick={goToPayment} className="w-full rounded-xl bg-gradient-brand px-6 py-3 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition">
               অর্ডার কনফার্ম করুন →
-            </button>
-          ) : (
-            <button onClick={submit} disabled={submitting} className="w-full rounded-xl bg-gradient-brand px-6 py-3 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition disabled:opacity-60 disabled:hover:scale-100 inline-flex items-center justify-center gap-2">
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              পেমেন্ট সাবমিট করুন
             </button>
           )}
           <p className="text-[11px] text-center text-muted-foreground">অ্যাডমিন verify করার পর প্রোডাক্ট deliver হবে।</p>
