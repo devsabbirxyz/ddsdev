@@ -35,7 +35,7 @@ const paymentMethodsQuery = queryOptions({
       .select("id,name,name_en,account_type,send_type,account_number,instructions,is_manual_active,is_automatic_active,has_automatic,sort_order")
       .order("sort_order", { ascending: true });
     if (error) throw error;
-    return (data ?? []).filter((m) => m.is_manual_active);
+    return (data ?? []).filter((m) => m.is_manual_active || (m.has_automatic && m.is_automatic_active));
   },
 });
 
