@@ -12,8 +12,9 @@ import {
 import { toast } from "sonner";
 import {
   ArrowLeft, Save, Trash2, Plus, Star, ImagePlus,
-  Package, Image as ImageIcon, Layers, Database, Search,
+  Package, Image as ImageIcon, Layers, Database, Search, CheckCircle2, Loader2,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/admin/products/$id")({
   head: () => ({ meta: [{ title: "Edit Product — Admin" }, { name: "robots", content: "noindex" }] }),
