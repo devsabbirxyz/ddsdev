@@ -105,8 +105,8 @@ function CheckoutPage() {
     }
     try {
       const orderNumber = `DDS-${Date.now().toString(36).toUpperCase()}`;
-      const perItemDiscount = items.length > 0 ? Math.floor(discount / items.length) : 0;
-      const rows = items.map((it, idx) => ({
+      const perItemDiscount = validItems.length > 0 ? Math.floor(discount / validItems.length) : 0;
+      const rows = validItems.map((it, idx) => ({
         order_number: idx === 0 ? orderNumber : `${orderNumber}-${idx + 1}`,
         user_id: user.id,
         product_id: it.productId,
