@@ -74,7 +74,11 @@ function ProductEditor() {
 
   const set = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }));
 
+  const [saving, setSaving] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const onSave = async () => {
+    setSaving(true);
     try {
       const regularPrice = form.regular_price != null ? Number(form.regular_price) : null;
       const offerPriceRaw = form.offer_price != null ? Number(form.offer_price) : null;
@@ -108,10 +112,14 @@ function ProductEditor() {
           status: form.status,
         },
       });
-      toast.success("সেভ হয়েছে");
       qc.invalidateQueries({ queryKey: ["admin", "product", id] });
       qc.invalidateQueries({ queryKey: ["admin", "products"] });
-    } catch (e: any) { toast.error(e.message); }
+      setShowSuccess(true);
+    } catch (e: any) {
+      toast.error(e.message || "সেভ ব্যর্থ হয়েছে");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const onDelete = async () => {
