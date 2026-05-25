@@ -24,22 +24,25 @@ export const Route = createFileRoute("/register")({
 function RegisterPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
+  const [step, setStep] = useState<"form" | "otp">("form");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [info, setInfo] = useState<string | null>(null);
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSignup(e: FormEvent) {
     e.preventDefault();
     setError(null);
+    setInfo(null);
     setLoading(true);
 
     // Ensure no previous (e.g. admin) session leaks into the new account flow
     await supabase.auth.signOut();
 
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -48,13 +51,35 @@ function RegisterPage() {
       },
     });
 
+    setLoading(false);
+
     if (signUpError) {
-      setLoading(false);
       setError(signUpError.message);
       return;
     }
 
-    // Fire Telegram notification server-side (reliable in preview + prod)
+    setStep("otp");
+    setInfo("📧 আপনার ইমেইলে ৬-সংখ্যার কোড পাঠানো হয়েছে। ইনবক্স/স্প্যাম চেক করুন।");
+  }
+
+  async function handleVerify(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email,
+      token: otp.trim(),
+      type: "email",
+    });
+
+    if (verifyError) {
+      setLoading(false);
+      setError("কোড সঠিক নয় বা মেয়াদ শেষ। আবার চেষ্টা করুন।");
+      return;
+    }
+
+    // Fire Telegram notification (best-effort)
     try {
       await notifyNewSignupServer({
         data: {
@@ -64,34 +89,34 @@ function RegisterPage() {
         },
       });
     } catch {
-      // never block UX on notification failure
-    }
-
-    // If no session was returned (email confirmation enabled), try to sign in.
-    // If confirmation is required, signIn will fail — show success message anyway.
-    if (!signUpData.session) {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInError) {
-        setLoading(false);
-        setSuccess(true);
-        setError("📧 ইমেইল কনফার্ম করতে আপনার ইনবক্স চেক করুন, তারপর লগইন করুন।");
-        return;
-      }
+      // ignore
     }
 
     setLoading(false);
-    setSuccess(true);
-    setTimeout(() => navigate({ to: "/dashboard" }), 1200);
+    setInfo("✅ ভেরিফিকেশন সফল! ড্যাশবোর্ডে নিয়ে যাচ্ছি...");
+    setTimeout(() => navigate({ to: "/dashboard" }), 900);
+  }
+
+  async function resendOtp() {
+    setError(null);
+    setInfo(null);
+    setLoading(true);
+    const { error: resendError } = await supabase.auth.resend({ type: "signup", email });
+    setLoading(false);
+    if (resendError) {
+      setError(resendError.message);
+      return;
+    }
+    setInfo("📧 নতুন কোড পাঠানো হয়েছে।");
   }
 
   return (
-    <AuthShell title={t("create_account")} subtitle="DDS-Digital এ যোগ দিন">
-      {success ? (
-        <div className="rounded-xl glass p-4 text-center text-sm">
-          ✅ অ্যাকাউন্ট তৈরি হয়েছে! আপনাকে ড্যাশবোর্ডে নিয়ে যাচ্ছি...
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <AuthShell
+      title={step === "form" ? t("create_account") : "ইমেইল ভেরিফাই করুন"}
+      subtitle={step === "form" ? "DDS-Digital এ যোগ দিন" : email}
+    >
+      {step === "form" ? (
+        <form onSubmit={handleSignup} className="space-y-4">
           <Field label={t("full_name")} value={fullName} onChange={setFullName} required />
           <Field label={t("email")} type="email" value={email} onChange={setEmail} required autoComplete="email" />
           <Field label={t("password")} type="password" value={password} onChange={setPassword} required autoComplete="new-password" />
@@ -104,6 +129,34 @@ function RegisterPage() {
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {t("sign_up")}
           </button>
+        </form>
+      ) : (
+        <form onSubmit={handleVerify} className="space-y-4">
+          {info && <p className="text-sm text-emerald-200">{info}</p>}
+          <Field
+            label="৬-সংখ্যার ভেরিফিকেশন কোড"
+            value={otp}
+            onChange={(v) => setOtp(v.replace(/\D/g, "").slice(0, 6))}
+            required
+            autoComplete="one-time-code"
+          />
+          {error && <p className="text-sm text-red-300">{error}</p>}
+          <button
+            type="submit"
+            disabled={loading || otp.length < 6}
+            className="w-full rounded-2xl bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 px-4 py-3.5 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(168,85,247,0.7)] hover:scale-[1.02] transition disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2 border border-white/20"
+          >
+            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+            ভেরিফাই করুন
+          </button>
+          <div className="flex items-center justify-between text-xs text-white/80">
+            <button type="button" onClick={() => setStep("form")} className="hover:text-white">
+              ← ইমেইল বদলান
+            </button>
+            <button type="button" onClick={resendOtp} disabled={loading} className="hover:text-white disabled:opacity-60">
+              কোড আবার পাঠান
+            </button>
+          </div>
         </form>
       )}
       <div className="mt-5 text-center text-xs">
