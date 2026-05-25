@@ -2,17 +2,35 @@ import { useQuery } from "@tanstack/react-query";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useRef } from "react";
+import { Sparkles } from "lucide-react";
 import { offerSlidesQuery } from "@/lib/site-settings";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function OfferBannerSlider() {
-  const { data: slides = [] } = useQuery(offerSlidesQuery);
-  const autoplay = useRef(Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true }));
+  const { data: slides = [], isLoading } = useQuery(offerSlidesQuery);
+  const autoplay = useRef(Autoplay({ delay: 3000, stopOnInteraction: false, stopOnMouseEnter: true }));
   const [emblaRef] = useEmblaCarousel({ loop: true, align: "start" }, [autoplay.current]);
+
+  if (isLoading) {
+    return (
+      <div className="mt-8 w-full rounded-3xl overflow-hidden border border-glass-border aspect-[16/6]">
+        <Skeleton className="w-full h-full" />
+      </div>
+    );
+  }
 
   if (slides.length === 0) {
     return (
-      <div className="mt-8 w-full rounded-3xl overflow-hidden bg-muted/40 border border-glass-border aspect-[16/6] grid place-items-center">
-        <span className="text-xs text-muted-foreground">Offer Banner — admin panel থেকে ইমেজ আপলোড করুন</span>
+      <div className="mt-8 w-full rounded-3xl overflow-hidden border border-glass-border aspect-[16/6] relative bg-gradient-to-br from-primary/30 via-primary/10 to-accent/30">
+        <div className="absolute inset-0 grid place-items-center text-center px-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-background/40 backdrop-blur-sm border border-glass-border text-xs font-semibold">
+              <Sparkles className="h-3.5 w-3.5" /> বিশেষ অফার
+            </div>
+            <h3 className="font-display font-bold text-2xl md:text-4xl">সেরা ডিল ও অফার</h3>
+            <p className="text-sm md:text-base text-muted-foreground">আপনার পছন্দের প্রোডাক্টে বিশাল ছাড়</p>
+          </div>
+        </div>
       </div>
     );
   }
