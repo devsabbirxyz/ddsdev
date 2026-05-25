@@ -156,11 +156,40 @@ function ProductEditor() {
           <button onClick={onDelete} className="rounded-xl border border-destructive/40 text-destructive hover:bg-destructive/10 px-3 py-2 text-sm font-bold inline-flex items-center gap-2">
             <Trash2 className="h-4 w-4" /> ডিলিট
           </button>
-          <button onClick={onSave} className="rounded-xl bg-gradient-brand text-primary-foreground shadow-glow px-4 py-2 text-sm font-bold inline-flex items-center gap-2">
-            <Save className="h-4 w-4" /> সেভ
+          <button onClick={onSave} disabled={saving} className="rounded-xl bg-gradient-brand text-primary-foreground shadow-glow px-4 py-2 text-sm font-bold inline-flex items-center gap-2 disabled:opacity-60">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {saving ? "সেভ হচ্ছে..." : "সেভ"}
           </button>
         </div>
       </div>
+
+      <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto mb-2 grid h-16 w-16 place-items-center rounded-full bg-green-500/10">
+              <CheckCircle2 className="h-10 w-10 text-green-500" />
+            </div>
+            <DialogTitle className="text-center text-xl">✅ সফলভাবে সেভ হয়েছে!</DialogTitle>
+            <DialogDescription className="text-center">
+              আপনার প্রোডাক্টের পরিবর্তন সফলভাবে সেভ হয়েছে।
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center gap-2">
+            <button
+              onClick={() => setShowSuccess(false)}
+              className="rounded-xl border border-border px-4 py-2 text-sm font-semibold hover:bg-accent"
+            >
+              এখানেই থাকুন
+            </button>
+            <button
+              onClick={() => { setShowSuccess(false); nav({ to: "/admin/products" }); }}
+              className="rounded-xl bg-gradient-brand text-primary-foreground shadow-glow px-4 py-2 text-sm font-bold"
+            >
+              প্রোডাক্ট লিস্টে যান
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="flex gap-2 border-b border-border overflow-x-auto">
         {tabs.map((t) => (
