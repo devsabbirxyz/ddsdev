@@ -215,3 +215,11 @@
   }
   .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
 }
+
+@layer utilities {
+  @keyframes slide-in-bottom {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .animate-slide-in-bottom { animation: slide-in-bottom 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+}

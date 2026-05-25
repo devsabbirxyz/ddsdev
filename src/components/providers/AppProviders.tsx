@@ -5,6 +5,7 @@ import { AuthContext, type AuthUser } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
+import { Toaster } from "@/components/ui/sonner";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   // ---- Theme (dark default) ----
@@ -65,6 +66,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
           <CartProvider>
             <WishlistProvider>{children}</WishlistProvider>
           </CartProvider>
+          <Toaster />
         </AuthContext.Provider>
       </I18nContext.Provider>
     </ThemeContext.Provider>
