@@ -13,8 +13,8 @@ const requireAdmin = createMiddleware({ type: "function" })
       .select("role")
       .eq("user_id", userId)
       .in("role", ["admin", "super_admin"])
-      .maybeSingle();
-    if (!data) throw new Error("Forbidden");
+      .limit(1);
+    if (!data || data.length === 0) throw new Error("Forbidden");
     return next({ context: { adminId: userId } });
   });
 
