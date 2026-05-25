@@ -179,7 +179,7 @@ function ShopPage() {
           ) : products.length === 0 ? (
             <EmptyState
               title="এখনো কোনো প্রোডাক্ট নেই"
-              hint="অ্যাডমিন প্যানেল থেকে প্রোডাক্ট যোগ করুন — Phase 7 এ আসছে।"
+              hint="অ্যাডমিন প্যানেল থেকে নতুন প্রোডাক্ট যোগ করুন।"
             />
           ) : (
             <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
