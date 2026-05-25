@@ -484,21 +484,33 @@ function PaymentSelect({
         ) : (
           <div className="grid grid-cols-2 gap-4">
             {methods.map((m) => {
+              const logo = logoFor(m.name);
               const brand = brandFor(m.name);
               return (
                 <button
                   key={m.id}
                   type="button"
                   onClick={() => setMethodId(m.id)}
-                  className="relative rounded-3xl p-6 transition-all duration-200 backdrop-blur-xl border border-white/40 bg-white/90 hover:bg-white shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
+                  className="relative rounded-3xl p-6 transition-all duration-200 backdrop-blur-xl border border-white/40 bg-white/95 hover:bg-white shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
                 >
                   <div className="aspect-[5/3] grid place-items-center">
-                    <span
-                      className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight"
-                      style={{ color: brand?.color ?? "#111" }}
-                    >
-                      {brand?.label ?? m.name}
-                    </span>
+                    {logo ? (
+                      <img
+                        src={logo}
+                        alt={brand?.label ?? m.name}
+                        loading="lazy"
+                        width={512}
+                        height={512}
+                        className="max-h-20 sm:max-h-24 w-auto object-contain"
+                      />
+                    ) : (
+                      <span
+                        className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight"
+                        style={{ color: brand?.color ?? "#111" }}
+                      >
+                        {brand?.label ?? m.name}
+                      </span>
+                    )}
                   </div>
                 </button>
               );
