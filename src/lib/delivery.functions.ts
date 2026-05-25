@@ -193,3 +193,36 @@ export const rejectOrder = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+// ---------- Send custom message to customer ----------
+export const sendOrderMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        orderId: z.string().uuid(),
+        message: z.string().min(1).max(1000),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    const { data: order, error } = await supabaseAdmin
+      .from("orders")
+      .select("id,user_id,order_number,product_title")
+      .eq("id", data.orderId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!order) throw new Error("Order not found");
+    if (!order.user_id) throw new Error("Order has no user");
+
+    await notifyUser(
+      order.user_id,
+      `অর্ডার #${order.order_number} — Admin থেকে মেসেজ`,
+      data.message,
+      `/order/${order.id}`,
+      "admin_message",
+    );
+    return { ok: true };
+  });
