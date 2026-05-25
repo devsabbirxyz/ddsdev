@@ -35,6 +35,7 @@ function ForgotPage() {
       setError(error.message);
       return;
     }
+    notify.passwordReset({ email });
     setSent(true);
   }
 
