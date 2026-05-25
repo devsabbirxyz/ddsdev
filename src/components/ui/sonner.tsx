@@ -20,6 +20,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
           cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
           error:
             "!bg-red-600 !text-white !border-red-700 !font-semibold animate-slide-in-bottom",
+          success:
+            "!bg-green-600 !text-white !border-green-700 !font-semibold animate-slide-in-bottom",
+          warning:
+            "!bg-yellow-500 !text-black !border-yellow-600 !font-semibold animate-slide-in-bottom",
+          info:
+            "!bg-blue-600 !text-white !border-blue-700 !font-semibold animate-slide-in-bottom",
         },
       }}
       {...props}
