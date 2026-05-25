@@ -96,7 +96,7 @@ function ApplySeller() {
         <input className="ip" placeholder="কি ধরনের প্রোডাক্ট বিক্রি করবেন?" value={form.product_types} onChange={(e) => setForm({ ...form, product_types: e.target.value })} />
         <button disabled={busy} className="rounded-xl bg-gradient-brand px-6 py-3 font-bold text-primary-foreground shadow-glow disabled:opacity-50 w-full">{busy ? "..." : "আবেদন সাবমিট করুন"}</button>
       </form>
-      <style>{`.ip{width:100%;border-radius:0.75rem;border:1px solid hsl(var(--border));background:transparent;padding:0.7rem 0.9rem;font-size:0.875rem}`}</style>
+      <style>{`.ip{width:100%;border-radius:0.75rem;border:1px solid var(--border);background:transparent;padding:0.7rem 0.9rem;font-size:0.875rem}`}</style>
     </div>
   );
 }

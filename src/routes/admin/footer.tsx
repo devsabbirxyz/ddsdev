@@ -134,7 +134,7 @@ function FooterCMS() {
         ], "payment")} className="btn bg-gradient-brand text-primary-foreground shadow-glow"><Save className="h-4 w-4" /> Save Payments</button>
       </section>
 
-      <style>{`.ip{width:100%;border-radius:0.75rem;border:1px solid hsl(var(--border));background:transparent;padding:0.6rem 0.85rem;font-size:0.875rem}.btn{display:inline-flex;align-items:center;gap:0.4rem;border-radius:0.75rem;padding:0.5rem 1rem;font-weight:600;font-size:0.875rem}`}</style>
+      <style>{`.ip{width:100%;border-radius:0.75rem;border:1px solid var(--border);background:transparent;padding:0.6rem 0.85rem;font-size:0.875rem}.btn{display:inline-flex;align-items:center;gap:0.4rem;border-radius:0.75rem;padding:0.5rem 1rem;font-weight:600;font-size:0.875rem}`}</style>
     </div>
   );
 }
