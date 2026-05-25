@@ -66,6 +66,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
           <CartProvider>
             <WishlistProvider>{children}</WishlistProvider>
           </CartProvider>
+          <Toaster />
         </AuthContext.Provider>
       </I18nContext.Provider>
     </ThemeContext.Provider>
