@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
-import { notify } from "@/lib/telegram-notify";
+import { notifyNewSignupServer } from "@/lib/telegram.functions";
 import { AuthShell, Field } from "@/routes/login";
 
 export const Route = createFileRoute("/register")({
@@ -35,7 +35,11 @@ function RegisterPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+
+    // Ensure no previous (e.g. admin) session leaks into the new account flow
+    await supabase.auth.signOut();
+
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -43,14 +47,41 @@ function RegisterPage() {
         data: { full_name: fullName },
       },
     });
-    setLoading(false);
-    if (error) {
-      setError(error.message);
+
+    if (signUpError) {
+      setLoading(false);
+      setError(signUpError.message);
       return;
     }
-    notify.newSignup({ email, name: fullName });
+
+    // Fire Telegram notification server-side (reliable in preview + prod)
+    try {
+      await notifyNewSignupServer({
+        data: {
+          email,
+          name: fullName,
+          origin: typeof window !== "undefined" ? window.location.origin : undefined,
+        },
+      });
+    } catch {
+      // never block UX on notification failure
+    }
+
+    // If no session was returned (email confirmation enabled), try to sign in.
+    // If confirmation is required, signIn will fail — show success message anyway.
+    if (!signUpData.session) {
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) {
+        setLoading(false);
+        setSuccess(true);
+        setError("📧 ইমেইল কনফার্ম করতে আপনার ইনবক্স চেক করুন, তারপর লগইন করুন।");
+        return;
+      }
+    }
+
+    setLoading(false);
     setSuccess(true);
-    setTimeout(() => navigate({ to: "/dashboard" }), 1500);
+    setTimeout(() => navigate({ to: "/dashboard" }), 1200);
   }
 
   return (

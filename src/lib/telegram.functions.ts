@@ -53,6 +53,37 @@ export const sendTelegramNotification = createServerFn({ method: "POST" })
     }
   });
 
+// Public — fire notification on new signup (server-side, reliable)
+export const notifyNewSignupServer = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) =>
+    z.object({
+      email: z.string().email().max(255),
+      name: z.string().min(1).max(200),
+      origin: z.string().url().max(500).optional(),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { data: rows } = await supabaseAdmin
+      .from("site_settings")
+      .select("key,value")
+      .in("key", ["telegram_bot_token", "telegram_chat_id"]);
+    const map: Record<string, string> = {};
+    for (const r of rows ?? []) map[r.key] = r.value ?? "";
+    const token = map.telegram_bot_token;
+    const chat = map.telegram_chat_id;
+    if (!token || !chat) return { ok: false, skipped: true };
+    const time = new Date().toLocaleString("bn-BD", { dateStyle: "medium", timeStyle: "short" });
+    const adminLink = data.origin ? `\n\n🔗 Admin Panel দেখুন: ${data.origin}/admin` : "";
+    const msg = `👤 <b>নতুন কাস্টমার রেজিস্ট্রেশন!</b>\n📧 ইমেইল: ${data.email}\n👤 নাম: ${data.name}\n🕐 সময়: ${time}${adminLink}`;
+    try {
+      await tgSend(token, chat, msg);
+      return { ok: true };
+    } catch (e: any) {
+      console.error("Telegram signup notify failed:", e?.message);
+      return { ok: false, error: e?.message };
+    }
+  });
+
 // Admin-only — test with provided credentials
 export const testTelegramNotification = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
