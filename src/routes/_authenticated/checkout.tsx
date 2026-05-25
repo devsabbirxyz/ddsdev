@@ -135,6 +135,10 @@ function CheckoutPage() {
       clear();
       setSuccessOrderId(firstOrderId);
       setSuccessOpen(true);
+      toast.success("✅ অর্ডার সফল হয়েছে!", {
+        duration: 3000,
+        className: "!bg-green-600 !text-white !border-green-700",
+      });
     } catch (e: any) {
       console.error("Order create failed:", e);
       toast.error(e?.message ?? "অর্ডার তৈরি ব্যর্থ");
