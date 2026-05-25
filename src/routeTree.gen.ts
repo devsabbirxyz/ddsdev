@@ -44,6 +44,7 @@ import { Route as AffiliateWithdrawalsRouteImport } from './routes/affiliate.wit
 import { Route as AffiliateReferralsRouteImport } from './routes/affiliate.referrals'
 import { Route as AdminWithdrawalsRouteImport } from './routes/admin/withdrawals'
 import { Route as AdminTicketsRouteImport } from './routes/admin/tickets'
+import { Route as AdminTelegramRouteImport } from './routes/admin/telegram'
 import { Route as AdminSlidesRouteImport } from './routes/admin/slides'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminSellersRouteImport } from './routes/admin/sellers'
@@ -255,6 +256,11 @@ const AdminWithdrawalsRoute = AdminWithdrawalsRouteImport.update({
 const AdminTicketsRoute = AdminTicketsRouteImport.update({
   id: '/tickets',
   path: '/tickets',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTelegramRoute = AdminTelegramRouteImport.update({
+  id: '/telegram',
+  path: '/telegram',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSlidesRoute = AdminSlidesRouteImport.update({
@@ -498,6 +504,7 @@ export interface FileRoutesByFullPath {
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
+  '/admin/telegram': typeof AdminTelegramRoute
   '/admin/tickets': typeof AdminTicketsRouteWithChildren
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/affiliate/referrals': typeof AffiliateReferralsRoute
@@ -566,6 +573,7 @@ export interface FileRoutesByTo {
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
+  '/admin/telegram': typeof AdminTelegramRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/affiliate/referrals': typeof AffiliateReferralsRoute
   '/affiliate/withdrawals': typeof AffiliateWithdrawalsRoute
@@ -641,6 +649,7 @@ export interface FileRoutesById {
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
+  '/admin/telegram': typeof AdminTelegramRoute
   '/admin/tickets': typeof AdminTicketsRouteWithChildren
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/affiliate/referrals': typeof AffiliateReferralsRoute
@@ -717,6 +726,7 @@ export interface FileRouteTypes {
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/slides'
+    | '/admin/telegram'
     | '/admin/tickets'
     | '/admin/withdrawals'
     | '/affiliate/referrals'
@@ -785,6 +795,7 @@ export interface FileRouteTypes {
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/slides'
+    | '/admin/telegram'
     | '/admin/withdrawals'
     | '/affiliate/referrals'
     | '/affiliate/withdrawals'
@@ -859,6 +870,7 @@ export interface FileRouteTypes {
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/slides'
+    | '/admin/telegram'
     | '/admin/tickets'
     | '/admin/withdrawals'
     | '/affiliate/referrals'
@@ -1164,6 +1176,13 @@ declare module '@tanstack/react-router' {
       path: '/tickets'
       fullPath: '/admin/tickets'
       preLoaderRoute: typeof AdminTicketsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/telegram': {
+      id: '/admin/telegram'
+      path: '/telegram'
+      fullPath: '/admin/telegram'
+      preLoaderRoute: typeof AdminTelegramRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/slides': {
@@ -1544,6 +1563,7 @@ interface AdminRouteChildren {
   AdminSellersRoute: typeof AdminSellersRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSlidesRoute: typeof AdminSlidesRoute
+  AdminTelegramRoute: typeof AdminTelegramRoute
   AdminTicketsRoute: typeof AdminTicketsRouteWithChildren
   AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1567,6 +1587,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSellersRoute: AdminSellersRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSlidesRoute: AdminSlidesRoute,
+  AdminTelegramRoute: AdminTelegramRoute,
   AdminTicketsRoute: AdminTicketsRouteWithChildren,
   AdminWithdrawalsRoute: AdminWithdrawalsRoute,
   AdminIndexRoute: AdminIndexRoute,
