@@ -22,7 +22,7 @@ function NewProduct() {
           title: variant ? "নতুন ভ্যারিয়েন্ট প্রোডাক্ট" : "নতুন প্রোডাক্ট",
           delivery_type: "instant_text",
           status: "approved",
-          is_active: false,
+          is_active: true,
           is_variant: variant,
         },
       });
