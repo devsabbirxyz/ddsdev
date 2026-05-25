@@ -263,7 +263,7 @@ function CheckoutPage() {
               <Field id="field-phone" label="ফোন নম্বর *" value={phone} onChange={(v) => { setPhone(v); if (errors.phone) setErrors({ ...errors, phone: false }); }} placeholder="01XXXXXXXXX" error={!!errors.phone} />
               <div className="sm:col-span-2"><Field id="field-email" label="ইমেইল *" value={email} onChange={(v) => { setEmail(v); if (errors.email) setErrors({ ...errors, email: false }); }} placeholder="you@example.com" type="email" error={!!errors.email} /></div>
               <div className="sm:col-span-2">
-                <label className="text-xs font-semibold mb-1.5 block">প্রোডাক্টের জন্য তথ্য (যেমন ইমেইল/ইউজারনেম) *</label>
+                <label className="text-xs font-semibold mb-1.5 block">প্রোডাক্টের জন্য তথ্য (যেমন ইমেইল/ইউজারনেম) — ঐচ্ছিক</label>
                 <textarea id="field-customerInput" value={customerInput} onChange={(e) => { setCustomerInput(e.target.value); if (errors.customerInput) setErrors({ ...errors, customerInput: false }); }} rows={2} placeholder="যেকোনো অতিরিক্ত তথ্য" className={`w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 ${errors.customerInput ? "border-2 border-destructive ring-2 ring-destructive/30" : ""}`} />
               </div>
             </div>
