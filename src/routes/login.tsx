@@ -45,19 +45,19 @@ function LoginPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <Field label={t("email")} type="email" value={email} onChange={setEmail} required autoComplete="email" />
         <Field label={t("password")} type="password" value={password} onChange={setPassword} required autoComplete="current-password" />
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && <p className="text-sm text-red-300">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-gradient-brand px-4 py-3 text-sm font-semibold text-primary-foreground shadow-glow hover:scale-[1.02] transition disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2"
+          className="w-full rounded-2xl bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 px-4 py-3.5 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(168,85,247,0.7)] hover:scale-[1.02] transition disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2 border border-white/20"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {t("sign_in")}
         </button>
       </form>
-      <div className="mt-4 flex items-center justify-between text-xs">
-        <Link to="/forgot-password" className="text-muted-foreground hover:text-foreground">{t("forgot_password")}</Link>
-        <Link to="/register" className="text-primary hover:underline">{t("no_account")} {t("sign_up")}</Link>
+      <div className="mt-5 flex items-center justify-between text-xs">
+        <Link to="/forgot-password" className="text-white/70 hover:text-white">{t("forgot_password")}</Link>
+        <Link to="/register" className="text-white font-semibold hover:underline">{t("no_account")} {t("sign_up")}</Link>
       </div>
     </AuthShell>
   );
