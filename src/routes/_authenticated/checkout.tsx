@@ -217,12 +217,12 @@ function CheckoutPage() {
             <section className="glass-card rounded-2xl p-6">
               <h2 className="font-display font-bold text-lg mb-4">আপনার তথ্য</h2>
               <div className="grid sm:grid-cols-2 gap-3">
-                <Field label="পূর্ণ নাম *" value={name} onChange={setName} placeholder="Md. Sabbir" />
-                <Field label="ফোন নম্বর *" value={phone} onChange={setPhone} placeholder="01XXXXXXXXX" />
-                <div className="sm:col-span-2"><Field label="ইমেইল *" value={email} onChange={setEmail} placeholder="you@example.com" type="email" /></div>
+                <Field id="field-name" label="পূর্ণ নাম *" value={name} onChange={(v) => { setName(v); if (errors.name) setErrors({ ...errors, name: false }); }} placeholder="Md. Sabbir" error={!!errors.name} />
+                <Field id="field-phone" label="ফোন নম্বর *" value={phone} onChange={(v) => { setPhone(v); if (errors.phone) setErrors({ ...errors, phone: false }); }} placeholder="01XXXXXXXXX" error={!!errors.phone} />
+                <div className="sm:col-span-2"><Field id="field-email" label="ইমেইল *" value={email} onChange={(v) => { setEmail(v); if (errors.email) setErrors({ ...errors, email: false }); }} placeholder="you@example.com" type="email" error={!!errors.email} /></div>
                 <div className="sm:col-span-2">
-                  <label className="text-xs font-semibold mb-1.5 block">প্রোডাক্টের জন্য তথ্য (যেমন ইমেইল/ইউজারনেম)</label>
-                  <textarea value={customerInput} onChange={(e) => setCustomerInput(e.target.value)} rows={2} placeholder="যেকোনো অতিরিক্ত তথ্য" className="w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+                  <label className="text-xs font-semibold mb-1.5 block">প্রোডাক্টের জন্য তথ্য (যেমন ইমেইল/ইউজারনেম) *</label>
+                  <textarea id="field-customerInput" value={customerInput} onChange={(e) => { setCustomerInput(e.target.value); if (errors.customerInput) setErrors({ ...errors, customerInput: false }); }} rows={2} placeholder="যেকোনো অতিরিক্ত তথ্য" className={`w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 ${errors.customerInput ? "border-2 border-destructive ring-2 ring-destructive/30" : ""}`} />
                 </div>
               </div>
             </section>
