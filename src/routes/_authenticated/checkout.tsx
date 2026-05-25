@@ -386,11 +386,11 @@ function PaymentSelect({
         <div className="mx-auto max-w-xl px-4 sm:px-6 pt-6 pb-32" style={{ color: textColor }}>
           <button
             type="button"
-            onClick={() => setMethodId("")}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold opacity-90 hover:opacity-100 mb-6"
+            onClick={() => { setMethodId(""); setTrxId(""); setPayTab("automatic"); }}
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-sm px-3.5 py-2 text-xs sm:text-sm font-bold mb-6 border border-white/30 transition"
             style={{ color: textColor }}
           >
-            <ArrowLeft className="h-4 w-4" /> ফিরে যান
+            <ArrowLeft className="h-4 w-4" /> পেমেন্ট মেথড পরিবর্তন করুন
           </button>
 
           <div className="text-center mb-6">
