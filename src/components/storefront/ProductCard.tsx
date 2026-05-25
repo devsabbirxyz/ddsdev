@@ -18,6 +18,7 @@ export interface ProductCardData {
   is_variant?: boolean | null;
   view_count?: number | null;
   sellers?: { store_name?: string | null; store_logo_url?: string | null } | null;
+  product_images?: Array<{ image_url: string; is_main?: boolean | null; sort_order?: number | null }> | null;
   product_variants?: Array<{ regular_price?: number | null; offer_price?: number | null; is_active?: boolean | null }> | null;
 }
 
@@ -38,6 +39,12 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   const initials = (sellerName ?? p.title).slice(0, 2).toUpperCase();
   const views = p.view_count ?? 0;
 
+  const images = (p.product_images ?? []).slice().sort((a, b) => {
+    if ((b.is_main ? 1 : 0) !== (a.is_main ? 1 : 0)) return (b.is_main ? 1 : 0) - (a.is_main ? 1 : 0);
+    return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+  });
+  const mainImage = images[0]?.image_url ?? null;
+
   return (
     <Link
       to="/product/$slug"
@@ -46,9 +53,18 @@ export function ProductCard({ p }: { p: ProductCardData }) {
     >
       {/* Image area */}
       <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-        <div className="absolute inset-0 grid place-items-center text-6xl font-display font-bold text-gradient-brand opacity-20 select-none">
-          {p.title.slice(0, 2).toUpperCase()}
-        </div>
+        {mainImage ? (
+          <img
+            src={mainImage}
+            alt={p.title}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 grid place-items-center text-6xl font-display font-bold text-gradient-brand opacity-20 select-none">
+            {p.title.slice(0, 2).toUpperCase()}
+          </div>
+        )}
 
         {/* top-left badges */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
