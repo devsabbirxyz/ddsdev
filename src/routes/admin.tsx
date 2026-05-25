@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, ShoppingBag, Store, Users, Package, Wallet,
   Tag, Image as ImageIcon, Settings, Home, CreditCard, Ticket, LifeBuoy,
-  Sparkles, ShieldCheck, Mail, PanelBottom, Menu, X, Search, Bell, MessageSquare, LogOut, Rocket,
+  Sparkles, ShieldCheck, Mail, PanelBottom, Menu, X, Search, Bell, MessageSquare, LogOut, Rocket, MessageCircle,
 } from "lucide-react";
 
 const adminAuthQuery = queryOptions({
