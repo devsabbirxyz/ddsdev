@@ -3,6 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Facebook, Instagram, Youtube, Send, MessageCircle } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { siteSettingsQuery, HOMEPAGE_KEYS } from "@/lib/site-settings";
+import logoBkash from "@/assets/pay-bkash.png";
+import logoNagad from "@/assets/pay-nagad.png";
+import logoRocket from "@/assets/pay-rocket.png";
+import logoUpay from "@/assets/pay-upay.png";
 
 export function Footer() {
   const { t } = useI18n();
@@ -18,10 +22,10 @@ export function Footer() {
   const wa = settings[HOMEPAGE_KEYS.social_whatsapp];
 
   const payments = [
-    { key: HOMEPAGE_KEYS.payment_bkash, label: "Bkash" },
-    { key: HOMEPAGE_KEYS.payment_nagad, label: "Nagad" },
-    { key: HOMEPAGE_KEYS.payment_rocket, label: "Rocket" },
-    { key: HOMEPAGE_KEYS.payment_upay, label: "Upay" },
+    { key: HOMEPAGE_KEYS.payment_bkash, label: "bKash", logo: logoBkash },
+    { key: HOMEPAGE_KEYS.payment_nagad, label: "Nagad", logo: logoNagad },
+    { key: HOMEPAGE_KEYS.payment_rocket, label: "Rocket", logo: logoRocket },
+    { key: HOMEPAGE_KEYS.payment_upay, label: "Upay", logo: logoUpay },
   ].filter((p) => (settings[p.key] ?? "true") !== "false");
 
   return (
