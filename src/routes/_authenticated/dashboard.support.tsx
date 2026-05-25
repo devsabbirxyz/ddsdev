@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { LifeBuoy, Plus, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { notify } from "@/lib/telegram-notify";
 
 const ticketsQuery = (userId?: string) =>
   queryOptions({
