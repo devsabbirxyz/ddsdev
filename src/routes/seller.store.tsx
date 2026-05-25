@@ -77,7 +77,7 @@ function StoreSettings() {
         </Field>
       </div>
       <button disabled={busy} className="rounded-xl bg-gradient-brand px-6 py-3 font-bold text-primary-foreground shadow-glow disabled:opacity-50">{busy ? "..." : "সেভ করুন"}</button>
-      <style>{`.ip{width:100%;border-radius:0.75rem;border:1px solid hsl(var(--border));background:transparent;padding:0.6rem 0.8rem;font-size:0.875rem}`}</style>
+      <style>{`.ip{width:100%;border-radius:0.75rem;border:1px solid var(--border);background:transparent;padding:0.6rem 0.8rem;font-size:0.875rem}`}</style>
     </form>
   );
 }

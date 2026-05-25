@@ -219,7 +219,7 @@ function AdminCoupons() {
         </div>
       )}
 
-      <style>{`.inp{width:100%;border-radius:0.75rem;background:transparent;border:1px solid hsl(var(--border));padding:0.5rem 0.75rem;font-size:0.875rem;outline:none}.inp:focus{box-shadow:0 0 0 2px hsl(var(--ring)/.4)}`}</style>
+      <style>{`.inp{width:100%;border-radius:0.75rem;background:transparent;border:1px solid var(--border);padding:0.5rem 0.75rem;font-size:0.875rem;outline:none}.inp:focus{box-shadow:0 0 0 2px color-mix(in oklab, var(--ring) 40%, transparent)}`}</style>
     </div>
   );
 }

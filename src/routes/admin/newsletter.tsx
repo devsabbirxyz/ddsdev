@@ -138,7 +138,7 @@ function NewsletterCMS() {
         </div>
       </section>
 
-      <style>{`.ip{border-radius:0.75rem;border:1px solid hsl(var(--border));background:transparent;padding:0.6rem 0.85rem;font-size:0.875rem;width:100%}.btn{display:inline-flex;align-items:center;gap:0.4rem;border-radius:0.75rem;padding:0.5rem 1rem;font-weight:600;font-size:0.875rem}`}</style>
+      <style>{`.ip{border-radius:0.75rem;border:1px solid var(--border);background:transparent;padding:0.6rem 0.85rem;font-size:0.875rem;width:100%}.btn{display:inline-flex;align-items:center;gap:0.4rem;border-radius:0.75rem;padding:0.5rem 1rem;font-weight:600;font-size:0.875rem}`}</style>
     </div>
   );
 }

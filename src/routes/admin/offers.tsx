@@ -139,7 +139,7 @@ function AdminOffers() {
           ))}
         </div>
       )}
-      <style>{`.ip{width:100%;border-radius:0.75rem;border:1px solid hsl(var(--border));background:transparent;padding:0.6rem 0.85rem;font-size:0.875rem;margin-top:0.25rem}`}</style>
+      <style>{`.ip{width:100%;border-radius:0.75rem;border:1px solid var(--border);background:transparent;padding:0.6rem 0.85rem;font-size:0.875rem;margin-top:0.25rem}`}</style>
     </div>
   );
 }
