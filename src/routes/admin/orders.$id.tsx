@@ -64,6 +64,7 @@ function AdminOrderDetail() {
   const nav = useNavigate();
   const deliver = useServerFn(deliverOrder);
   const reject = useServerFn(rejectOrder);
+  const sendMsg = useServerFn(sendOrderMessage);
 
   const { data: order, isLoading } = useQuery(orderQuery(id));
   const { data: product } = useQuery(productQuery(order?.product_id));
@@ -72,6 +73,8 @@ function AdminOrderDetail() {
   const [submitting, setSubmitting] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
+  const [customMsg, setCustomMsg] = useState("");
+  const [sendingMsg, setSendingMsg] = useState(false);
 
   if (isLoading) return <p className="text-center text-muted-foreground py-12">Loading...</p>;
   if (!order) return <p className="text-center py-12">Order not found</p>;
