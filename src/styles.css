@@ -83,14 +83,14 @@
   --accent-foreground: oklch(0.98 0.01 320);
   --destructive: oklch(0.60 0.24 25);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 12%);
+  --border: oklch(1 0 0 / 22%);
+  --input: oklch(1 0 0 / 24%);
   --ring: oklch(0.68 0.24 350);
 
   --surface: oklch(0.21 0.05 285);
   --surface-elevated: oklch(0.26 0.06 290);
   --glass: oklch(1 0 0 / 6%);
-  --glass-border: oklch(1 0 0 / 14%);
+  --glass-border: oklch(1 0 0 / 28%);
 }
 
 /* Light theme — soft pink/lavender like the reference */
