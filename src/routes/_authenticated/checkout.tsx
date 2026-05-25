@@ -141,7 +141,7 @@ function CheckoutPage() {
     if (items.length === 0) { toast.error("কার্ট খালি"); return; }
     if (!validateInfo()) { setStep(1); return; }
     if (!methodId || !method) { toast.error("পেমেন্ট মেথড সিলেক্ট করুন"); return; }
-    if (method.is_manual_active && !trxId.trim()) { toast.error("ট্রানজেকশন আইডি দিন"); return; }
+    
 
 
     setSubmitting(true);
