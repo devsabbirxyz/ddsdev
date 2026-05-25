@@ -195,7 +195,7 @@ function CheckoutPage() {
         customer_phone: phone.trim(),
         customer_input: customerInput.trim() || null,
         payment_method: method.name,
-        payment_type: method.is_manual_active ? "manual" : "automatic",
+        payment_type: "manual",
         transaction_id: trxId.trim() || null,
         coupon_code: coupon?.code ?? null,
         discount_amount: perItemDiscount,
