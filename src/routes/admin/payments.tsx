@@ -109,9 +109,6 @@ function AdminPayments() {
             <div className="text-sm font-mono">{m.account_number ?? "—"}</div>
             <div className="flex gap-2 text-[11px]">
               <span className={`rounded-full border px-2 py-0.5 ${m.is_manual_active ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" : "glass"}`}>Manual {m.is_manual_active ? "ON" : "OFF"}</span>
-              {m.has_automatic && (
-                <span className={`rounded-full border px-2 py-0.5 ${m.is_automatic_active ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" : "glass"}`}>Auto {m.is_automatic_active ? "ON" : "OFF"}</span>
-              )}
             </div>
           </div>
         ))}
