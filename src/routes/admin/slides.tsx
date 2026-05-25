@@ -5,6 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { saveSlide, deleteSlide } from "@/lib/admin.functions";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/admin/ImageUpload";
+
 
 const slidesQuery = queryOptions({
   queryKey: ["admin", "slides"],
