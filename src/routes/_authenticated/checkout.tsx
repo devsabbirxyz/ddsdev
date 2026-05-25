@@ -205,6 +205,23 @@ function CheckoutPage() {
       }));
       const { data, error } = await supabase.from("orders").insert(rows).select("id,order_number").limit(1);
       if (error) throw error;
+      // Fire Telegram notifications (fire-and-forget)
+      const firstItem = validItems[0];
+      const totalAmount = rows.reduce((s, r) => s + (r.total_price || 0), 0);
+      notify.newOrder({
+        name: name.trim(),
+        phone: phone.trim(),
+        product: firstItem.title + (validItems.length > 1 ? ` (+${validItems.length - 1} আরো)` : ""),
+        amount: totalAmount,
+      });
+      if (trxId.trim()) {
+        notify.paymentSubmit({
+          name: name.trim(),
+          amount: totalAmount,
+          method: method.name,
+          trxId: trxId.trim(),
+        });
+      }
       clear();
       toast.success("✅ আপনার অর্ডার সফলভাবে জমা হয়েছে!", {
         duration: 3500,
