@@ -190,14 +190,12 @@ function CheckoutPage() {
       }));
       const { data, error } = await supabase.from("orders").insert(rows).select("id,order_number").limit(1);
       if (error) throw error;
-      const firstOrderId = data?.[0]?.id ?? null;
       clear();
-      setSuccessOrderId(firstOrderId);
-      setSuccessOpen(true);
-      toast.success("✅ অর্ডার সফল হয়েছে!", {
-        duration: 3000,
+      toast.success("✅ আপনার অর্ডার সফলভাবে জমা হয়েছে!", {
+        duration: 3500,
         className: "!bg-green-600 !text-white !border-green-700",
       });
+      nav({ to: "/dashboard/orders" });
     } catch (e: any) {
       console.error("Order create failed:", e);
       toast.error(e?.message ?? "অর্ডার তৈরি ব্যর্থ");
