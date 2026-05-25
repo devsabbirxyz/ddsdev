@@ -45,6 +45,48 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+
+  const validateInfo = (): boolean => {
+    const defs = [
+      { key: "name", label: "পূর্ণ নাম", value: name },
+      { key: "phone", label: "ফোন নম্বর", value: phone },
+      { key: "email", label: "ইমেইল", value: email, validate: (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
+      { key: "customerInput", label: "প্রোডাক্টের জন্য তথ্য", value: customerInput },
+    ];
+    const newErrors: Record<string, boolean> = {};
+    let firstInvalid: string | null = null;
+    let firstLabel = "";
+    let formatBadFirst = false;
+    for (const f of defs) {
+      const empty = !f.value.trim();
+      const formatBad = !empty && f.validate ? !f.validate(f.value) : false;
+      if (empty || formatBad) {
+        newErrors[f.key] = true;
+        if (!firstInvalid) {
+          firstInvalid = f.key;
+          firstLabel = f.label;
+          formatBadFirst = formatBad;
+        }
+      }
+    }
+    setErrors(newErrors);
+    if (firstInvalid) {
+      toast.error(
+        formatBadFirst ? `⚠️ সঠিক ${firstLabel} দিন!` : `⚠️ অনুগ্রহ করে ${firstLabel} পূরণ করুন!`,
+        { position: "bottom-center" }
+      );
+      if (typeof document !== "undefined") {
+        const el = document.getElementById(`field-${firstInvalid}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => (el as HTMLElement).focus?.(), 300);
+        }
+      }
+      return false;
+    }
+    return true;
+  };
 
   const method = methods.find((m) => m.id === methodId);
   const discount = coupon?.discount ?? 0;
@@ -74,7 +116,7 @@ function CheckoutPage() {
 
   const goToPayment = () => {
     if (items.length === 0) { toast.error("কার্ট খালি"); return; }
-    if (!name.trim() || !email.trim() || !phone.trim()) { toast.error("সব তথ্য দিন"); return; }
+    if (!validateInfo()) return;
     setStep(2);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -82,8 +124,10 @@ function CheckoutPage() {
   const submit = async () => {
     if (!user) { toast.error("লগইন করুন"); return; }
     if (items.length === 0) { toast.error("কার্ট খালি"); return; }
+    if (!validateInfo()) { setStep(1); return; }
     if (!methodId || !method) { toast.error("পেমেন্ট মেথড সিলেক্ট করুন"); return; }
     if (method.is_manual_active && !trxId.trim()) { toast.error("ট্রানজেকশন আইডি দিন"); return; }
+
 
     setSubmitting(true);
     // Validate product IDs still exist (cart may have stale/deleted products)
@@ -173,12 +217,12 @@ function CheckoutPage() {
             <section className="glass-card rounded-2xl p-6">
               <h2 className="font-display font-bold text-lg mb-4">আপনার তথ্য</h2>
               <div className="grid sm:grid-cols-2 gap-3">
-                <Field label="পূর্ণ নাম *" value={name} onChange={setName} placeholder="Md. Sabbir" />
-                <Field label="ফোন নম্বর *" value={phone} onChange={setPhone} placeholder="01XXXXXXXXX" />
-                <div className="sm:col-span-2"><Field label="ইমেইল *" value={email} onChange={setEmail} placeholder="you@example.com" type="email" /></div>
+                <Field id="field-name" label="পূর্ণ নাম *" value={name} onChange={(v) => { setName(v); if (errors.name) setErrors({ ...errors, name: false }); }} placeholder="Md. Sabbir" error={!!errors.name} />
+                <Field id="field-phone" label="ফোন নম্বর *" value={phone} onChange={(v) => { setPhone(v); if (errors.phone) setErrors({ ...errors, phone: false }); }} placeholder="01XXXXXXXXX" error={!!errors.phone} />
+                <div className="sm:col-span-2"><Field id="field-email" label="ইমেইল *" value={email} onChange={(v) => { setEmail(v); if (errors.email) setErrors({ ...errors, email: false }); }} placeholder="you@example.com" type="email" error={!!errors.email} /></div>
                 <div className="sm:col-span-2">
-                  <label className="text-xs font-semibold mb-1.5 block">প্রোডাক্টের জন্য তথ্য (যেমন ইমেইল/ইউজারনেম)</label>
-                  <textarea value={customerInput} onChange={(e) => setCustomerInput(e.target.value)} rows={2} placeholder="যেকোনো অতিরিক্ত তথ্য" className="w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+                  <label className="text-xs font-semibold mb-1.5 block">প্রোডাক্টের জন্য তথ্য (যেমন ইমেইল/ইউজারনেম) *</label>
+                  <textarea id="field-customerInput" value={customerInput} onChange={(e) => { setCustomerInput(e.target.value); if (errors.customerInput) setErrors({ ...errors, customerInput: false }); }} rows={2} placeholder="যেকোনো অতিরিক্ত তথ্য" className={`w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 ${errors.customerInput ? "border-2 border-destructive ring-2 ring-destructive/30" : ""}`} />
                 </div>
               </div>
             </section>
@@ -288,11 +332,11 @@ function CheckoutPage() {
   );
 }
 
-function Field({ label, value, onChange, placeholder, type = "text" }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string }) {
+function Field({ label, value, onChange, placeholder, type = "text", id, error }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string; id?: string; error?: boolean }) {
   return (
     <div>
       <label className="text-xs font-semibold mb-1.5 block">{label}</label>
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+      <input id={id} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={`w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 ${error ? "border-2 border-destructive ring-2 ring-destructive/30" : ""}`} />
     </div>
   );
 }
