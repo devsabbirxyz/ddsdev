@@ -86,10 +86,27 @@ function CheckoutPage() {
     if (method.is_manual_active && !trxId.trim()) { toast.error("ট্রানজেকশন আইডি দিন"); return; }
 
     setSubmitting(true);
+    // Validate product IDs still exist (cart may have stale/deleted products)
+    const productIds = Array.from(new Set(items.map((i) => i.productId)));
+    const { data: existing, error: vErr } = await supabase
+      .from("products").select("id").in("id", productIds);
+    if (vErr) { setSubmitting(false); toast.error(vErr.message); return; }
+    const validIds = new Set((existing ?? []).map((p) => p.id));
+    const validItems = items.filter((i) => validIds.has(i.productId));
+    if (validItems.length === 0) {
+      setSubmitting(false);
+      clear();
+      toast.error("কার্টের প্রোডাক্টগুলো আর পাওয়া যাচ্ছে না — নতুন করে অর্ডার করুন");
+      nav({ to: "/shop" });
+      return;
+    }
+    if (validItems.length !== items.length) {
+      toast.warning("কিছু প্রোডাক্ট আর পাওয়া যাচ্ছে না — বাকিগুলো অর্ডার হচ্ছে");
+    }
     try {
       const orderNumber = `DDS-${Date.now().toString(36).toUpperCase()}`;
-      const perItemDiscount = items.length > 0 ? Math.floor(discount / items.length) : 0;
-      const rows = items.map((it, idx) => ({
+      const perItemDiscount = validItems.length > 0 ? Math.floor(discount / validItems.length) : 0;
+      const rows = validItems.map((it, idx) => ({
         order_number: idx === 0 ? orderNumber : `${orderNumber}-${idx + 1}`,
         user_id: user.id,
         product_id: it.productId,
