@@ -48,6 +48,7 @@ function RegisterPage() {
       setError(error.message);
       return;
     }
+    notify.newSignup({ email, name: fullName });
     setSuccess(true);
     setTimeout(() => navigate({ to: "/dashboard" }), 1500);
   }
