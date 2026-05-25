@@ -86,7 +86,9 @@ export function Footer() {
             <div className="flex items-center gap-2 flex-wrap">
               <span>{t("foot_we_accept")}:</span>
               {payments.map((p) => (
-                <span key={p.label} className="rounded-md glass px-2 py-1 font-semibold text-foreground">{p.label}</span>
+                <span key={p.label} className="rounded-md bg-white px-2 py-1 inline-flex items-center" title={p.label}>
+                  <img src={p.logo} alt={p.label} loading="lazy" width={512} height={512} className="h-5 w-auto object-contain" />
+                </span>
               ))}
             </div>
           )}
