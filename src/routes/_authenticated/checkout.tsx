@@ -45,6 +45,48 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+
+  const validateInfo = (): boolean => {
+    const defs = [
+      { key: "name", label: "পূর্ণ নাম", value: name },
+      { key: "phone", label: "ফোন নম্বর", value: phone },
+      { key: "email", label: "ইমেইল", value: email, validate: (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
+      { key: "customerInput", label: "প্রোডাক্টের জন্য তথ্য", value: customerInput },
+    ];
+    const newErrors: Record<string, boolean> = {};
+    let firstInvalid: string | null = null;
+    let firstLabel = "";
+    let formatBadFirst = false;
+    for (const f of defs) {
+      const empty = !f.value.trim();
+      const formatBad = !empty && f.validate ? !f.validate(f.value) : false;
+      if (empty || formatBad) {
+        newErrors[f.key] = true;
+        if (!firstInvalid) {
+          firstInvalid = f.key;
+          firstLabel = f.label;
+          formatBadFirst = formatBad;
+        }
+      }
+    }
+    setErrors(newErrors);
+    if (firstInvalid) {
+      toast.error(
+        formatBadFirst ? `⚠️ সঠিক ${firstLabel} দিন!` : `⚠️ অনুগ্রহ করে ${firstLabel} পূরণ করুন!`,
+        { position: "bottom-center" }
+      );
+      if (typeof document !== "undefined") {
+        const el = document.getElementById(`field-${firstInvalid}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => (el as HTMLElement).focus?.(), 300);
+        }
+      }
+      return false;
+    }
+    return true;
+  };
 
   const method = methods.find((m) => m.id === methodId);
   const discount = coupon?.discount ?? 0;
