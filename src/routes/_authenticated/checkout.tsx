@@ -58,8 +58,6 @@ function CheckoutPage() {
   const [couponCode, setCouponCode] = useState("");
   const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [successOpen, setSuccessOpen] = useState(false);
-  const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
 
   const validateInfo = (): boolean => {
