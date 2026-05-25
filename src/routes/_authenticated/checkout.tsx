@@ -82,8 +82,7 @@ function CheckoutPage() {
       { key: "phone", label: "ফোন নম্বর", value: phone },
       { key: "email", label: "ইমেইল", value: email, validate: (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
     ];
-    void customerInput;
-    const _unused = [
+
 
     ];
     const newErrors: Record<string, boolean> = {};
