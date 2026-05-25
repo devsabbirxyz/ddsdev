@@ -4,7 +4,7 @@ import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { saveSlide, deleteSlide, saveSettingsBulk } from "@/lib/admin.functions";
-import { HOMEPAGE_KEYS, parseTrustBar, type TrustItem } from "@/lib/site-settings";
+import { HOMEPAGE_KEYS, parseTrustBar, parsePromoSection, DEFAULT_PROMO, type TrustItem, type PromoSection, type PromoStat } from "@/lib/site-settings";
 import { toast } from "sonner";
 import { Plus, Trash2, Save } from "lucide-react";
 import { ImageUpload } from "@/components/admin/ImageUpload";
@@ -37,6 +37,7 @@ export const Route = createFileRoute("/admin/homepage")({
 const TABS = [
   { id: "hero", label: "Navbar + Hero" },
   { id: "offer", label: "Offer Banner" },
+  { id: "promo", label: "Promo Section" },
   { id: "trust", label: "Trust Bar" },
   { id: "reviews", label: "Review Slides" },
 ] as const;
@@ -62,6 +63,7 @@ function HomepageCMS() {
 
       {tab === "hero" && <HeroTab settings={data.settings} slides={data.hero} />}
       {tab === "offer" && <OfferTab slides={data.offer} />}
+      {tab === "promo" && <PromoTab settings={data.settings} />}
       {tab === "trust" && <TrustTab settings={data.settings} />}
       {tab === "reviews" && <ReviewTab slides={data.review} />}
       <div className="text-xs text-muted-foreground">
