@@ -9,6 +9,23 @@ import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { formatBDT } from "@/lib/storefront";
 import { siteSettingsQuery } from "@/lib/site-settings";
+import logoBkash from "@/assets/pay-bkash.png";
+import logoNagad from "@/assets/pay-nagad.png";
+import logoRocket from "@/assets/pay-rocket.png";
+import logoUpay from "@/assets/pay-upay.png";
+
+const METHOD_LOGO: Record<string, string> = {
+  bkash: logoBkash,
+  nagad: logoNagad,
+  rocket: logoRocket,
+  upay: logoUpay,
+};
+function logoFor(name?: string | null) {
+  if (!name) return null;
+  const k = name.toLowerCase().replace(/\s+/g, "");
+  for (const key of Object.keys(METHOD_LOGO)) if (k.includes(key)) return METHOD_LOGO[key];
+  return null;
+}
 
 const paymentMethodsQuery = queryOptions({
   queryKey: ["payment_methods", "active"],
