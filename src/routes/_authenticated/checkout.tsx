@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { CheckCircle2, Tag, Loader2, ArrowLeft } from "lucide-react";
+import { CheckCircle2, Tag, Loader2, ArrowLeft, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useCart } from "@/lib/cart";
