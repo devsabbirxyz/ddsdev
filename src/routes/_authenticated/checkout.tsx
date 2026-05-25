@@ -412,49 +412,97 @@ function PaymentSelect({
             <p className="text-sm opacity-90 mt-1">{appName} পেমেন্ট</p>
           </div>
 
+          {/* Automatic / Manual tabs */}
+          <div className="grid grid-cols-2 gap-2 mb-5 rounded-2xl bg-white/15 p-1 backdrop-blur-sm">
+            <button
+              type="button"
+              onClick={() => setPayTab("automatic")}
+              className={`rounded-xl py-2.5 text-sm font-bold transition ${payTab === "automatic" ? "bg-white shadow-md" : "opacity-80 hover:opacity-100"}`}
+              style={payTab === "automatic" ? { color: btnBg } : { color: textColor }}
+            >
+              Automatic
+            </button>
+            <button
+              type="button"
+              onClick={() => setPayTab("manual")}
+              className={`rounded-xl py-2.5 text-sm font-bold transition ${payTab === "manual" ? "bg-white shadow-md" : "opacity-80 hover:opacity-100"}`}
+              style={payTab === "manual" ? { color: btnBg } : { color: textColor }}
+            >
+              Manual
+            </button>
+          </div>
 
-          <input
-            type="text"
-            value={trxId}
-            onChange={(e) => setTrxId(e.target.value)}
-            placeholder="ট্রানজেকশন আইডি লিখুন"
-            className="w-full rounded-2xl bg-white text-black px-5 py-4 text-base font-semibold outline-none focus:ring-4 focus:ring-white/40 placeholder:text-black/40 shadow-lg"
-          />
+          {payTab === "automatic" ? (
+            selectedMethod.has_automatic && selectedMethod.is_automatic_active ? (
+              <div className="rounded-2xl bg-white/95 text-black p-6 space-y-4 shadow-lg">
+                <p className="text-sm font-semibold">
+                  নিচের বাটনে চাপলে {appName} এর Automatic পেমেন্ট গেটওয়ে চালু হবে।
+                </p>
+                <button
+                  type="button"
+                  onClick={() => toast.info("Automatic gateway শীঘ্রই যুক্ত হবে")}
+                  className="w-full rounded-xl px-6 py-3 text-base font-extrabold text-white shadow-lg hover:scale-[1.01] transition"
+                  style={{ backgroundColor: btnBg }}
+                >
+                  Pay {Math.round(total)} BDT — {appName}
+                </button>
+                <p className="text-xs text-black/60 text-center">
+                  সমস্যা হলে উপরে Manual tab এ যান।
+                </p>
+              </div>
+            ) : (
+              <div className="rounded-2xl bg-black/60 text-white p-6 text-center shadow-lg">
+                <p className="text-base font-bold">এই মুহূর্তে Automatic পেমেন্ট Available নেই</p>
+                <p className="text-xs opacity-80 mt-2">অনুগ্রহ করে উপরে Manual tab বেছে নিন।</p>
+              </div>
+            )
+          ) : (
+            <>
+              <input
+                type="text"
+                value={trxId}
+                onChange={(e) => setTrxId(e.target.value)}
+                placeholder="ট্রানজেকশন আইডি লিখুন"
+                className="w-full rounded-2xl bg-white text-black px-5 py-4 text-base font-semibold outline-none focus:ring-4 focus:ring-white/40 placeholder:text-black/40 shadow-lg"
+              />
 
-          <ol className="mt-6 space-y-3 text-sm sm:text-base">
-            <Step n={1}>
-              {appName} অ্যাপ খুলুন{ussd ? <> অথবা <span className="font-bold">{ussd}</span> ডায়াল করুন</> : null}
-            </Step>
-            <Step n={2}>"Send Money" সিলেক্ট করুন</Step>
-            <Step n={3}>
-              নম্বরটি দিন:{" "}
-              <span className="font-bold">{adminNumber}</span>
+              <ol className="mt-6 space-y-3 text-sm sm:text-base">
+                <Step n={1}>
+                  {appName} অ্যাপ খুলুন{ussd ? <> অথবা <span className="font-bold">{ussd}</span> ডায়াল করুন</> : null}
+                </Step>
+                <Step n={2}>"Send Money" সিলেক্ট করুন</Step>
+                <Step n={3}>
+                  নম্বরটি দিন:{" "}
+                  <span className="font-bold">{adminNumber}</span>
+                  <button
+                    type="button"
+                    onClick={copyNumber}
+                    className="ml-2 inline-flex items-center gap-1 rounded-md bg-white/20 px-2 py-0.5 text-xs font-semibold hover:bg-white/30 align-middle"
+                  >
+                    <Copy className="h-3 w-3" /> কপি
+                  </button>
+                </Step>
+                <Step n={4}>
+                  পরিমাণ দিন: <span className="font-bold">{formatBDT(total)}</span>
+                </Step>
+                <Step n={5}>Reference এ আপনার নাম লিখুন</Step>
+                <Step n={6}>PIN দিয়ে confirm করুন</Step>
+                <Step n={7}>Confirmation SMS পেলে Transaction ID উপরের বক্সে দিন</Step>
+              </ol>
+
               <button
                 type="button"
-                onClick={copyNumber}
-                className="ml-2 inline-flex items-center gap-1 rounded-md bg-white/20 px-2 py-0.5 text-xs font-semibold hover:bg-white/30 align-middle"
+                onClick={handleVerify}
+                disabled={submitting}
+                className="mt-8 w-full rounded-2xl px-6 py-4 text-base font-extrabold shadow-2xl hover:scale-[1.01] transition disabled:opacity-60 disabled:hover:scale-100 inline-flex items-center justify-center gap-2 bg-white"
+                style={{ color: btnBg }}
               >
-                <Copy className="h-3 w-3" /> কপি
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                যাচাই করুন
               </button>
-            </Step>
-            <Step n={4}>
-              পরিমাণ দিন: <span className="font-bold">{formatBDT(total)}</span>
-            </Step>
-            <Step n={5}>Reference এ আপনার নাম লিখুন</Step>
-            <Step n={6}>PIN দিয়ে confirm করুন</Step>
-            <Step n={7}>Confirmation SMS পেলে Transaction ID উপরের বক্সে দিন</Step>
-          </ol>
+            </>
+          )}
 
-          <button
-            type="button"
-            onClick={handleVerify}
-            disabled={submitting}
-            className="mt-8 w-full rounded-2xl px-6 py-4 text-base font-extrabold shadow-2xl hover:scale-[1.01] transition disabled:opacity-60 disabled:hover:scale-100 inline-flex items-center justify-center gap-2 bg-white"
-            style={{ color: btnBg }}
-          >
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            যাচাই করুন
-          </button>
         </div>
 
         {/* Fixed bottom Pay bar */}
