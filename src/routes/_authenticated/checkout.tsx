@@ -116,7 +116,7 @@ function CheckoutPage() {
 
   const goToPayment = () => {
     if (items.length === 0) { toast.error("কার্ট খালি"); return; }
-    if (!name.trim() || !email.trim() || !phone.trim()) { toast.error("সব তথ্য দিন"); return; }
+    if (!validateInfo()) return;
     setStep(2);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -124,8 +124,10 @@ function CheckoutPage() {
   const submit = async () => {
     if (!user) { toast.error("লগইন করুন"); return; }
     if (items.length === 0) { toast.error("কার্ট খালি"); return; }
+    if (!validateInfo()) { setStep(1); return; }
     if (!methodId || !method) { toast.error("পেমেন্ট মেথড সিলেক্ট করুন"); return; }
     if (method.is_manual_active && !trxId.trim()) { toast.error("ট্রানজেকশন আইডি দিন"); return; }
+
 
     setSubmitting(true);
     // Validate product IDs still exist (cart may have stale/deleted products)
