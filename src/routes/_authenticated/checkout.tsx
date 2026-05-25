@@ -409,6 +409,8 @@ function PaymentSelect({
             </div>
             <h1 className="font-display font-extrabold text-2xl sm:text-3xl">ট্রানজেকশন আইডি দিন</h1>
             <p className="text-sm opacity-90 mt-1">{appName} পেমেন্ট</p>
+          </div>
+
 
           <input
             type="text"
