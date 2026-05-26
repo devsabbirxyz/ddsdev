@@ -20,7 +20,7 @@ const FALLBACK_DATA_URI =
     </svg>`,
   );
 
-interface Props extends ImgHTMLAttributes<HTMLImageElement> {
+interface Props extends Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> {
   src?: string | null;
   fallback?: string;
   /** Max number of automatic retries on load failure */
