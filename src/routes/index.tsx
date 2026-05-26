@@ -279,13 +279,14 @@ function HomePage() {
             কাস্টমাররা কী <span className="text-gradient-brand">বলছেন</span>
           </h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-5">
-          {(slides.length > 0 ? slides : [
+        {(() => {
+          const reviews = (slides.length > 0 ? slides : [
             { id: "r1", customer_name: "রাকিব হাসান", rating: 5, review_text: "অর্ডার দেওয়ার সাথে সাথে ডেলিভারি পেলাম। দারুণ সার্ভিস!", product_name: "Netflix Premium" },
             { id: "r2", customer_name: "তানভীর আহমেদ", rating: 5, review_text: "প্রাইস সবচেয়ে কম, কোয়ালিটি একদম পারফেক্ট।", product_name: "ChatGPT Plus" },
             { id: "r3", customer_name: "সাবিনা ইয়াসমিন", rating: 5, review_text: "সাপোর্ট টিম খুবই হেল্পফুল। সবাইকে রিকমেন্ড করব।", product_name: "Canva Pro" },
-          ]).slice(0, 3).map((r: any) => (
-            <div key={r.id} className="glass-card rounded-2xl p-6">
+          ]);
+          const ReviewCard = ({ r }: { r: any }) => (
+            <div className="glass-card rounded-2xl p-6">
               <div className="flex gap-0.5 mb-3">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} className={`h-4 w-4 ${i < (r.rating ?? 5) ? "fill-primary text-primary" : "text-muted-foreground/30"}`} />
@@ -302,8 +303,25 @@ function HomePage() {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          );
+          return (
+            <>
+              {/* Desktop grid */}
+              <div className="hidden md:grid md:grid-cols-3 gap-5">
+                {reviews.slice(0, 3).map((r: any) => <ReviewCard key={r.id} r={r} />)}
+              </div>
+              {/* Mobile vertical marquee */}
+              <div className="md:hidden relative h-[520px] overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_12%,black_88%,transparent)]">
+                <div className="animate-marquee-y flex flex-col gap-4">
+                  {[...reviews, ...reviews].map((r: any, i: number) => (
+                    <ReviewCard key={`${r.id}-${i}`} r={r} />
+                  ))}
+                </div>
+              </div>
+            </>
+          );
+        })()}
+
       </section>
 
       {/* BLOG TEASER */}
