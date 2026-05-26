@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { Sparkles } from "lucide-react";
 import { offerSlidesQuery } from "@/lib/site-settings";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SmartImage } from "./SmartImage";
 
 export function OfferBannerSlider() {
   const { data: slides = [], isLoading } = useQuery(offerSlidesQuery);
