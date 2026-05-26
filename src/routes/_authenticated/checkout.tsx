@@ -136,10 +136,6 @@ function CheckoutPage() {
     const now = new Date();
     if (data.start_date && new Date(data.start_date) > now) { toast.error("কুপন এখনো সক্রিয় হয়নি"); return; }
     if (data.end_date && new Date(data.end_date) < now) { toast.error("কুপন মেয়াদ শেষ"); return; }
-    const now = new Date();
-    if (data.start_date && new Date(data.start_date) > now) { toast.error("কুপন এখনো সক্রিয় হয়নি"); return; }
-    if (data.end_date && new Date(data.end_date) < now) { toast.error("কুপন মেয়াদ শেষ"); return; }
-    if (data.max_uses && (data.used_count ?? 0) >= data.max_uses) { toast.error("কুপন সীমা শেষ"); return; }
     if (subtotal < Number(data.minimum_order ?? 0)) { toast.error(`নূন্যতম অর্ডার ${formatBDT(data.minimum_order)}`); return; }
     const disc = data.discount_type === "percent"
       ? Math.round((subtotal * Number(data.discount_value)) / 100)
