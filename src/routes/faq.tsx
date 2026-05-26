@@ -4,15 +4,35 @@ import { useState } from "react";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import { faqsQuery } from "@/lib/storefront";
 
+const FAQ_FALLBACK = [
+  { id: "f1", question: "প্রোডাক্ট কেনার পর কীভাবে ডেলিভারি পাবো?", answer: "পেমেন্ট অ্যাপ্রুভ হওয়ার সাথে সাথে অটো ডেলিভারি হবে এবং আপনার ইমেইল ও ড্যাশবোর্ডে পাঠানো হবে।" },
+  { id: "f2", question: "কী কী পেমেন্ট মেথড আছে?", answer: "বিকাশ, নগদ, রকেট, উপায়, ব্যাংক ট্রান্সফার এবং SSLCommerz এর মাধ্যমে কার্ড পেমেন্ট সাপোর্ট করি।" },
+  { id: "f3", question: "রিফান্ড পলিসি কী?", answer: "ডিজিটাল প্রোডাক্টের ক্ষেত্রে নির্দিষ্ট শর্তে রিফান্ড দেওয়া হয়। বিস্তারিত রিফান্ড পেজে দেখুন।" },
+  { id: "f4", question: "সাপোর্ট কীভাবে পাবো?", answer: "২৪/৭ লাইভ চ্যাট, ইমেইল এবং সাপোর্ট টিকিটের মাধ্যমে আমরা সাহায্য করি।" },
+];
+
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
       { title: "প্রশ্নোত্তর (FAQ) — DDS-Digital" },
-      { name: "description", content: "DDS-Digital সম্পর্কে প্রায়শই জিজ্ঞাসিত প্রশ্নের উত্তর।" },
+      { name: "description", content: "DDS-Digital সম্পর্কে প্রায়শই জিজ্ঞাসিত প্রশ্নের উত্তর — ডেলিভারি, পেমেন্ট, রিফান্ড ও সাপোর্ট সম্পর্কিত সকল তথ্য।" },
       { property: "og:title", content: "FAQ — DDS-Digital" },
+      { property: "og:description", content: "DDS-Digital সম্পর্কে প্রায়শই জিজ্ঞাসিত প্রশ্নের উত্তর — ডেলিভারি, পেমেন্ট, রিফান্ড ও সাপোর্ট সম্পর্কিত সকল তথ্য।" },
       { property: "og:url", content: "/faq" },
     ],
     links: [{ rel: "canonical", href: "/faq" }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: FAQ_FALLBACK.map((f) => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: { "@type": "Answer", text: f.answer },
+        })),
+      }),
+    }],
   }),
   component: FaqPage,
 });
@@ -21,16 +41,9 @@ function FaqPage() {
   const { data: faqs = [], isLoading } = useQuery(faqsQuery());
   const [open, setOpen] = useState<string | null>(null);
 
-  const fallback = [
-    { id: "f1", question: "প্রোডাক্ট কেনার পর কীভাবে ডেলিভারি পাবো?", answer: "পেমেন্ট অ্যাপ্রুভ হওয়ার সাথে সাথে অটো ডেলিভারি হবে এবং আপনার ইমেইল ও ড্যাশবোর্ডে পাঠানো হবে।" },
-    { id: "f2", question: "কী কী পেমেন্ট মেথড আছে?", answer: "বিকাশ, নগদ, রকেট, উপায়, ব্যাংক ট্রান্সফার এবং SSLCommerz এর মাধ্যমে কার্ড পেমেন্ট সাপোর্ট করি।" },
-    { id: "f3", question: "রিফান্ড পলিসি কী?", answer: "ডিজিটাল প্রোডাক্টের ক্ষেত্রে নির্দিষ্ট শর্তে রিফান্ড দেওয়া হয়। বিস্তারিত রিফান্ড পেজে দেখুন।" },
-    { id: "f4", question: "সাপোর্ট কীভাবে পাবো?", answer: "২৪/৭ লাইভ চ্যাট, ইমেইল এবং সাপোর্ট টিকিটের মাধ্যমে আমরা সাহায্য করি।" },
-  ];
-
   const items = faqs.length > 0
     ? faqs.map((f) => ({ id: f.id, question: f.question, answer: f.answer }))
-    : fallback;
+    : FAQ_FALLBACK;
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12">

@@ -1,0 +1,25 @@
+# DDS-Digital
+
+> বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট মার্কেটপ্লেস — সাবস্ক্রিপশন, সফটওয়্যার, অ্যাকাউন্ট ইনস্ট্যান্ট অটো ডেলিভারির মাধ্যমে।
+
+DDS-Digital (Dev Sabbir Soft) is Bangladesh's digital product selling platform offering subscriptions, software, and accounts with instant auto-delivery, secure payment (bKash, Nagad, Rocket, Upay, cards), and 24/7 support.
+
+## Pages
+
+- [Home](/): Featured digital products, categories, and offers.
+- [Shop](/shop): Browse all digital products with filters and search.
+- [Blog](/blog): Tips, guides, reviews, and platform updates.
+- [FAQ](/faq): Frequently asked questions about delivery, payment, and support.
+- [About](/about): Our story, mission, and vision.
+- [Developer](/developer): About the developer behind DDS-Digital.
+
+## Programs
+
+- [Affiliate Program](/apply-affiliate): Earn commission by referring customers.
+- [Become a Seller](/apply-seller): Sell your digital products on DDS-Digital.
+
+## Optional
+
+- [Privacy Policy](/privacy)
+- [Refund Policy](/refund)
+- [Terms](/terms)
