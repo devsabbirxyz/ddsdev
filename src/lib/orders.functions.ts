@@ -189,7 +189,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       .select("id,order_number");
     if (iErr) throw new Error(iErr.message);
 
-    // 6) Record coupon usage (best effort)
+    // 6) Record coupon usage + increment used_count (best effort)
     if (couponId && inserted && inserted[0]) {
       await supabaseAdmin.from("coupon_usage").insert({
         coupon_id: couponId,
@@ -197,12 +197,15 @@ export const placeOrder = createServerFn({ method: "POST" })
         order_id: inserted[0].id,
         discount_amount: discount,
       });
+      const { data: cur } = await supabaseAdmin
+        .from("coupons")
+        .select("used_count")
+        .eq("id", couponId)
+        .maybeSingle();
       await supabaseAdmin
         .from("coupons")
-        .update({ used_count: (await supabaseAdmin.from("coupons").select("used_count").eq("id", couponId).maybeSingle()).data?.used_count ?? 0 })
+        .update({ used_count: (cur?.used_count ?? 0) + 1 })
         .eq("id", couponId);
-      // increment atomically via rpc-less fallback
-      await supabaseAdmin.rpc as unknown;
     }
 
     const totalAmount = rows.reduce((s, r) => s + (r.total_price || 0), 0);
