@@ -203,6 +203,12 @@
   .animate-marquee-slow { animation: marquee-x 50s linear infinite; }
   .animate-marquee-reverse { animation: marquee-x 40s linear infinite reverse; }
 
+  @keyframes marquee-y {
+    from { transform: translateY(0); }
+    to { transform: translateY(-50%); }
+  }
+  .animate-marquee-y { animation: marquee-y 25s linear infinite; }
+
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-12px); }
