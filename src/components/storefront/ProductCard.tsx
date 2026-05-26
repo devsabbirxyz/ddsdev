@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Eye, Layers, ArrowUpRight, Zap } from "lucide-react";
 import { formatBDT } from "@/lib/storefront";
+import { SmartImage } from "./SmartImage";
 
 export interface ProductCardData {
   id: string;
