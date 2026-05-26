@@ -133,11 +133,13 @@ function RootComponent() {
         <div className="flex min-h-screen flex-col bg-background">
           <AnnouncementBar />
           <Navbar />
-          <main className="flex-1 pb-20 lg:pb-0">
+          <main className="flex-1">
             <Outlet />
           </main>
           <Footer />
+          <div className="lg:hidden h-20" aria-hidden />
           <MobileBottomNav />
+
           <FloatingWhatsApp />
           <PWAInstallButton />
         </div>
