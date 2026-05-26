@@ -4,7 +4,7 @@ import { useState } from "react";
 import * as LucideIcons from "lucide-react";
 import { Zap, ShieldCheck, Headphones, Users, BadgeCheck, ArrowRight, Star, Mail, CheckCircle2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { productsQuery, blogPostsQuery, reviewSlidesQuery } from "@/lib/storefront";
+import { productsQuery, blogPostsQuery, reviewSlidesQuery, categoriesQuery } from "@/lib/storefront";
 import { siteSettingsQuery, parseTrustBar, parsePromoSection, HOMEPAGE_KEYS } from "@/lib/site-settings";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { OfferBannerSlider } from "@/components/storefront/OfferBannerSlider";
