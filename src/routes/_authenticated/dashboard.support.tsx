@@ -102,7 +102,7 @@ function SupportPage() {
               </div>
               <div>
                 <label className="text-xs font-semibold mb-1.5 block">ক্যাটাগরি</label>
-                <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full rounded-xl glass px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40">
+                <select value={category} onChange={(e) => setCategory(e.target.value)} style={{ colorScheme: "dark" }} className="w-full rounded-xl glass px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40 text-foreground [&>option]:bg-background [&>option]:text-foreground">
                   <option value="general">সাধারণ</option>
                   <option value="order">অর্ডার সম্পর্কিত</option>
                   <option value="payment">পেমেন্ট</option>
