@@ -29,8 +29,9 @@ async function tgSend(token: string, chatId: string, text: string) {
   return j;
 }
 
-// Public — called from anywhere (signup, checkout, ticket, etc.)
+// Authenticated — called from order/ticket/payment flows after user is signed in
 export const sendTelegramNotification = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) =>
     z.object({ message: z.string().min(1).max(3500) }).parse(i),
   )
