@@ -122,53 +122,45 @@ function HomePage() {
       </section>
 
 
-      {/* TRUST BAR — glassmorphism */}
-      <section className="py-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          {/* Mobile: marquee */}
-          <div className="md:hidden overflow-hidden relative [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-            <div className="flex gap-3 w-max animate-marquee">
-              {[...trustItems, ...trustItems].map((item, i) => {
-                const Icon = item.icon;
-                return (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl px-4 py-3 shadow-lg shrink-0"
-                  >
-                    <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shrink-0">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold whitespace-nowrap">{item.label}</div>
-                      <div className="text-[10px] text-muted-foreground whitespace-nowrap">{item.sub}</div>
-                    </div>
+      {/* CATEGORIES */}
+      {categories.length > 0 && (
+        <section className="py-10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="flex items-end justify-between mb-6">
+              <div>
+                <div className="text-xs text-primary font-bold uppercase tracking-wider">🗂️ ক্যাটাগরি</div>
+                <h2 className="mt-1 font-display font-bold text-2xl sm:text-3xl">
+                  ব্রাউজ করুন <span className="text-gradient-brand">ক্যাটাগরি</span>
+                </h2>
+              </div>
+              <Link to="/shop" className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                সব দেখুন <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+              {categories.slice(0, 12).map((c: any) => (
+                <Link
+                  key={c.id}
+                  to="/shop"
+                  search={{ category: c.slug } as any}
+                  className="group flex flex-col items-center gap-2 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-4 shadow-lg hover:bg-white/15 hover:shadow-glow transition"
+                >
+                  <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-brand text-primary-foreground overflow-hidden shrink-0">
+                    {c.icon_url ? (
+                      <img src={c.icon_url} alt={c.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="font-display font-bold text-lg">{c.name?.slice(0, 1)}</span>
+                    )}
                   </div>
-                );
-              })}
+                  <div className="text-xs font-semibold text-center line-clamp-2 group-hover:text-primary transition-colors">
+                    {c.name}
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
-          {/* Desktop: single row */}
-          <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-6 gap-3">
-            {trustItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.label}
-                  className="flex items-center gap-3 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-3 shadow-lg hover:bg-white/15 transition"
-                >
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shrink-0">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-xs font-semibold truncate">{item.label}</div>
-                    <div className="text-[10px] text-muted-foreground truncate">{item.sub}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* FEATURED PRODUCTS */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
