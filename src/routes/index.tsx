@@ -45,6 +45,7 @@ function HomePage() {
   const { data: posts = [] } = useQuery(blogPostsQuery(3));
   const { data: slides = [] } = useQuery(reviewSlidesQuery());
   const { data: settings = {} } = useQuery(siteSettingsQuery);
+  const { data: categories = [] } = useQuery(categoriesQuery());
 
   const products = featured.length > 0 ? featured : latest;
 
