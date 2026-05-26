@@ -160,65 +160,38 @@ function CheckoutPage() {
 
 
     setSubmitting(true);
-    // Validate product IDs still exist (cart may have stale/deleted products)
-    const productIds = Array.from(new Set(items.map((i) => i.productId)));
-    const { data: existing, error: vErr } = await supabase
-      .from("products").select("id").in("id", productIds);
-    if (vErr) { setSubmitting(false); toast.error(vErr.message); return; }
-    const validIds = new Set((existing ?? []).map((p) => p.id));
-    const validItems = items.filter((i) => validIds.has(i.productId));
-    if (validItems.length === 0) {
-      setSubmitting(false);
-      clear();
-      toast.error("কার্টের প্রোডাক্টগুলো আর পাওয়া যাচ্ছে না — নতুন করে অর্ডার করুন");
-      nav({ to: "/shop" });
-      return;
-    }
-    if (validItems.length !== items.length) {
-      toast.warning("কিছু প্রোডাক্ট আর পাওয়া যাচ্ছে না — বাকিগুলো অর্ডার হচ্ছে");
-    }
     try {
-      const orderNumber = `DDS-${Date.now().toString(36).toUpperCase()}`;
-      const perItemDiscount = validItems.length > 0 ? Math.floor(discount / validItems.length) : 0;
-      const rows = validItems.map((it, idx) => ({
-        order_number: idx === 0 ? orderNumber : `${orderNumber}-${idx + 1}`,
-        user_id: user.id,
-        product_id: it.productId,
-        variant_id: it.variantId ?? null,
-        product_title: it.title,
-        variant_label: it.variantLabel ?? null,
-        quantity: it.quantity,
-        regular_price: it.price,
-        offer_price: it.price,
-        total_price: Math.max(0, it.price * it.quantity - perItemDiscount),
-        customer_name: name.trim(),
-        customer_email: email.trim(),
-        customer_phone: phone.trim(),
-        customer_input: customerInput.trim() || null,
-        payment_method: method.name,
-        payment_type: "manual",
-        transaction_id: trxId.trim() || null,
-        coupon_code: coupon?.code ?? null,
-        discount_amount: perItemDiscount,
-        status: "pending",
-        delivery_status: "pending",
-      }));
-      const { data, error } = await supabase.from("orders").insert(rows).select("id,order_number").limit(1);
-      if (error) throw error;
+      const result = await placeOrder({
+        data: {
+          items: items.map((it) => ({
+            productId: it.productId,
+            variantId: it.variantId ?? null,
+            quantity: it.quantity,
+          })),
+          customer: {
+            name: name.trim(),
+            email: email.trim(),
+            phone: phone.trim(),
+            input: customerInput.trim() || null,
+          },
+          paymentMethodId: methodId,
+          transactionId: trxId.trim() || null,
+          couponCode: coupon?.code ?? null,
+        },
+      });
+
       // Fire Telegram notifications (fire-and-forget)
-      const firstItem = validItems[0];
-      const totalAmount = rows.reduce((s, r) => s + (r.total_price || 0), 0);
       notify.newOrder({
         name: name.trim(),
         phone: phone.trim(),
-        product: firstItem.title + (validItems.length > 1 ? ` (+${validItems.length - 1} আরো)` : ""),
-        amount: totalAmount,
+        product: result.firstTitle + (result.itemCount > 1 ? ` (+${result.itemCount - 1} আরো)` : ""),
+        amount: result.totalAmount,
       });
       if (trxId.trim()) {
         notify.paymentSubmit({
           name: name.trim(),
-          amount: totalAmount,
-          method: method.name,
+          amount: result.totalAmount,
+          method: result.paymentMethod,
           trxId: trxId.trim(),
         });
       }
