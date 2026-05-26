@@ -54,8 +54,9 @@ export const sendTelegramNotification = createServerFn({ method: "POST" })
     }
   });
 
-// Public — fire notification on new signup (server-side, reliable)
+// Authenticated — fire notification on new signup (caller must be the signed-up user)
 export const notifyNewSignupServer = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) =>
     z.object({
       email: z.string().email().max(255),
@@ -63,7 +64,11 @@ export const notifyNewSignupServer = createServerFn({ method: "POST" })
       origin: z.string().url().max(500).optional(),
     }).parse(i),
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const { claims } = context as { claims?: { email?: string } };
+    if (!claims?.email || claims.email.toLowerCase() !== data.email.toLowerCase()) {
+      return { ok: false, skipped: true };
+    }
     const { data: rows } = await supabaseAdmin
       .from("site_settings")
       .select("key,value")
