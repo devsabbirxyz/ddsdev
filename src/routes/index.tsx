@@ -4,7 +4,7 @@ import { useState } from "react";
 import * as LucideIcons from "lucide-react";
 import { Zap, ShieldCheck, Headphones, Users, BadgeCheck, ArrowRight, Star, Mail, CheckCircle2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { productsQuery, blogPostsQuery, reviewSlidesQuery } from "@/lib/storefront";
+import { productsQuery, blogPostsQuery, reviewSlidesQuery, categoriesQuery } from "@/lib/storefront";
 import { siteSettingsQuery, parseTrustBar, parsePromoSection, HOMEPAGE_KEYS } from "@/lib/site-settings";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { OfferBannerSlider } from "@/components/storefront/OfferBannerSlider";
@@ -45,6 +45,7 @@ function HomePage() {
   const { data: posts = [] } = useQuery(blogPostsQuery(3));
   const { data: slides = [] } = useQuery(reviewSlidesQuery());
   const { data: settings = {} } = useQuery(siteSettingsQuery);
+  const { data: categories = [] } = useQuery(categoriesQuery());
 
   const products = featured.length > 0 ? featured : latest;
 
@@ -121,8 +122,69 @@ function HomePage() {
       </section>
 
 
+      {/* CATEGORIES */}
+      {categories.length > 0 && (
+        <section className="py-10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="flex items-end justify-between mb-6">
+              <div>
+                <div className="text-xs text-primary font-bold uppercase tracking-wider">🗂️ ক্যাটাগরি</div>
+                <h2 className="mt-1 font-display font-bold text-2xl sm:text-3xl">
+                  ব্রাউজ করুন <span className="text-gradient-brand">ক্যাটাগরি</span>
+                </h2>
+              </div>
+              <Link to="/shop" className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                সব দেখুন <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+              {categories.slice(0, 12).map((c: any) => (
+                <Link
+                  key={c.id}
+                  to="/shop"
+                  search={{ category: c.slug } as any}
+                  className="group flex flex-col items-center gap-2 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-4 shadow-lg hover:bg-white/15 hover:shadow-glow transition"
+                >
+                  <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-brand text-primary-foreground overflow-hidden shrink-0">
+                    {c.icon_url ? (
+                      <img src={c.icon_url} alt={c.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="font-display font-bold text-lg">{c.name?.slice(0, 1)}</span>
+                    )}
+                  </div>
+                  <div className="text-xs font-semibold text-center line-clamp-2 group-hover:text-primary transition-colors">
+                    {c.name}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* FEATURED PRODUCTS */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
+        <div className="text-center mb-8 mx-auto max-w-2xl">
+          <div className="text-xs text-primary font-bold uppercase tracking-wider">⭐ ফিচারড</div>
+          <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
+            সেরা <span className="text-gradient-brand">প্রোডাক্টসমূহ</span>
+          </h2>
+          <p className="mt-3 text-sm text-muted-foreground">আমাদের জনপ্রিয় ফ্রি ও প্রিমিয়াম ডিজিটাল প্রোডাক্টসমূহ দেখুন।</p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {products.slice(0, 6).map((p) => <ProductCard key={p.id} p={p} />)}
+        </div>
+
+        <div className="mt-6 text-center sm:hidden">
+          <Link to="/shop" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+            সব দেখুন <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
       {/* TRUST BAR — glassmorphism */}
-      <section className="py-8">
+      <section className="pb-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           {/* Mobile: marquee */}
           <div className="md:hidden overflow-hidden relative [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
@@ -166,27 +228,6 @@ function HomePage() {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* FEATURED PRODUCTS */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
-        <div className="text-center mb-8 mx-auto max-w-2xl">
-          <div className="text-xs text-primary font-bold uppercase tracking-wider">⭐ ফিচারড</div>
-          <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
-            সেরা <span className="text-gradient-brand">প্রোডাক্টসমূহ</span>
-          </h2>
-          <p className="mt-3 text-sm text-muted-foreground">আমাদের জনপ্রিয় ফ্রি ও প্রিমিয়াম ডিজিটাল প্রোডাক্টসমূহ দেখুন।</p>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {products.slice(0, 6).map((p) => <ProductCard key={p.id} p={p} />)}
-        </div>
-
-        <div className="mt-6 text-center sm:hidden">
-          <Link to="/shop" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-            সব দেখুন <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
       </section>
 
