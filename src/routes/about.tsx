@@ -7,6 +7,7 @@ export const Route = createFileRoute("/about")({
       { title: "আমাদের সম্পর্কে — DDS-Digital" },
       { name: "description", content: "DDS-Digital (Dev Sabbir Soft) — বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট মার্কেটপ্লেস এর গল্প, মিশন ও ভিশন।" },
       { property: "og:title", content: "আমাদের সম্পর্কে — DDS-Digital" },
+      { property: "og:description", content: "DDS-Digital (Dev Sabbir Soft) — বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট মার্কেটপ্লেস এর গল্প, মিশন ও ভিশন।" },
       { property: "og:url", content: "/about" },
     ],
     links: [{ rel: "canonical", href: "/about" }],

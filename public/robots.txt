@@ -3,3 +3,5 @@ Allow: /
 Disallow: /admin
 Disallow: /admin-login
 Disallow: /api/
+
+Sitemap: https://ddsshop.lovable.app/sitemap.xml

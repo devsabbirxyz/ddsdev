@@ -10,6 +10,7 @@ export const Route = createFileRoute("/blog")({
       { title: "ব্লগ — DDS-Digital" },
       { name: "description", content: "DDS-Digital ব্লগ — টিপস, গাইড, ডিজিটাল প্রোডাক্ট রিভিউ ও নতুন আপডেট।" },
       { property: "og:title", content: "ব্লগ — DDS-Digital" },
+      { property: "og:description", content: "DDS-Digital ব্লগ — টিপস, গাইড, ডিজিটাল প্রোডাক্ট রিভিউ ও প্ল্যাটফর্মের নতুন আপডেট সম্পর্কিত আর্টিকেল।" },
       { property: "og:url", content: "/blog" },
     ],
     links: [{ rel: "canonical", href: "/blog" }],

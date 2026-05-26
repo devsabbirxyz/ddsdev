@@ -16,9 +16,9 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "DDS-Digital — Bangladesh Number 1 Digital Product Selling System" },
+      { title: "DDS-Digital — Bangladesh's #1 Digital Product Store" },
       { name: "description", content: "DDS-Digital (Dev Sabbir Soft) — বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট মার্কেটপ্লেস। সাবস্ক্রিপশন, সফটওয়্যার, অ্যাকাউন্ট সবকিছু এক জায়গায়।" },
-      { property: "og:title", content: "DDS-Digital — Bangladesh Number 1 Digital Product Selling System" },
+      { property: "og:title", content: "DDS-Digital — Bangladesh's #1 Digital Product Store" },
       { property: "og:description", content: "বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট সেলিং প্ল্যাটফর্ম। ইনস্ট্যান্ট ডেলিভারি, সিকিউর পেমেন্ট, ২৪/৭ সাপোর্ট।" },
       { property: "og:url", content: "/" },
     ],
