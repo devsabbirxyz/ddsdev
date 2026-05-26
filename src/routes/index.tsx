@@ -372,24 +372,58 @@ function HomePage() {
                   )}
                 </div>
                 <div className="p-5">
-                  <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors">{p.title}</h3>
+      {/* NEWSLETTER */}
+      {settings[HOMEPAGE_KEYS.newsletter_enabled] !== "false" && (
+        <section className="mx-auto max-w-4xl px-4 sm:px-6 pb-16">
+          <Newsletter heading={settings[HOMEPAGE_KEYS.newsletter_heading]} sub={settings[HOMEPAGE_KEYS.newsletter_sub]} />
+        </section>
+      )}
+
+      {/* BLOG */}
+      {posts.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-20">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <div className="text-xs text-primary font-bold uppercase tracking-wider">📝 ব্লগ</div>
+              <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
+                Latest <span className="text-gradient-brand">Blog Posts</span>
+              </h2>
+            </div>
+            <Link to="/blog" className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+              সব পড়ুন <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {posts.slice(0, 3).map((p) => (
+              <Link
+                key={p.id}
+                to="/blog/$slug"
+                params={{ slug: p.slug }}
+                className="group glass-card rounded-2xl overflow-hidden hover:shadow-glow transition flex flex-col"
+              >
+                <div className="aspect-video w-full bg-gradient-glow grid place-items-center overflow-hidden">
+                  {p.thumbnail_url ? (
+                    <img src={p.thumbnail_url} alt={p.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="text-5xl font-display font-bold text-gradient-brand opacity-25">{p.title.slice(0, 1)}</div>
+                  )}
+                </div>
+                <div className="p-5 flex-1 flex flex-col">
+                  <h3 className="font-bold text-base line-clamp-2 group-hover:text-primary transition-colors">{p.title}</h3>
                   {p.short_description && <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{p.short_description}</p>}
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary group-hover:gap-2 transition-all">
+                    Read More <ArrowRight className="h-4 w-4" />
+                  </span>
                 </div>
               </Link>
             ))}
           </div>
         </section>
       )}
-
-      {/* NEWSLETTER */}
-      {settings[HOMEPAGE_KEYS.newsletter_enabled] !== "false" && (
-        <section className="mx-auto max-w-4xl px-4 sm:px-6 pb-20">
-          <Newsletter heading={settings[HOMEPAGE_KEYS.newsletter_heading]} sub={settings[HOMEPAGE_KEYS.newsletter_sub]} />
-        </section>
-      )}
     </>
   );
 }
+
 
 function Newsletter({ heading, sub }: { heading?: string; sub?: string }) {
   const [email, setEmail] = useState("");
