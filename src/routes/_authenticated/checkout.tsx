@@ -128,11 +128,14 @@ function CheckoutPage() {
     if (!code) return;
     const { data, error } = await supabase
       .from("coupons")
-      .select("code,discount_type,discount_value,minimum_order,is_active,start_date,end_date,max_uses,used_count")
+      .select("code,discount_type,discount_value,minimum_order,is_active,start_date,end_date")
       .ilike("code", code)
       .maybeSingle();
     if (error || !data) { toast.error("কুপন কোড পাওয়া যায়নি"); return; }
     if (!data.is_active) { toast.error("কুপন সক্রিয় নয়"); return; }
+    const now = new Date();
+    if (data.start_date && new Date(data.start_date) > now) { toast.error("কুপন এখনো সক্রিয় হয়নি"); return; }
+    if (data.end_date && new Date(data.end_date) < now) { toast.error("কুপন মেয়াদ শেষ"); return; }
     const now = new Date();
     if (data.start_date && new Date(data.start_date) > now) { toast.error("কুপন এখনো সক্রিয় হয়নি"); return; }
     if (data.end_date && new Date(data.end_date) < now) { toast.error("কুপন মেয়াদ শেষ"); return; }
