@@ -38,13 +38,14 @@ export function OfferBannerSlider() {
   return (
     <div className="mt-8 w-full overflow-hidden rounded-3xl border border-glass-border" ref={emblaRef}>
       <div className="flex">
-        {slides.map((s) => {
+        {slides.map((s, idx) => {
           const img = (
-            <img
+            <SmartImage
               src={s.image_url}
               alt={s.alt_text ?? "offer banner"}
               className="w-full h-full object-cover"
-              loading="lazy"
+              loading={idx === 0 ? "eager" : "lazy"}
+              fetchPriority={idx === 0 ? "high" : "auto"}
             />
           );
           return (
