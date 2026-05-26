@@ -125,9 +125,9 @@ function AdminOverview() {
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard icon={DollarSign} label="মোট আয়" value={formatBDT(data.revenue)} sub={`${range}: ${formatBDT(data.rangeRevenue)}`} tint="rose" />
+        <KpiCard icon={DollarSign} label="মোট আয়" value={formatBDT(data.revenue)} sub={`${range}: ${formatBDT(data.rangeRevenue)}`} tint="amber" />
         <KpiCard icon={ShoppingCart} label="মোট অর্ডার" value={data.orderCount} sub={`${range}: ${data.rangeOrders}`} tint="violet" />
-        <KpiCard icon={Package} label="প্রোডাক্ট" value={data.productCount} tint="pink" />
+        <KpiCard icon={Package} label="প্রোডাক্ট" value={data.productCount} tint="teal" />
         <KpiCard icon={Users} label="সেলার + অ্যাফিলিয়েট" value={data.sellerCount + data.affiliateCount} sub={`${data.sellerCount} sellers · ${data.affiliateCount} aff.`} tint="cyan" />
       </div>
 
@@ -213,24 +213,26 @@ function AdminOverview() {
   );
 }
 
-function KpiCard({ icon: Icon, label, value, sub, tint }: { icon: any; label: string; value: React.ReactNode; sub?: string; tint: "rose" | "violet" | "pink" | "cyan" | "amber" }) {
-  const tints: Record<string, { ring: string; bg: string; icon: string; glow: string }> = {
-    rose:   { ring: "ring-rose-500/30",   bg: "bg-gradient-to-br from-rose-500 to-rose-700",     icon: "text-white", glow: "shadow-[0_10px_30px_-10px_rgba(244,63,94,0.6)]" },
-    violet: { ring: "ring-violet-500/30", bg: "bg-gradient-to-br from-violet-500 to-violet-700", icon: "text-white", glow: "shadow-[0_10px_30px_-10px_rgba(139,92,246,0.6)]" },
-    pink:   { ring: "ring-pink-500/30",   bg: "bg-gradient-to-br from-pink-500 to-fuchsia-700",  icon: "text-white", glow: "shadow-[0_10px_30px_-10px_rgba(236,72,153,0.6)]" },
-    cyan:   { ring: "ring-cyan-500/30",   bg: "bg-gradient-to-br from-cyan-500 to-sky-700",      icon: "text-white", glow: "shadow-[0_10px_30px_-10px_rgba(6,182,212,0.6)]" },
-    amber:  { ring: "ring-amber-500/30",  bg: "bg-gradient-to-br from-amber-500 to-orange-600",  icon: "text-white", glow: "shadow-[0_10px_30px_-10px_rgba(245,158,11,0.6)]" },
+function KpiCard({ icon: Icon, label, value, sub, tint }: { icon: any; label: string; value: React.ReactNode; sub?: string; tint: "teal" | "violet" | "cyan" | "amber" | "rose" }) {
+  const tints: Record<string, { bg: string; glow: string }> = {
+    amber:  { bg: "bg-gradient-to-br from-orange-400 to-amber-600",  glow: "shadow-[0_10px_30px_-10px_rgba(251,146,60,0.55)]" },
+    violet: { bg: "bg-gradient-to-br from-violet-500 to-indigo-700", glow: "shadow-[0_10px_30px_-10px_rgba(139,92,246,0.55)]" },
+    teal:   { bg: "bg-gradient-to-br from-teal-400 to-emerald-600",  glow: "shadow-[0_10px_30px_-10px_rgba(45,212,191,0.55)]" },
+    cyan:   { bg: "bg-gradient-to-br from-cyan-400 to-sky-600",      glow: "shadow-[0_10px_30px_-10px_rgba(34,211,238,0.55)]" },
+    rose:   { bg: "bg-gradient-to-br from-rose-500 to-pink-700",     glow: "shadow-[0_10px_30px_-10px_rgba(244,63,94,0.55)]" },
   };
   const t = tints[tint];
   return (
-    <div className="glass-card rounded-2xl p-5 flex flex-col gap-4 hover:scale-[1.02] transition">
-      <div className={`grid h-12 w-12 place-items-center rounded-2xl ${t.bg} ${t.glow}`}>
-        <Icon className={`h-6 w-6 ${t.icon}`} />
-      </div>
-      <div>
-        <div className="text-2xl font-display font-bold leading-tight truncate">{value}</div>
-        <div className="text-xs text-muted-foreground mt-1">{label}</div>
-        {sub && <div className="text-[11px] text-muted-foreground/80 mt-1 truncate">{sub}</div>}
+    <div className="glass-card rounded-2xl p-5 hover:scale-[1.02] transition relative overflow-hidden">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-xs text-muted-foreground uppercase tracking-wider">{label}</div>
+          <div className="text-3xl font-display font-bold leading-tight mt-2 truncate">{value}</div>
+          {sub && <div className="text-[11px] text-muted-foreground/80 mt-1 truncate">{sub}</div>}
+        </div>
+        <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${t.bg} ${t.glow}`}>
+          <Icon className="h-5 w-5 text-white" />
+        </div>
       </div>
     </div>
   );

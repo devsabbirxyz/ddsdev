@@ -182,9 +182,9 @@ function AdminLayout() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="admin-theme min-h-screen bg-background">
       {/* Ambient glow */}
-      <div className="pointer-events-none fixed inset-0 -z-10 opacity-50" style={{ background: "var(--gradient-glow)" }} />
+      <div className="pointer-events-none fixed inset-0 -z-10 opacity-60" style={{ background: "var(--gradient-glow)" }} />
 
       <div className="flex">
         {/* Desktop sidebar (fixed full-height) */}
