@@ -349,29 +349,6 @@ function HomePage() {
 
       </section>
 
-      {/* BLOG TEASER */}
-      {posts.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-16">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <div className="text-xs text-primary font-bold uppercase tracking-wider">📝 ব্লগ</div>
-              <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
-                সর্বশেষ <span className="text-gradient-brand">আর্টিকেল</span>
-              </h2>
-            </div>
-            <Link to="/blog" className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-              সব পড়ুন <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-5">
-            {posts.map((p) => (
-              <Link key={p.id} to="/blog/$slug" params={{ slug: p.slug }} className="group glass-card rounded-2xl overflow-hidden hover:shadow-glow transition">
-                <div className="aspect-video bg-gradient-glow grid place-items-center">
-                  {p.thumbnail_url ? <img src={p.thumbnail_url} alt={p.title} className="h-full w-full object-cover" /> : (
-                    <div className="text-5xl font-display font-bold text-gradient-brand opacity-25">{p.title.slice(0, 1)}</div>
-                  )}
-                </div>
-                <div className="p-5">
       {/* NEWSLETTER */}
       {settings[HOMEPAGE_KEYS.newsletter_enabled] !== "false" && (
         <section className="mx-auto max-w-4xl px-4 sm:px-6 pb-16">
