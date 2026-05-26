@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Eye, Layers, ArrowUpRight, Zap } from "lucide-react";
 import { formatBDT } from "@/lib/storefront";
+import { SmartImage } from "./SmartImage";
 
 export interface ProductCardData {
   id: string;
@@ -53,18 +54,12 @@ export function ProductCard({ p }: { p: ProductCardData }) {
     >
       {/* Image area */}
       <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-        {mainImage ? (
-          <img
-            src={mainImage}
-            alt={p.title}
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="absolute inset-0 grid place-items-center text-6xl font-display font-bold text-gradient-brand opacity-20 select-none">
-            {p.title.slice(0, 2).toUpperCase()}
-          </div>
-        )}
+        <SmartImage
+          src={mainImage}
+          alt={p.title}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+
 
         {/* top-left badges */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">

@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { Sparkles } from "lucide-react";
 import { offerSlidesQuery } from "@/lib/site-settings";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SmartImage } from "./SmartImage";
 
 export function OfferBannerSlider() {
   const { data: slides = [], isLoading } = useQuery(offerSlidesQuery);
@@ -38,13 +39,14 @@ export function OfferBannerSlider() {
   return (
     <div className="mt-8 w-full overflow-hidden rounded-3xl border border-glass-border" ref={emblaRef}>
       <div className="flex">
-        {slides.map((s) => {
+        {slides.map((s, idx) => {
           const img = (
-            <img
+            <SmartImage
               src={s.image_url}
               alt={s.alt_text ?? "offer banner"}
               className="w-full h-full object-cover"
-              loading="lazy"
+              loading={idx === 0 ? "eager" : "lazy"}
+              fetchPriority={idx === 0 ? "high" : "auto"}
             />
           );
           return (
