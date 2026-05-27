@@ -42,7 +42,7 @@ function HomePage() {
   const { t } = useI18n();
   const { data: featured = [] } = useQuery(productsQuery({ featured: true, limit: 8 }));
   const { data: latest = [] } = useQuery(productsQuery({ sort: "new", limit: 4 }));
-  const { data: posts = [] } = useQuery(blogPostsQuery(3));
+  const { data: posts = [] } = useQuery(blogPostsQuery(3, { featured: true }));
   const { data: slides = [] } = useQuery(reviewSlidesQuery());
   const { data: settings = {} } = useQuery(siteSettingsQuery);
   const { data: categories = [] } = useQuery(categoriesQuery());
