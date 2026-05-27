@@ -85,7 +85,9 @@ function HeroTab({ settings, slides }: { settings: Record<string, string>; slide
     hero_cta_secondary: settings[HOMEPAGE_KEYS.hero_cta_secondary] ?? "আরও জানুন",
     hero_cta_secondary_link: settings[HOMEPAGE_KEYS.hero_cta_secondary_link] ?? "/dashboard",
     announcement_text: settings[HOMEPAGE_KEYS.announcement] ?? "",
+    how_to_buy_video_url: settings[HOMEPAGE_KEYS.how_to_buy_video] ?? "",
   });
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
