@@ -94,21 +94,23 @@ export const productReviewsQuery = (productId: string | undefined) =>
     },
   });
 
-export const blogPostsQuery = (limit?: number) =>
+export const blogPostsQuery = (limit?: number, opts?: { featured?: boolean }) =>
   queryOptions({
-    queryKey: ["blog", limit ?? null],
+    queryKey: ["blog", limit ?? null, opts ?? {}],
     queryFn: async () => {
       let q = supabase
         .from("blog_posts")
-        .select("id,slug,title,title_en,short_description,short_description_en,thumbnail_url,published_at,view_count")
+        .select("id,slug,title,title_en,short_description,short_description_en,thumbnail_url,published_at,view_count,is_featured")
         .eq("is_published", true)
         .order("published_at", { ascending: false, nullsFirst: false });
+      if (opts?.featured) q = q.eq("is_featured", true);
       if (limit) q = q.limit(limit);
       const { data, error } = await q;
       if (error) throw error;
       return data ?? [];
     },
   });
+
 
 export const blogPostBySlugQuery = (slug: string) =>
   queryOptions({
