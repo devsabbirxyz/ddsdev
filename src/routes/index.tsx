@@ -283,7 +283,8 @@ function HomePage() {
         <div className="glass-card rounded-3xl p-2 sm:p-3 shadow-glow">
           <div className="aspect-video w-full overflow-hidden rounded-2xl bg-black">
             <iframe
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+              src={toYouTubeEmbed(settings[HOMEPAGE_KEYS.how_to_buy_video])}
+
               title="How to Buy"
               loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
