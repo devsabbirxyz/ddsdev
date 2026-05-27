@@ -113,8 +113,13 @@ function HeroTab({ settings, slides }: { settings: Record<string, string>; slide
           <div></div>
           <div><label className="text-xs text-muted-foreground">Secondary CTA Text</label><input className="ip" placeholder="আরও জানুন" value={form.hero_cta_secondary} onChange={(e) => setForm({...form, hero_cta_secondary: e.target.value})} /></div>
           <div><label className="text-xs text-muted-foreground">Secondary CTA Link</label><input className="ip" placeholder="/dashboard বা https://..." value={form.hero_cta_secondary_link} onChange={(e) => setForm({...form, hero_cta_secondary_link: e.target.value})} /></div>
+          <div className="sm:col-span-2">
+            <label className="text-xs text-muted-foreground">How to Buy — YouTube Video URL (যেকোনো youtube.com/watch বা youtu.be লিংক)</label>
+            <input className="ip" placeholder="https://www.youtube.com/watch?v=..." value={form.how_to_buy_video_url} onChange={(e) => setForm({...form, how_to_buy_video_url: e.target.value})} />
+          </div>
         </div>
         <button className="btn bg-gradient-brand text-primary-foreground shadow-glow"><Save className="h-4 w-4" /> Save</button>
+
       </form>
       <SlideCRUD kind="hero" slides={slides} title="Hero Slides (ব্যাকগ্রাউন্ড / নাভবার ইমেজ)" />
     </div>
