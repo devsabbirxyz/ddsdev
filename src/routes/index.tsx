@@ -5,7 +5,7 @@ import * as LucideIcons from "lucide-react";
 import { Zap, ShieldCheck, Headphones, Users, BadgeCheck, ArrowRight, Star, Mail, CheckCircle2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { productsQuery, blogPostsQuery, reviewSlidesQuery, categoriesQuery } from "@/lib/storefront";
-import { siteSettingsQuery, parseTrustBar, parsePromoSection, HOMEPAGE_KEYS } from "@/lib/site-settings";
+import { siteSettingsQuery, parseTrustBar, parsePromoSection, HOMEPAGE_KEYS, toYouTubeEmbed } from "@/lib/site-settings";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { OfferBannerSlider } from "@/components/storefront/OfferBannerSlider";
 import { OfferPopup } from "@/components/storefront/OfferPopup";
@@ -42,7 +42,7 @@ function HomePage() {
   const { t } = useI18n();
   const { data: featured = [] } = useQuery(productsQuery({ featured: true, limit: 8 }));
   const { data: latest = [] } = useQuery(productsQuery({ sort: "new", limit: 4 }));
-  const { data: posts = [] } = useQuery(blogPostsQuery(3));
+  const { data: posts = [] } = useQuery(blogPostsQuery(3, { featured: true }));
   const { data: slides = [] } = useQuery(reviewSlidesQuery());
   const { data: settings = {} } = useQuery(siteSettingsQuery);
   const { data: categories = [] } = useQuery(categoriesQuery());
@@ -283,7 +283,8 @@ function HomePage() {
         <div className="glass-card rounded-3xl p-2 sm:p-3 shadow-glow">
           <div className="aspect-video w-full overflow-hidden rounded-2xl bg-black">
             <iframe
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+              src={toYouTubeEmbed(settings[HOMEPAGE_KEYS.how_to_buy_video])}
+
               title="How to Buy"
               loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

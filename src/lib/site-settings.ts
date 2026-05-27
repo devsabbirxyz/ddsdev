@@ -65,7 +65,26 @@ export const HOMEPAGE_KEYS = {
   payment_nagad: "payment_nagad_enabled",
   payment_rocket: "payment_rocket_enabled",
   payment_upay: "payment_upay_enabled",
+  how_to_buy_video: "how_to_buy_video_url",
 } as const;
+
+export function toYouTubeEmbed(url: string | undefined | null): string {
+  if (!url) return "https://www.youtube.com/embed/dQw4w9WgXcQ";
+  const u = url.trim();
+  // youtu.be/<id>
+  let m = u.match(/youtu\.be\/([\w-]{6,})/);
+  if (m) return `https://www.youtube.com/embed/${m[1]}`;
+  // youtube.com/watch?v=<id>
+  m = u.match(/[?&]v=([\w-]{6,})/);
+  if (m) return `https://www.youtube.com/embed/${m[1]}`;
+  // youtube.com/shorts/<id>
+  m = u.match(/youtube\.com\/shorts\/([\w-]{6,})/);
+  if (m) return `https://www.youtube.com/embed/${m[1]}`;
+  // already embed or any other URL
+  if (u.includes("/embed/")) return u;
+  return u;
+}
+
 
 export type TrustItem = { icon: string; label: string; sub: string };
 
