@@ -8,8 +8,8 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 const requireAdmin = createMiddleware({ type: "function" })
   .middleware([requireSupabaseAuth])
   .server(async ({ next, context }) => {
-    const { supabase, userId } = context;
-    const { data, error } = await supabase
+    const { userId } = context;
+    const { data, error } = await supabaseAdmin
       .from("user_roles")
       .select("role,is_active")
       .eq("user_id", userId)
@@ -19,6 +19,25 @@ const requireAdmin = createMiddleware({ type: "function" })
     if (error) throw new Error(error.message);
     if (!data) throw new Error("Forbidden: admin role required");
     return next({ context: { adminId: userId } });
+  });
+
+export const getAdminAuthState = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { userId, claims } = context;
+    const { data: roles, error } = await supabaseAdmin
+      .from("user_roles")
+      .select("role,is_active")
+      .eq("user_id", userId)
+      .in("role", ["admin", "super_admin", "moderator"])
+      .eq("is_active", true);
+    if (error) throw new Error(error.message);
+    const email = typeof claims?.email === "string" ? claims.email : "";
+    return {
+      ok: Boolean(roles?.length),
+      isSuper: Boolean(roles?.some((role) => role.role === "super_admin")),
+      email,
+    };
   });
 
 function genReferralCode(seed: string) {
@@ -826,8 +845,8 @@ export const deleteOffer = createServerFn({ method: "POST" })
 const requireSuperAdmin = createMiddleware({ type: "function" })
   .middleware([requireSupabaseAuth])
   .server(async ({ next, context }) => {
-    const { supabase, userId } = context;
-    const { data, error } = await supabase
+    const { userId } = context;
+    const { data, error } = await supabaseAdmin
       .from("user_roles")
       .select("role,is_active")
       .eq("user_id", userId)

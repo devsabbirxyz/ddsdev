@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getAdminAuthState } from "@/lib/admin.functions";
 import { Loader2, ShieldCheck, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/admin-login")({
@@ -11,14 +13,10 @@ export const Route = createFileRoute("/admin-login")({
     ],
   }),
   beforeLoad: async () => {
-    const { data: sess } = await supabase.auth.getSession();
-    if (sess.session) {
-      const { data: roles } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", sess.session.user.id)
-        .in("role", ["admin", "super_admin"]);
-      if (roles && roles.length > 0) throw redirect({ to: "/admin" });
+    const { data, error } = await supabase.auth.getUser();
+    if (!error && data.user) {
+      const authState = await getAdminAuthState().catch(() => null);
+      if (authState?.ok) throw redirect({ to: "/admin" });
     }
   },
   component: AdminLoginPage,
@@ -26,6 +24,7 @@ export const Route = createFileRoute("/admin-login")({
 
 function AdminLoginPage() {
   const navigate = useNavigate();
+  const getAuthState = useServerFn(getAdminAuthState);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -44,13 +43,9 @@ function AdminLoginPage() {
       setError("ভুল ইউজারনেম বা পাসওয়ার্ড");
       return;
     }
-    const { data: roles, error: rpcErr } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", data.user.id)
-      .in("role", ["admin", "super_admin"]);
+    const authState = await getAuthState().catch(() => null);
     setLoading(false);
-    if (rpcErr || !roles || roles.length === 0) {
+    if (!authState?.ok) {
       await supabase.auth.signOut();
       setError("এই অ্যাকাউন্টে এডমিন অ্যাক্সেস নেই");
       return;
