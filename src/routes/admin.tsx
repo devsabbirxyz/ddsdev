@@ -1,34 +1,14 @@
 import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQuery, queryOptions } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { getAdminAuthState } from "@/lib/admin.functions";
 import {
   LayoutDashboard, ShoppingBag, Store, Users, Package, Wallet,
   Tag, Image as ImageIcon, Settings, Home, CreditCard, Ticket, LifeBuoy,
   Sparkles, ShieldCheck, Mail, PanelBottom, Menu, X, Search, Bell, MessageSquare, LogOut, Rocket, MessageCircle,
 } from "lucide-react";
-
-const adminAuthQuery = queryOptions({
-  queryKey: ["admin", "auth-check"],
-  staleTime: 10 * 60 * 1000,
-  gcTime: 30 * 60 * 1000,
-  queryFn: async () => {
-    const { data: userData, error: userErr } = await supabase.auth.getUser();
-    if (userErr || !userData.user) return { ok: false as const, isSuper: false, email: "" };
-    const uid = userData.user.id;
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role,is_active")
-      .eq("user_id", uid)
-      .in("role", ["admin", "super_admin", "moderator"])
-      .eq("is_active", true);
-    return {
-      ok: Boolean(roles?.length),
-      isSuper: Boolean(roles?.some((role) => role.role === "super_admin")),
-      email: userData.user.email ?? "",
-    };
-  },
-});
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
