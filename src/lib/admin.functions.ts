@@ -4,20 +4,42 @@ import { createMiddleware } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
+type AdminRole = "admin" | "super_admin" | "moderator";
+const ADMIN_ROLES: AdminRole[] = ["admin", "super_admin", "moderator"];
+
+function isPermissionDenied(error: { message?: string } | null) {
+  return Boolean(error?.message?.toLowerCase().includes("permission denied"));
+}
+
+async function getActiveAdminRoles(userId: string) {
+  const { data, error } = await supabaseAdmin
+    .from("user_roles")
+    .select("role,is_active")
+    .eq("user_id", userId)
+    .in("role", ADMIN_ROLES)
+    .eq("is_active", true);
+
+  if (error) {
+    if (isPermissionDenied(error)) {
+      console.error(
+        "Admin role lookup failed because SERVICE_ROLE_KEY is not a real service_role key or has_role grants are missing.",
+        error.message,
+      );
+      return [];
+    }
+    throw new Error(error.message);
+  }
+
+  return data ?? [];
+}
+
 // Admin guard middleware: composes with requireSupabaseAuth
 const requireAdmin = createMiddleware({ type: "function" })
   .middleware([requireSupabaseAuth])
   .server(async ({ next, context }) => {
     const { userId } = context;
-    const { data, error } = await supabaseAdmin
-      .from("user_roles")
-      .select("role,is_active")
-      .eq("user_id", userId)
-      .in("role", ["admin", "super_admin", "moderator"])
-      .eq("is_active", true)
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    if (!data) throw new Error("Forbidden: admin role required");
+    const roles = await getActiveAdminRoles(userId);
+    if (!roles.length) throw new Error("Forbidden: admin role required");
     return next({ context: { adminId: userId } });
   });
 
@@ -25,13 +47,7 @@ export const getAdminAuthState = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { userId, claims } = context;
-    const { data: roles, error } = await supabaseAdmin
-      .from("user_roles")
-      .select("role,is_active")
-      .eq("user_id", userId)
-      .in("role", ["admin", "super_admin", "moderator"])
-      .eq("is_active", true);
-    if (error) throw new Error(error.message);
+    const roles = await getActiveAdminRoles(userId);
     const email = typeof claims?.email === "string" ? claims.email : "";
     return {
       ok: Boolean(roles?.length),
