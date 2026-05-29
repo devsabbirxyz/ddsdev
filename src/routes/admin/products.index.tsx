@@ -46,7 +46,7 @@ function AdminProducts() {
   };
 
   const onDelete = async (id: string) => {
-    if (!confirm("ডিলিট করবেন? এটি ফেরানো যাবে না।")) return;
+    if (!(await confirmDialog())) return;
     try {
       await del({ data: { id } });
       toast.success("ডিলিট হয়েছে");
