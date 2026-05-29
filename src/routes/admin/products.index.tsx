@@ -7,6 +7,7 @@ import { deleteProduct } from "@/lib/admin.functions";
 import { formatBDT } from "@/lib/storefront";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Star, Eye, EyeOff } from "lucide-react";
+import { confirmDialog } from "@/components/ui/modal-dialogs";
 
 const productsQuery = queryOptions({
   queryKey: ["admin", "products"],
