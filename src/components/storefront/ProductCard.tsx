@@ -64,10 +64,12 @@ export function ProductCard({ p }: { p: ProductCardData }) {
         {/* top-left badges */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
           {p.is_best_seller && (
-            <span className="rounded-full bg-gradient-brand px-2.5 py-1 text-[10px] font-bold text-primary-foreground shadow-glow">BEST</span>
-          )}
-          {p.is_new_arrival && (
-            <span className="rounded-full bg-secondary/90 backdrop-blur px-2.5 py-1 text-[10px] font-bold text-secondary-foreground">NEW</span>
+            <span
+              className="rounded-lg px-2.5 py-1 text-[10px] font-bold text-white shadow-[0_0_12px_rgba(255,107,53,0.6)]"
+              style={{ background: "linear-gradient(135deg,#FF6B35,#7B2FBE)" }}
+            >
+              🏆 Best Seller
+            </span>
           )}
           {isVariant && (
             <span className="inline-flex items-center gap-1 rounded-full bg-background/70 backdrop-blur px-2.5 py-1 text-[10px] font-bold text-foreground border border-primary/30">

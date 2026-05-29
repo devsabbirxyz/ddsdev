@@ -3,11 +3,12 @@ import { useState } from "react";
 import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { deleteProduct } from "@/lib/admin.functions";
+import { deleteProduct, toggleProductFlag } from "@/lib/admin.functions";
 import { formatBDT } from "@/lib/storefront";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Star, Eye, EyeOff } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Trophy, Eye, EyeOff } from "lucide-react";
 import { confirmDialog } from "@/components/ui/modal-dialogs";
+
 
 const productsQuery = queryOptions({
   queryKey: ["admin", "products"],
@@ -32,8 +33,10 @@ function AdminProducts() {
   const qc = useQueryClient();
   const nav = useNavigate();
   const del = useServerFn(deleteProduct);
+  const toggleFlag = useServerFn(toggleProductFlag);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [search, setSearch] = useState("");
+  const [pulse, setPulse] = useState<string | null>(null);
 
   if (isLoading || !data) return <div className="text-muted-foreground">লোড হচ্ছে...</div>;
 
@@ -53,6 +56,27 @@ function AdminProducts() {
       qc.invalidateQueries({ queryKey: ["admin", "products"] });
     } catch (e: any) { toast.error(e.message); }
   };
+
+  const onToggle = async (id: string, flag: "is_featured" | "is_best_seller", current: boolean) => {
+    const key = `${id}:${flag}`;
+    setPulse(key);
+    setTimeout(() => setPulse((p) => (p === key ? null : p)), 800);
+    // optimistic update
+    qc.setQueryData(["admin", "products"], (old: any) =>
+      Array.isArray(old) ? old.map((r: any) => (r.id === id ? { ...r, [flag]: !current } : r)) : old,
+    );
+    try {
+      await toggleFlag({ data: { id, flag, value: !current } });
+      toast.success(flag === "is_featured" ? "Featured আপডেট হয়েছে!" : "Best Seller আপডেট হয়েছে!");
+    } catch (e: any) {
+      // revert
+      qc.setQueryData(["admin", "products"], (old: any) =>
+        Array.isArray(old) ? old.map((r: any) => (r.id === id ? { ...r, [flag]: current } : r)) : old,
+      );
+      toast.error(e.message || "আপডেট ব্যর্থ হয়েছে, আবার চেষ্টা করুন");
+    }
+  };
+
 
   return (
     <div className="space-y-4">
@@ -87,7 +111,8 @@ function AdminProducts() {
                 <th className="text-left px-4 py-3">প্রোডাক্ট</th>
                 <th className="text-left px-4 py-3">টাইপ</th>
                 <th className="text-left px-4 py-3">মূল্য</th>
-                <th className="text-left px-4 py-3">ট্যাগ</th>
+                <th className="text-center px-2 py-3">⭐</th>
+                <th className="text-center px-2 py-3">🏆</th>
                 <th className="text-left px-4 py-3">স্ট্যাটাস</th>
                 <th className="text-right px-4 py-3">অ্যাকশন</th>
               </tr>
@@ -103,13 +128,23 @@ function AdminProducts() {
                     <div className="text-xs text-muted-foreground font-mono">/{p.slug}</div>
                   </td>
                   <td className="px-4 py-3 text-xs">{p.delivery_type}</td>
-                  <td className="px-4 py-3">{formatBDT(Number(p.offer_price ?? p.regular_price ?? 0))}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1">
-                      {p.is_featured && <span title="Featured"><Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" /></span>}
-                      {p.is_best_seller && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-600">BEST</span>}
-                      {p.is_new_arrival && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-600">NEW</span>}
-                    </div>
+                  <td className="px-2 py-3 text-center">
+                    <button
+                      onClick={() => onToggle(p.id, "is_featured", !!p.is_featured)}
+                      title={p.is_featured ? "Featured (click to remove)" : "Mark as Featured"}
+                      className={`inline-flex items-center justify-center h-8 w-8 rounded-lg transition-all duration-200 hover:bg-accent active:scale-90 ${pulse === `${p.id}:is_featured` ? "scale-110 animate-pulse" : "scale-100"}`}
+                    >
+                      <Star className={`h-4 w-4 transition-colors ${p.is_featured ? "text-yellow-400 fill-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.7)]" : "text-muted-foreground/40"}`} />
+                    </button>
+                  </td>
+                  <td className="px-2 py-3 text-center">
+                    <button
+                      onClick={() => onToggle(p.id, "is_best_seller", !!p.is_best_seller)}
+                      title={p.is_best_seller ? "Best Seller (click to remove)" : "Mark as Best Seller"}
+                      className={`inline-flex items-center justify-center h-8 w-8 rounded-lg transition-all duration-200 hover:bg-accent active:scale-90 ${pulse === `${p.id}:is_best_seller` ? "scale-110 animate-pulse" : "scale-100"}`}
+                    >
+                      <Trophy className={`h-4 w-4 transition-colors ${p.is_best_seller ? "text-[#FF6B35] fill-[#FF6B35]/30 drop-shadow-[0_0_6px_rgba(255,107,53,0.7)]" : "text-muted-foreground/40"}`} />
+                    </button>
                   </td>
                   <td className="px-4 py-3"><span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-accent">{p.status}</span></td>
                   <td className="px-4 py-3 text-right">
