@@ -6,6 +6,7 @@ import { formatBDT } from "@/lib/storefront";
 import { deleteProduct } from "@/lib/seller.functions";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import { confirmDialog } from "@/components/ui/modal-dialogs";
 
 const myProductsQuery = queryOptions({
   queryKey: ["seller", "my-products"],
