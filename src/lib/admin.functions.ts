@@ -826,14 +826,15 @@ export const deleteOffer = createServerFn({ method: "POST" })
 const requireSuperAdmin = createMiddleware({ type: "function" })
   .middleware([requireSupabaseAuth])
   .server(async ({ next, context }) => {
-    const { userId } = context;
-    const { data } = await supabaseAdmin
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
       .from("user_roles")
       .select("role,is_active")
       .eq("user_id", userId)
       .eq("role", "super_admin")
       .eq("is_active", true)
       .maybeSingle();
+    if (error) throw new Error(error.message);
     if (!data) throw new Error("Forbidden: super_admin required");
     return next({ context: { adminId: userId } });
   });
