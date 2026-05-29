@@ -3,7 +3,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { saveProduct } from "@/lib/admin.functions";
 import { toast } from "sonner";
-import { successDialog } from "@/components/ui/modal-dialogs";
 import { Package, Layers, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products/new")({
