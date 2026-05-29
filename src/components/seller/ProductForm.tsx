@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { saveProduct } from "@/lib/seller.functions";
 import { toast } from "sonner";
+import { successDialog } from "@/components/ui/modal-dialogs";
 
 const categoriesQuery = queryOptions({
   queryKey: ["all-categories"],
