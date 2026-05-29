@@ -862,15 +862,10 @@ const requireSuperAdmin = createMiddleware({ type: "function" })
   .middleware([requireSupabaseAuth])
   .server(async ({ next, context }) => {
     const { userId } = context;
-    const { data, error } = await supabaseAdmin
-      .from("user_roles")
-      .select("role,is_active")
-      .eq("user_id", userId)
-      .eq("role", "super_admin")
-      .eq("is_active", true)
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    if (!data) throw new Error("Forbidden: super_admin required");
+    const roles = await getActiveAdminRoles(userId);
+    if (!roles.some((role) => role.role === "super_admin")) {
+      throw new Error("Forbidden: super_admin required");
+    }
     return next({ context: { adminId: userId } });
   });
 
