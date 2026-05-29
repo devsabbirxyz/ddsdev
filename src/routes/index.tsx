@@ -40,14 +40,18 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const { t } = useI18n();
-  const { data: featured = [] } = useQuery(productsQuery({ featured: true, limit: 8 }));
-  const { data: latest = [] } = useQuery(productsQuery({ sort: "new", limit: 4 }));
-  const { data: posts = [] } = useQuery(blogPostsQuery(3, { featured: true }));
+  const { data: featured = [], isLoading: loadingFeatured } = useQuery(productsQuery({ featured: true, limit: 8 }));
+  const { data: latest = [], isLoading: loadingLatest } = useQuery(productsQuery({ sort: "new", limit: 8 }));
+  const { data: featuredPosts = [] } = useQuery(blogPostsQuery(3, { featured: true }));
+  const { data: latestPosts = [], isLoading: loadingBlog } = useQuery(blogPostsQuery(3));
   const { data: slides = [] } = useQuery(reviewSlidesQuery());
   const { data: settings = {} } = useQuery(siteSettingsQuery);
   const { data: categories = [] } = useQuery(categoriesQuery());
 
   const products = featured.length > 0 ? featured : latest;
+  const posts = featuredPosts.length > 0 ? featuredPosts : latestPosts;
+  const productsLoading = loadingFeatured && loadingLatest;
+
 
   const defaultTrust = [
     { icon: "BadgeCheck", label: "Best Quality", sub: "100% Authentic" },
