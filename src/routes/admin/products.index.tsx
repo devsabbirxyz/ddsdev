@@ -30,11 +30,14 @@ export const Route = createFileRoute("/admin/products/")({
 
 function AdminProducts() {
   const { data, isLoading } = useQuery(productsQuery);
+  const { data, isLoading } = useQuery(productsQuery);
   const qc = useQueryClient();
   const nav = useNavigate();
   const del = useServerFn(deleteProduct);
+  const toggleFlag = useServerFn(toggleProductFlag);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [search, setSearch] = useState("");
+  const [pulse, setPulse] = useState<string | null>(null);
 
   if (isLoading || !data) return <div className="text-muted-foreground">লোড হচ্ছে...</div>;
 
@@ -54,6 +57,27 @@ function AdminProducts() {
       qc.invalidateQueries({ queryKey: ["admin", "products"] });
     } catch (e: any) { toast.error(e.message); }
   };
+
+  const onToggle = async (id: string, flag: "is_featured" | "is_best_seller", current: boolean) => {
+    const key = `${id}:${flag}`;
+    setPulse(key);
+    setTimeout(() => setPulse((p) => (p === key ? null : p)), 800);
+    // optimistic update
+    qc.setQueryData(["admin", "products"], (old: any) =>
+      Array.isArray(old) ? old.map((r: any) => (r.id === id ? { ...r, [flag]: !current } : r)) : old,
+    );
+    try {
+      await toggleFlag({ data: { id, flag, value: !current } });
+      toast.success(flag === "is_featured" ? "Featured আপডেট হয়েছে!" : "Best Seller আপডেট হয়েছে!");
+    } catch (e: any) {
+      // revert
+      qc.setQueryData(["admin", "products"], (old: any) =>
+        Array.isArray(old) ? old.map((r: any) => (r.id === id ? { ...r, [flag]: current } : r)) : old,
+      );
+      toast.error(e.message || "আপডেট ব্যর্থ হয়েছে, আবার চেষ্টা করুন");
+    }
+  };
+
 
   return (
     <div className="space-y-4">
