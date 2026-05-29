@@ -529,6 +529,7 @@ export const deleteProduct = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.from("products").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
 
 export const toggleProductFlag = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
