@@ -3,11 +3,12 @@ import { useState } from "react";
 import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { deleteProduct } from "@/lib/admin.functions";
+import { deleteProduct, toggleProductFlag } from "@/lib/admin.functions";
 import { formatBDT } from "@/lib/storefront";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Star, Eye, EyeOff } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Trophy, Eye, EyeOff } from "lucide-react";
 import { confirmDialog } from "@/components/ui/modal-dialogs";
+
 
 const productsQuery = queryOptions({
   queryKey: ["admin", "products"],
