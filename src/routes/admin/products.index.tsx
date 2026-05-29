@@ -111,7 +111,8 @@ function AdminProducts() {
                 <th className="text-left px-4 py-3">প্রোডাক্ট</th>
                 <th className="text-left px-4 py-3">টাইপ</th>
                 <th className="text-left px-4 py-3">মূল্য</th>
-                <th className="text-left px-4 py-3">ট্যাগ</th>
+                <th className="text-center px-2 py-3">⭐</th>
+                <th className="text-center px-2 py-3">🏆</th>
                 <th className="text-left px-4 py-3">স্ট্যাটাস</th>
                 <th className="text-right px-4 py-3">অ্যাকশন</th>
               </tr>
