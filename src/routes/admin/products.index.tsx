@@ -30,7 +30,6 @@ export const Route = createFileRoute("/admin/products/")({
 
 function AdminProducts() {
   const { data, isLoading } = useQuery(productsQuery);
-  const { data, isLoading } = useQuery(productsQuery);
   const qc = useQueryClient();
   const nav = useNavigate();
   const del = useServerFn(deleteProduct);
