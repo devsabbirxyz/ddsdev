@@ -10,6 +10,7 @@ import {
   addProductAccounts, deleteProductAccount,
 } from "@/lib/admin.functions";
 import { toast } from "sonner";
+import { confirmDialog } from "@/components/ui/modal-dialogs";
 import {
   ArrowLeft, Save, Trash2, Plus, Star, ImagePlus,
   Package, Image as ImageIcon, Layers, Database, Search, CheckCircle2, Loader2,
