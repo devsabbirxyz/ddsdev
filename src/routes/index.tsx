@@ -166,15 +166,35 @@ function HomePage() {
           <div className="text-xs text-primary font-bold uppercase tracking-wider">⭐ ফিচারড</div>
           <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
             সেরা <span className="text-gradient-brand">প্রোডাক্টসমূহ</span>
-          </h2>
-          <p className="mt-3 text-sm text-muted-foreground">আমাদের জনপ্রিয় ফ্রি ও প্রিমিয়াম ডিজিটাল প্রোডাক্টসমূহ দেখুন।</p>
-        </div>
-
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {products.slice(0, 6).map((p) => <ProductCard key={p.id} p={p} />)}
+          {productsLoading
+            ? Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="glass-card rounded-2xl overflow-hidden">
+                  <div className="aspect-square w-full bg-white/5 animate-pulse" />
+                  <div className="p-4 space-y-2">
+                    <div className="h-4 w-3/4 bg-white/10 rounded animate-pulse" />
+                    <div className="h-3 w-1/2 bg-white/10 rounded animate-pulse" />
+                    <div className="h-8 w-full bg-white/10 rounded animate-pulse mt-3" />
+                  </div>
+                </div>
+              ))
+            : products.length > 0
+              ? products.slice(0, 8).map((p) => <ProductCard key={p.id} p={p} />)
+              : (
+                <div className="col-span-full glass-card rounded-2xl p-10 text-center">
+                  <div className="text-4xl mb-3">📦</div>
+                  <h3 className="font-display font-bold text-lg">এখনো কোনো প্রোডাক্ট নেই</h3>
+                  <p className="text-sm text-muted-foreground mt-2">Admin Panel → Products থেকে নতুন প্রোডাক্ট যোগ করুন।</p>
+                </div>
+              )}
         </div>
 
         <div className="mt-6 text-center sm:hidden">
+          <Link to="/shop" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+            সব দেখুন <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
           <Link to="/shop" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
             সব দেখুন <ArrowRight className="h-4 w-4" />
           </Link>
