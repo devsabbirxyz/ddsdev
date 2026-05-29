@@ -220,3 +220,62 @@ function AdminProducts() {
     </div>
   );
 }
+
+/** Swipe-left to reveal Edit / Delete actions on mobile. */
+function SwipeRow({
+  children,
+  onEdit,
+  onDelete,
+}: {
+  children: React.ReactNode;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const MAX = 160;
+  const [offset, setOffset] = useState(0);
+  const startX = useRef<number | null>(null);
+  const startOffset = useRef(0);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+    startOffset.current = offset;
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (startX.current == null) return;
+    const dx = e.touches[0].clientX - startX.current;
+    const next = Math.min(0, Math.max(-MAX, startOffset.current + dx));
+    setOffset(next);
+  };
+  const onTouchEnd = () => {
+    setOffset(offset < -MAX / 2 ? -MAX : 0);
+    startX.current = null;
+  };
+
+  return (
+    <div className="relative overflow-hidden rounded-2xl">
+      <div className="absolute inset-y-0 right-0 flex items-stretch">
+        <button
+          onClick={() => { setOffset(0); onEdit(); }}
+          className="w-20 bg-primary/90 text-primary-foreground flex flex-col items-center justify-center gap-1 text-xs font-bold"
+        >
+          <Pencil className="h-4 w-4" /> ইডিট
+        </button>
+        <button
+          onClick={() => { setOffset(0); onDelete(); }}
+          className="w-20 bg-destructive text-destructive-foreground flex flex-col items-center justify-center gap-1 text-xs font-bold"
+        >
+          <Trash2 className="h-4 w-4" /> ডিলিট
+        </button>
+      </div>
+      <div
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        style={{ transform: `translateX(${offset}px)`, transition: startX.current == null ? "transform 200ms ease" : "none" }}
+        className="relative bg-background"
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
