@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { saveProduct } from "@/lib/admin.functions";
 import { toast } from "sonner";
+import { successDialog } from "@/components/ui/modal-dialogs";
 import { Package, Layers, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products/new")({
@@ -26,8 +27,10 @@ function NewProduct() {
           is_variant: variant,
         },
       });
-      toast.success("✅ তৈরি হয়েছে");
       qc.invalidateQueries({ queryKey: ["admin", "products"] });
+      void successDialog({
+        description: "আপনার প্রোডাক্টটি সফলভাবে তৈরি হয়েছে। এখন বিস্তারিত তথ্য পূরণ করুন।",
+      });
       nav({ to: "/admin/products/$id" as any, params: { id: r.id } as any });
     } catch (e: any) {
       toast.error(`❌ ${e.message || "সমস্যা হয়েছে"}`);

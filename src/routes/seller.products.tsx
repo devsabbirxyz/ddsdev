@@ -6,6 +6,7 @@ import { formatBDT } from "@/lib/storefront";
 import { deleteProduct } from "@/lib/seller.functions";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import { confirmDialog } from "@/components/ui/modal-dialogs";
 
 const myProductsQuery = queryOptions({
   queryKey: ["seller", "my-products"],
@@ -36,7 +37,7 @@ function SellerProducts() {
   const del = useServerFn(deleteProduct);
 
   const onDelete = async (id: string) => {
-    if (!confirm("ডিলিট করতে চান?")) return;
+    if (!(await confirmDialog())) return;
     try {
       await del({ data: { id } });
       toast.success("ডিলিট করা হয়েছে");

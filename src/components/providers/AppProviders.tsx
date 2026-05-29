@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
 import { Toaster } from "@/components/ui/sonner";
+import { ModalDialogHost } from "@/components/ui/modal-dialogs";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   // ---- Theme (dark default) ----
@@ -67,6 +68,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
             <WishlistProvider>{children}</WishlistProvider>
           </CartProvider>
           <Toaster />
+          <ModalDialogHost />
         </AuthContext.Provider>
       </I18nContext.Provider>
     </ThemeContext.Provider>

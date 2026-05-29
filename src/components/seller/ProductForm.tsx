@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { saveProduct } from "@/lib/seller.functions";
 import { toast } from "sonner";
+import { successDialog } from "@/components/ui/modal-dialogs";
 
 const categoriesQuery = queryOptions({
   queryKey: ["all-categories"],
@@ -76,9 +77,17 @@ export function ProductForm({ initial }: { initial?: Initial }) {
           is_active: form.is_active,
         },
       });
-      toast.success(initial?.id ? "আপডেট হয়েছে" : "প্রোডাক্ট তৈরি হয়েছে — admin approval এর অপেক্ষায়");
       qc.invalidateQueries({ queryKey: ["seller", "my-products"] });
-      if (res?.id) nav({ to: "/seller/products" });
+      if (initial?.id) {
+        toast.success("আপডেট হয়েছে");
+        if (res?.id) nav({ to: "/seller/products" });
+      } else {
+        await successDialog({
+          title: "প্রোডাক্ট যোগ সফল হয়েছে!",
+          description: "আপনার প্রোডাক্টটি সফলভাবে যোগ করা হয়েছে — admin approval-এর অপেক্ষায় আছে।",
+        });
+        if (res?.id) nav({ to: "/seller/products" });
+      }
     } catch (err: any) {
       toast.error(err.message);
     } finally {
