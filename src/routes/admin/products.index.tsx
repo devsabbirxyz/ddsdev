@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import { formatBDT } from "@/lib/storefront";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Star, Trophy, Eye, EyeOff } from "lucide-react";
 import { confirmDialog } from "@/components/ui/modal-dialogs";
+
 
 
 const productsQuery = queryOptions({
