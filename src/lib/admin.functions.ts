@@ -529,7 +529,35 @@ export const deleteProduct = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.from("products").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
+
+export const toggleProductFlag = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({
+      id: z.string().uuid(),
+      flag: z.enum(["is_featured", "is_best_seller", "is_new_arrival", "is_active"]),
+      value: z.boolean(),
+    }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    if (data.flag === "is_featured" && data.value) {
+      const { count, error: cErr } = await supabaseAdmin
+        .from("products")
+        .select("id", { count: "exact", head: true })
+        .eq("is_featured", true);
+      if (cErr) throw new Error(cErr.message);
+      if ((count ?? 0) >= 12) {
+        throw new Error("সর্বোচ্চ ১২টা Featured প্রোডাক্ট নির্বাচন করা হয়েছে!");
+      }
+    }
+    const { error } = await supabaseAdmin
+      .from("products")
+      .update({ [data.flag]: data.value })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true, flag: data.flag, value: data.value };
   });
+
 
 export const saveProductImage = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
