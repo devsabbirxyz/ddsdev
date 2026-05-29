@@ -166,6 +166,10 @@ function HomePage() {
           <div className="text-xs text-primary font-bold uppercase tracking-wider">⭐ ফিচারড</div>
           <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
             সেরা <span className="text-gradient-brand">প্রোডাক্টসমূহ</span>
+          </h2>
+          <p className="mt-3 text-sm text-muted-foreground">আমাদের জনপ্রিয় ফ্রি ও প্রিমিয়াম ডিজিটাল প্রোডাক্টসমূহ দেখুন।</p>
+        </div>
+
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {productsLoading
             ? Array.from({ length: 8 }).map((_, i) => (
@@ -194,12 +198,8 @@ function HomePage() {
             সব দেখুন <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-
-          <Link to="/shop" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-            সব দেখুন <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
       </section>
+
 
       {/* TRUST BAR — glassmorphism */}
       <section className="pb-8">
