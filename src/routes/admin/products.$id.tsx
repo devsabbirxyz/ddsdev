@@ -56,6 +56,9 @@ function ProductEditor() {
   });
 
   const [form, setForm] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
   useEffect(() => {
     if (productQ.data?.product && !form) {
       setForm({
@@ -74,9 +77,6 @@ function ProductEditor() {
   const { images, variants, accounts } = productQ.data;
 
   const set = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }));
-
-  const [saving, setSaving] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
 
   const onSave = async () => {
     setSaving(true);
