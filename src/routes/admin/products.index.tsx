@@ -146,7 +146,6 @@ function AdminProducts() {
                       <Trophy className={`h-4 w-4 transition-colors ${p.is_best_seller ? "text-[#FF6B35] fill-[#FF6B35]/30 drop-shadow-[0_0_6px_rgba(255,107,53,0.7)]" : "text-muted-foreground/40"}`} />
                     </button>
                   </td>
-                  </td>
                   <td className="px-4 py-3"><span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-accent">{p.status}</span></td>
                   <td className="px-4 py-3 text-right">
                     <div className="inline-flex gap-2">
