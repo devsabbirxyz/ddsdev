@@ -16,14 +16,15 @@ const adminAuthQuery = queryOptions({
     const { data: userData, error: userErr } = await supabase.auth.getUser();
     if (userErr || !userData.user) return { ok: false as const, isSuper: false, email: "" };
     const uid = userData.user.id;
-    const [a, s, m] = await Promise.all([
-      supabase.rpc("has_role", { _user_id: uid, _role: "admin" }),
-      supabase.rpc("has_role", { _user_id: uid, _role: "super_admin" }),
-      supabase.rpc("has_role", { _user_id: uid, _role: "moderator" }),
-    ]);
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role,is_active")
+      .eq("user_id", uid)
+      .in("role", ["admin", "super_admin", "moderator"])
+      .eq("is_active", true);
     return {
-      ok: Boolean(a.data || s.data || m.data),
-      isSuper: Boolean(s.data),
+      ok: Boolean(roles?.length),
+      isSuper: Boolean(roles?.some((role) => role.role === "super_admin")),
       email: userData.user.email ?? "",
     };
   },
