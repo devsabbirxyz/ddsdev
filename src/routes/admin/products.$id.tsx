@@ -124,7 +124,7 @@ function ProductEditor() {
   };
 
   const onDelete = async () => {
-    if (!confirm("পুরো প্রোডাক্ট ডিলিট হবে। নিশ্চিত?")) return;
+    if (!(await confirmDialog({ description: "পুরো প্রোডাক্টটি স্থায়ীভাবে মুছে যাবে। এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।" }))) return;
     try {
       await del({ data: { id } });
       toast.success("ডিলিট হয়েছে");
@@ -337,7 +337,7 @@ function MediaTab({ productId, images, onChange }: any) {
   };
 
   const remove = async (id: string) => {
-    if (!confirm("ডিলিট?")) return;
+    if (!(await confirmDialog())) return;
     try { await delImg({ data: { id } }); onChange(); } catch (e: any) { toast.error(e.message); }
   };
 
@@ -408,7 +408,7 @@ function VariantsTab({ productId, variants, onChange }: any) {
   };
 
   const remove = async (id: string) => {
-    if (!confirm("ডিলিট?")) return;
+    if (!(await confirmDialog())) return;
     try { await del({ data: { id } }); onChange(); } catch (e: any) { toast.error(e.message); }
   };
 
@@ -477,7 +477,7 @@ function DeliveryTab({ form, set, productId, variants, accounts, onChange }: any
   };
 
   const removeAcct = async (id: string) => {
-    if (!confirm("ডিলিট?")) return;
+    if (!(await confirmDialog())) return;
     try { await delAcct({ data: { id } }); onChange(); } catch (e: any) { toast.error(e.message); }
   };
 
