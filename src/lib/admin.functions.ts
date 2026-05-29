@@ -8,8 +8,8 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 const requireAdmin = createMiddleware({ type: "function" })
   .middleware([requireSupabaseAuth])
   .server(async ({ next, context }) => {
-    const { supabase, userId } = context;
-    const { data, error } = await supabase
+    const { userId } = context;
+    const { data, error } = await supabaseAdmin
       .from("user_roles")
       .select("role,is_active")
       .eq("user_id", userId)
@@ -826,8 +826,8 @@ export const deleteOffer = createServerFn({ method: "POST" })
 const requireSuperAdmin = createMiddleware({ type: "function" })
   .middleware([requireSupabaseAuth])
   .server(async ({ next, context }) => {
-    const { supabase, userId } = context;
-    const { data, error } = await supabase
+    const { userId } = context;
+    const { data, error } = await supabaseAdmin
       .from("user_roles")
       .select("role,is_active")
       .eq("user_id", userId)
