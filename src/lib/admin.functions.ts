@@ -553,7 +553,7 @@ export const toggleProductFlag = createServerFn({ method: "POST" })
     }
     const { error } = await supabaseAdmin
       .from("products")
-      .update({ [data.flag]: data.value })
+      .update({ [data.flag]: data.value } as any)
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true, flag: data.flag, value: data.value };
