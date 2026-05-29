@@ -21,6 +21,25 @@ const requireAdmin = createMiddleware({ type: "function" })
     return next({ context: { adminId: userId } });
   });
 
+export const getAdminAuthState = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { userId, claims } = context;
+    const { data: roles, error } = await supabaseAdmin
+      .from("user_roles")
+      .select("role,is_active")
+      .eq("user_id", userId)
+      .in("role", ["admin", "super_admin", "moderator"])
+      .eq("is_active", true);
+    if (error) throw new Error(error.message);
+    const email = typeof claims?.email === "string" ? claims.email : "";
+    return {
+      ok: Boolean(roles?.length),
+      isSuper: Boolean(roles?.some((role) => role.role === "super_admin")),
+      email,
+    };
+  });
+
 function genReferralCode(seed: string) {
   const base = seed.replace(/[^a-zA-Z0-9]/g, "").slice(0, 4).toUpperCase() || "DDS";
   const rand = Math.random().toString(36).slice(2, 7).toUpperCase();
