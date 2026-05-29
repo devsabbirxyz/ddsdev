@@ -64,7 +64,17 @@ const navGroups: NavGroup[] = [
 
 function AdminLayout() {
   const navigate = useNavigate();
-  const { data, isLoading } = useQuery(adminAuthQuery);
+  const getAuthState = useServerFn(getAdminAuthState);
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin", "auth-check"],
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if (userErr || !userData.user) return { ok: false, isSuper: false, email: "" };
+      return getAuthState();
+    },
+  });
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
