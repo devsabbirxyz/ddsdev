@@ -1,11 +1,14 @@
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { pushRecentlyViewed } from "@/lib/recently-viewed";
 
 const SESSION_KEY = "dds_viewed_products";
 
 export function ProductViewTracker({ productId }: { productId: string | undefined }) {
   useEffect(() => {
     if (!productId || typeof window === "undefined") return;
+    // Persist for user-visible "Recently Viewed" list (across sessions)
+    pushRecentlyViewed(productId);
     try {
       const raw = sessionStorage.getItem(SESSION_KEY);
       const viewed: string[] = raw ? JSON.parse(raw) : [];

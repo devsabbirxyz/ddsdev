@@ -5,6 +5,7 @@ import { Star, Zap, ShieldCheck, Headphones, Heart, ShoppingCart, Eye } from "lu
 import { productBySlugQuery, productReviewsQuery, productsQuery, formatBDT } from "@/lib/storefront";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { ProductViewTracker } from "@/components/storefront/ProductViewTracker";
+import { RecentlyViewed } from "@/components/storefront/RecentlyViewed";
 import { useCart } from "@/lib/cart";
 import { toast } from "sonner";
 
@@ -264,6 +265,8 @@ function ProductPage() {
           </div>
         </section>
       )}
+
+      <RecentlyViewed excludeId={product.id} />
     </div>
   );
 }

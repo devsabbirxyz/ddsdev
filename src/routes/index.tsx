@@ -10,6 +10,7 @@ import { ProductCard } from "@/components/storefront/ProductCard";
 import { OfferBannerSlider } from "@/components/storefront/OfferBannerSlider";
 import { OfferPopup } from "@/components/storefront/OfferPopup";
 import { CountdownBanner } from "@/components/storefront/CountdownBanner";
+import { RecentlyViewed } from "@/components/storefront/RecentlyViewed";
 import { supabase } from "@/integrations/supabase/client";
 
 
@@ -199,6 +200,8 @@ function HomePage() {
           </Link>
         </div>
       </section>
+
+      <RecentlyViewed />
 
 
       {/* TRUST BAR — glassmorphism */}
