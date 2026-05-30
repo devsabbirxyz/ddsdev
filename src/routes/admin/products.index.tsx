@@ -17,6 +17,8 @@ const productsQuery = queryOptions({
     const { data, error } = await supabase
       .from("products")
       .select("id,title,slug,status,regular_price,offer_price,delivery_type,is_active,is_featured,is_best_seller,is_new_arrival,created_at,seller_id")
+      .order("is_featured", { ascending: false })
+      .order("is_best_seller", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(500);
     if (error) throw error;
