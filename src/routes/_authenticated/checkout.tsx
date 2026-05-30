@@ -137,7 +137,8 @@ function CheckoutPage() {
     if (data.start_date && new Date(data.start_date) > now) { toast.error("কুপন এখনো সক্রিয় হয়নি"); return; }
     if (data.end_date && new Date(data.end_date) < now) { toast.error("কুপন মেয়াদ শেষ"); return; }
     if (subtotal < Number(data.minimum_order ?? 0)) { toast.error(`নূন্যতম অর্ডার ${formatBDT(data.minimum_order)}`); return; }
-    const disc = data.discount_type === "percent"
+    const isPercent = data.discount_type === "percentage" || data.discount_type === "percent";
+    const disc = isPercent
       ? Math.round((subtotal * Number(data.discount_value)) / 100)
       : Number(data.discount_value);
     setCoupon({ code: data.code, discount: Math.min(disc, subtotal) });
