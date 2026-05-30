@@ -79,6 +79,7 @@ export function ProductForm({ initial }: { initial?: Initial }) {
         data: {
           id: initial?.id,
           title: form.title.trim(),
+          slug: form.slug || null,
           title_en: form.title_en || null,
           short_description: form.short_description || null,
           long_description: form.long_description || null,
