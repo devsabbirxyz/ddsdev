@@ -201,6 +201,8 @@ function HomePage() {
         </div>
       </section>
 
+      <RecentlyViewed />
+
 
       {/* TRUST BAR — glassmorphism */}
       <section className="pb-8">
