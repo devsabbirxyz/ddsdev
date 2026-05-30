@@ -68,6 +68,9 @@ function CheckoutPage() {
   const nav = useNavigate();
   const { data: methods = [] } = useQuery(paymentMethodsQuery);
 
+  const { data: wallet } = useQuery({ ...walletQuery(), enabled: !!user });
+  const walletBalance = wallet?.balance ?? 0;
+
   const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState(user?.email ?? "");
@@ -77,6 +80,7 @@ function CheckoutPage() {
   const [trxId, setTrxId] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
+  const [redeemPoints, setRedeemPoints] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
 
