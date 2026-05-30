@@ -214,9 +214,13 @@ function ProductEditor() {
       {tab === "basic" && (
         <div className="grid lg:grid-cols-3 gap-4">
           <div className="glass-card rounded-2xl p-5 space-y-4 lg:col-span-2">
-            <Field label="শিরোনাম (বাংলা)" value={form.title} onChange={(v) => set("title", v)} />
-            
-            <Field label="Slug" value={form.slug} onChange={(v) => set("slug", v)} mono />
+            <Field label="শিরোনাম (বাংলা)" value={form.title} onChange={(v) => {
+              set("title", v);
+              if (!slugEdited) {
+                set("slug", `${slugify(v)}-${Math.random().toString(36).slice(2, 6)}`);
+              }
+            }} />
+            <Field label="Slug" value={form.slug} onChange={(v) => { set("slug", v); setSlugEdited(true); }} mono />
             <div>
               <label className="text-sm font-medium mb-1.5 block">ক্যাটাগরি</label>
               <select value={form.category_id ?? ""} onChange={(e) => set("category_id", e.target.value || null)} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm">
