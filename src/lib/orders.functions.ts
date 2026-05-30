@@ -204,7 +204,7 @@ export const placeOrder = createServerFn({ method: "POST" })
 
     const { data: inserted, error: iErr } = await supabaseAdmin
       .from("orders")
-      .insert(rows)
+      .insert(rows as any)
       .select("id,order_number");
     if (iErr) throw new Error(iErr.message);
 
