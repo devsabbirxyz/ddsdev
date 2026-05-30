@@ -57,6 +57,7 @@ function ProductEditor() {
 
   const [form, setForm] = useState<any>(null);
   const [saving, setSaving] = useState(false);
+  const [slugEdited, setSlugEdited] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
