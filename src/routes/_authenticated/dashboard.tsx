@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, Link } from "@tanstack/react-router";
-import { LayoutDashboard, ShoppingBag, Download, Heart, Bell, Ticket, LifeBuoy, User as UserIcon, LogOut } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Download, Heart, Bell, Ticket, LifeBuoy, User as UserIcon, LogOut, Wallet } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
