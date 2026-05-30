@@ -146,10 +146,10 @@ export const placeOrder = createServerFn({ method: "POST" })
         if ((count ?? 0) >= coupon.max_uses_per_user) throw new Error("Coupon per-user limit reached");
       }
 
-      const raw =
-        coupon.discount_type === "percent"
-          ? Math.round((subtotal * Number(coupon.discount_value)) / 100)
-          : Number(coupon.discount_value);
+      const isPercent = coupon.discount_type === "percentage" || coupon.discount_type === "percent";
+      const raw = isPercent
+        ? Math.round((subtotal * Number(coupon.discount_value)) / 100)
+        : Number(coupon.discount_value);
       discount = Math.max(0, Math.min(raw, subtotal));
       couponCode = coupon.code;
       couponId = coupon.id;
