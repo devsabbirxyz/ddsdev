@@ -20,6 +20,7 @@ const PlaceOrderSchema = z.object({
   paymentMethodId: z.string().uuid(),
   transactionId: z.string().trim().max(120).optional().nullable(),
   couponCode: z.string().trim().max(60).optional().nullable(),
+  redeemPoints: z.number().int().min(0).max(1000000).optional().nullable(),
 });
 
 export const placeOrder = createServerFn({ method: "POST" })
