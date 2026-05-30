@@ -131,22 +131,25 @@ function AdminProducts() {
                       ) : null}
                     </div>
                   </div>
-                  <div className="flex flex-col gap-1 items-center">
+                  <div className="flex flex-col gap-1.5 items-end shrink-0">
                     <button
                       onClick={() => onToggle(p.id, "is_featured", !!p.is_featured)}
-                      className={`inline-flex items-center justify-center h-7 w-7 rounded-lg hover:bg-accent active:scale-90 transition ${pulse === `${p.id}:is_featured` ? "scale-110 animate-pulse" : ""}`}
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold border transition ${p.is_featured ? "bg-yellow-400/15 border-yellow-400/60 text-yellow-600 dark:text-yellow-400" : "border-border text-muted-foreground"} ${pulse === `${p.id}:is_featured` ? "scale-105 animate-pulse" : ""}`}
                     >
-                      <Star className={`h-4 w-4 ${p.is_featured ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground/40"}`} />
+                      <Star className={`h-3 w-3 ${p.is_featured ? "fill-yellow-400 text-yellow-400" : ""}`} />
+                      Featured {p.is_featured ? "ON" : "OFF"}
                     </button>
                     <button
                       onClick={() => onToggle(p.id, "is_best_seller", !!p.is_best_seller)}
-                      className={`inline-flex items-center justify-center h-7 w-7 rounded-lg hover:bg-accent active:scale-90 transition ${pulse === `${p.id}:is_best_seller` ? "scale-110 animate-pulse" : ""}`}
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold border transition ${p.is_best_seller ? "bg-[#FF6B35]/15 border-[#FF6B35]/60 text-[#FF6B35]" : "border-border text-muted-foreground"} ${pulse === `${p.id}:is_best_seller` ? "scale-105 animate-pulse" : ""}`}
                     >
-                      <Trophy className={`h-4 w-4 ${p.is_best_seller ? "text-[#FF6B35] fill-[#FF6B35]/30" : "text-muted-foreground/40"}`} />
+                      <Trophy className={`h-3 w-3 ${p.is_best_seller ? "fill-[#FF6B35]/30 text-[#FF6B35]" : ""}`} />
+                      Best {p.is_best_seller ? "ON" : "OFF"}
                     </button>
                   </div>
                 </div>
                 <div className="mt-2 text-[10px] text-muted-foreground/70">বাম দিকে টান দিন → অ্যাকশন</div>
+
               </div>
             </SwipeRow>
           ))
