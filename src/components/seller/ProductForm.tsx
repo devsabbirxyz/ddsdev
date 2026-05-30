@@ -16,9 +16,20 @@ const categoriesQuery = queryOptions({
   },
 });
 
+function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\u0980-\u09FF\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 80) || `p-${Date.now()}`;
+}
+
 type Initial = {
   id?: string;
   title?: string;
+  slug?: string | null;
   title_en?: string | null;
   short_description?: string | null;
   long_description?: string | null;
