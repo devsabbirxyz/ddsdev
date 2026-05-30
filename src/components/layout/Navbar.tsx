@@ -71,6 +71,7 @@ export function Navbar() {
               <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-gradient-brand px-1 text-[10px] font-bold text-primary-foreground">{count}</span>
             )}
           </Link>
+          <NotificationBell />
           {isAuthenticated ? (
             <>
               <Link to="/dashboard" className="rounded-lg p-2 glass hover:bg-accent transition" aria-label="Dashboard">
