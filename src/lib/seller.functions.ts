@@ -56,6 +56,7 @@ const productInput = z.object({
   id: z.string().uuid().optional(),
   title: z.string().min(2).max(200),
   title_en: z.string().max(200).optional().nullable(),
+  slug: z.string().max(200).optional().nullable(),
   short_description: z.string().max(500).optional().nullable(),
   long_description: z.string().max(5000).optional().nullable(),
   category_id: z.string().uuid().optional().nullable(),
