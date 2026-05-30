@@ -92,9 +92,11 @@ export const saveProduct = createServerFn({ method: "POST" })
     };
 
     if (data.id) {
+      const updatePayload: any = { ...payload };
+      if (data.slug) updatePayload.slug = data.slug;
       const { data: updated, error } = await supabase
         .from("products")
-        .update(payload)
+        .update(updatePayload)
         .eq("id", data.id)
         .eq("seller_id", seller.id)
         .select("id,slug")
