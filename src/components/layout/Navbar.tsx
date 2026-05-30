@@ -91,14 +91,17 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="lg:hidden rounded-lg p-2 glass"
-          aria-label="Menu"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        {/* Mobile right cluster */}
+        <div className="lg:hidden flex items-center gap-1">
+          <NotificationBell />
+          <button
+            onClick={() => setOpen(!open)}
+            className="rounded-lg p-2 glass"
+            aria-label="Menu"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
