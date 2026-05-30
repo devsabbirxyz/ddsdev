@@ -11,6 +11,8 @@ import { formatBDT } from "@/lib/storefront";
 import { siteSettingsQuery } from "@/lib/site-settings";
 import { notify } from "@/lib/telegram-notify";
 import { placeOrder } from "@/lib/orders.functions";
+import { walletQuery } from "@/lib/wallet";
+import { Wallet } from "lucide-react";
 import logoBkash from "@/assets/pay-bkash.png";
 import logoNagad from "@/assets/pay-nagad.png";
 import logoRocket from "@/assets/pay-rocket.png";
