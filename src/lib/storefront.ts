@@ -37,7 +37,11 @@ export const productsQuery = (opts?: {
         case "best": q = q.order("total_sales", { ascending: false }); break;
         case "price_asc": q = q.order("offer_price", { ascending: true, nullsFirst: false }); break;
         case "price_desc": q = q.order("offer_price", { ascending: false, nullsFirst: false }); break;
-        default: q = q.order("created_at", { ascending: false });
+      default:
+        q = q.order("is_featured", { ascending: false });
+        q = q.order("is_best_seller", { ascending: false });
+        q = q.order("created_at", { ascending: false });
+        break;
       }
       if (opts?.limit) q = q.limit(opts.limit);
 
