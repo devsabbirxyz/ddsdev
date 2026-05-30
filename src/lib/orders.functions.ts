@@ -156,9 +156,26 @@ export const placeOrder = createServerFn({ method: "POST" })
       couponId = coupon.id;
     }
 
+    // 4b) Validate wallet redemption
+    let walletRedeem = 0;
+    if (data.redeemPoints && data.redeemPoints > 0) {
+      const { data: u, error: uErr } = await supabaseAdmin
+        .from("users" as any)
+        .select("wallet_points")
+        .eq("id", userId)
+        .maybeSingle();
+      if (uErr) throw new Error(uErr.message);
+      const balance = Number((u as any)?.wallet_points ?? 0);
+      const afterCoupon = Math.max(0, subtotal - discount);
+      walletRedeem = Math.min(data.redeemPoints, balance, afterCoupon);
+      if (walletRedeem <= 0) walletRedeem = 0;
+    }
+
     // 5) Insert orders (one row per line) with admin client (bypasses RLS but data validated)
     const orderNumber = `DDS-${Date.now().toString(36).toUpperCase()}`;
+    const totalDeduction = discount + walletRedeem;
     const perItemDiscount = Math.floor(discount / lines.length);
+    const perItemWallet = Math.floor(walletRedeem / lines.length);
     const rows = lines.map((l, idx) => ({
       order_number: idx === 0 ? orderNumber : `${orderNumber}-${idx + 1}`,
       user_id: userId,
@@ -169,7 +186,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       quantity: l.quantity,
       regular_price: l.regularPrice,
       offer_price: l.unitPrice,
-      total_price: Math.max(0, l.unitPrice * l.quantity - perItemDiscount),
+      total_price: Math.max(0, l.unitPrice * l.quantity - perItemDiscount - perItemWallet),
       customer_name: data.customer.name,
       customer_email: data.customer.email,
       customer_phone: data.customer.phone,
@@ -179,6 +196,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       transaction_id: data.transactionId?.trim() || null,
       coupon_code: couponCode,
       discount_amount: perItemDiscount,
+      wallet_points_used: idx === 0 ? walletRedeem : 0,
       seller_id: l.sellerId,
       status: "pending",
       delivery_status: "pending",
