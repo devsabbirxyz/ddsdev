@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { siteSettingsQuery } from "@/lib/site-settings";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
