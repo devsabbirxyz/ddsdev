@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { siteSettingsQuery } from "@/lib/site-settings";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -70,6 +71,7 @@ export function Navbar() {
               <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-gradient-brand px-1 text-[10px] font-bold text-primary-foreground">{count}</span>
             )}
           </Link>
+          <NotificationBell />
           {isAuthenticated ? (
             <>
               <Link to="/dashboard" className="rounded-lg p-2 glass hover:bg-accent transition" aria-label="Dashboard">
@@ -89,14 +91,17 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="lg:hidden rounded-lg p-2 glass"
-          aria-label="Menu"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        {/* Mobile right cluster */}
+        <div className="lg:hidden flex items-center gap-1">
+          <NotificationBell />
+          <button
+            onClick={() => setOpen(!open)}
+            className="rounded-lg p-2 glass"
+            aria-label="Menu"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
