@@ -192,6 +192,7 @@ function CheckoutPage() {
           paymentMethodId: methodId,
           transactionId: trxId.trim() || null,
           couponCode: coupon?.code ?? null,
+          redeemPoints: safeRedeem || null,
         },
       });
 
