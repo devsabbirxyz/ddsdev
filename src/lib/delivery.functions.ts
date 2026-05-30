@@ -140,18 +140,48 @@ export const deliverOrder = createServerFn({ method: "POST" })
       .update({ total_sales: (pCur?.total_sales ?? 0) + (order.quantity ?? 1) })
       .eq("id", product.id);
 
+    // Credit wallet points (2% of order total)
+    let pointsEarned = 0;
+    if (order.user_id) {
+      pointsEarned = Math.max(0, Math.floor(Number(order.total_price ?? 0) * 0.02));
+      if (pointsEarned > 0) {
+        const { data: u } = await supabaseAdmin
+          .from("users" as any)
+          .select("wallet_points")
+          .eq("id", order.user_id)
+          .maybeSingle();
+        const cur = Number((u as any)?.wallet_points ?? 0);
+        await supabaseAdmin
+          .from("users" as any)
+          .update({ wallet_points: cur + pointsEarned } as any)
+          .eq("id", order.user_id);
+        await supabaseAdmin.from("wallet_transactions" as any).insert({
+          user_id: order.user_id,
+          points: pointsEarned,
+          type: "earn",
+          order_id: order.id,
+          description: `অর্ডার #${order.order_number} থেকে ক্যাশব্যাক`,
+        } as any);
+        await supabaseAdmin
+          .from("orders")
+          .update({ wallet_points_earned: pointsEarned } as any)
+          .eq("id", order.id);
+      }
+    }
+
     // Notify user
     if (order.user_id) {
+      const earnLine = pointsEarned > 0 ? ` +${pointsEarned} পয়েন্ট ক্যাশব্যাক!` : "";
       await notifyUser(
         order.user_id,
         "অর্ডার ডেলিভার হয়েছে",
-        `${product.title} — অর্ডার #${order.order_number} এর প্রোডাক্ট ডেলিভার হয়েছে।`,
+        `${product.title} — অর্ডার #${order.order_number} এর প্রোডাক্ট ডেলিভার হয়েছে।${earnLine}`,
         `/order/${order.id}`,
         "order_delivered",
       );
     }
 
-    return { ok: true, orderId: order.id };
+    return { ok: true, orderId: order.id, pointsEarned };
   });
 
 // ---------- Reject ----------

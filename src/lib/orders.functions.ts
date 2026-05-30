@@ -20,6 +20,7 @@ const PlaceOrderSchema = z.object({
   paymentMethodId: z.string().uuid(),
   transactionId: z.string().trim().max(120).optional().nullable(),
   couponCode: z.string().trim().max(60).optional().nullable(),
+  redeemPoints: z.number().int().min(0).max(1000000).optional().nullable(),
 });
 
 export const placeOrder = createServerFn({ method: "POST" })
@@ -155,9 +156,26 @@ export const placeOrder = createServerFn({ method: "POST" })
       couponId = coupon.id;
     }
 
+    // 4b) Validate wallet redemption
+    let walletRedeem = 0;
+    if (data.redeemPoints && data.redeemPoints > 0) {
+      const { data: u, error: uErr } = await supabaseAdmin
+        .from("users" as any)
+        .select("wallet_points")
+        .eq("id", userId)
+        .maybeSingle();
+      if (uErr) throw new Error(uErr.message);
+      const balance = Number((u as any)?.wallet_points ?? 0);
+      const afterCoupon = Math.max(0, subtotal - discount);
+      walletRedeem = Math.min(data.redeemPoints, balance, afterCoupon);
+      if (walletRedeem <= 0) walletRedeem = 0;
+    }
+
     // 5) Insert orders (one row per line) with admin client (bypasses RLS but data validated)
     const orderNumber = `DDS-${Date.now().toString(36).toUpperCase()}`;
+    const totalDeduction = discount + walletRedeem;
     const perItemDiscount = Math.floor(discount / lines.length);
+    const perItemWallet = Math.floor(walletRedeem / lines.length);
     const rows = lines.map((l, idx) => ({
       order_number: idx === 0 ? orderNumber : `${orderNumber}-${idx + 1}`,
       user_id: userId,
@@ -168,7 +186,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       quantity: l.quantity,
       regular_price: l.regularPrice,
       offer_price: l.unitPrice,
-      total_price: Math.max(0, l.unitPrice * l.quantity - perItemDiscount),
+      total_price: Math.max(0, l.unitPrice * l.quantity - perItemDiscount - perItemWallet),
       customer_name: data.customer.name,
       customer_email: data.customer.email,
       customer_phone: data.customer.phone,
@@ -178,6 +196,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       transaction_id: data.transactionId?.trim() || null,
       coupon_code: couponCode,
       discount_amount: perItemDiscount,
+      wallet_points_used: idx === 0 ? walletRedeem : 0,
       seller_id: l.sellerId,
       status: "pending",
       delivery_status: "pending",
@@ -185,7 +204,7 @@ export const placeOrder = createServerFn({ method: "POST" })
 
     const { data: inserted, error: iErr } = await supabaseAdmin
       .from("orders")
-      .insert(rows)
+      .insert(rows as any)
       .select("id,order_number");
     if (iErr) throw new Error(iErr.message);
 
@@ -206,6 +225,28 @@ export const placeOrder = createServerFn({ method: "POST" })
         .from("coupons")
         .update({ used_count: (cur?.used_count ?? 0) + 1 })
         .eq("id", couponId);
+    }
+
+    // 7) Apply wallet redemption (deduct balance + ledger entry)
+    if (walletRedeem > 0 && inserted && inserted[0]) {
+      const { data: u } = await supabaseAdmin
+        .from("users" as any)
+        .select("wallet_points")
+        .eq("id", userId)
+        .maybeSingle();
+      const bal = Number((u as any)?.wallet_points ?? 0);
+      const newBal = Math.max(0, bal - walletRedeem);
+      await supabaseAdmin
+        .from("users" as any)
+        .update({ wallet_points: newBal } as any)
+        .eq("id", userId);
+      await supabaseAdmin.from("wallet_transactions" as any).insert({
+        user_id: userId,
+        points: -walletRedeem,
+        type: "redeem",
+        order_id: inserted[0].id,
+        description: `অর্ডার #${orderNumber} এ ব্যবহার`,
+      } as any);
     }
 
     const totalAmount = rows.reduce((s, r) => s + (r.total_price || 0), 0);

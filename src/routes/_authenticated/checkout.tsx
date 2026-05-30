@@ -11,6 +11,8 @@ import { formatBDT } from "@/lib/storefront";
 import { siteSettingsQuery } from "@/lib/site-settings";
 import { notify } from "@/lib/telegram-notify";
 import { placeOrder } from "@/lib/orders.functions";
+import { walletQuery } from "@/lib/wallet";
+import { Wallet } from "lucide-react";
 import logoBkash from "@/assets/pay-bkash.png";
 import logoNagad from "@/assets/pay-nagad.png";
 import logoRocket from "@/assets/pay-rocket.png";
@@ -66,6 +68,9 @@ function CheckoutPage() {
   const nav = useNavigate();
   const { data: methods = [] } = useQuery(paymentMethodsQuery);
 
+  const { data: wallet } = useQuery({ ...walletQuery(), enabled: !!user });
+  const walletBalance = wallet?.balance ?? 0;
+
   const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState(user?.email ?? "");
@@ -75,6 +80,7 @@ function CheckoutPage() {
   const [trxId, setTrxId] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
+  const [redeemPoints, setRedeemPoints] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
 
@@ -121,7 +127,15 @@ function CheckoutPage() {
 
   const method = methods.find((m) => m.id === methodId);
   const discount = coupon?.discount ?? 0;
-  const total = useMemo(() => Math.max(0, subtotal - discount), [subtotal, discount]);
+  const maxRedeem = useMemo(
+    () => Math.max(0, Math.min(walletBalance, subtotal - discount)),
+    [walletBalance, subtotal, discount],
+  );
+  const safeRedeem = Math.max(0, Math.min(redeemPoints, maxRedeem));
+  const total = useMemo(
+    () => Math.max(0, subtotal - discount - safeRedeem),
+    [subtotal, discount, safeRedeem],
+  );
 
   const applyCoupon = async () => {
     const code = couponCode.trim().toUpperCase();
@@ -178,6 +192,7 @@ function CheckoutPage() {
           paymentMethodId: methodId,
           transactionId: trxId.trim() || null,
           couponCode: coupon?.code ?? null,
+          redeemPoints: safeRedeem || null,
         },
       });
 
@@ -282,9 +297,29 @@ function CheckoutPage() {
             {coupon && <div className="mt-2 text-xs text-primary inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> {coupon.code} — {formatBDT(coupon.discount)}</div>}
           </div>
 
+          {walletBalance > 0 && (
+            <div>
+              <label className="text-xs font-semibold mb-1.5 flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-primary" /> ওয়ালেট পয়েন্ট ব্যবহার <span className="text-muted-foreground font-normal">(ব্যালেন্স: {walletBalance})</span></label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  min={0}
+                  max={maxRedeem}
+                  value={redeemPoints || ""}
+                  onChange={(e) => setRedeemPoints(Math.max(0, Math.min(maxRedeem, Number(e.target.value) || 0)))}
+                  placeholder="0"
+                  className="flex-1 rounded-xl glass px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                />
+                <button onClick={() => setRedeemPoints(maxRedeem)} className="rounded-xl glass px-3 py-2 text-xs font-semibold hover:bg-accent">সর্বোচ্চ</button>
+              </div>
+              {safeRedeem > 0 && <div className="mt-2 text-xs text-primary inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> − {formatBDT(safeRedeem)} (1 পয়েন্ট = 1৳)</div>}
+            </div>
+          )}
+
           <div className="border-t border-border pt-3 space-y-1.5 text-sm">
             <div className="flex justify-between"><span className="text-muted-foreground">সাবটোটাল</span><span>{formatBDT(subtotal)}</span></div>
-            {discount > 0 && <div className="flex justify-between text-primary"><span>ছাড়</span><span>− {formatBDT(discount)}</span></div>}
+            {discount > 0 && <div className="flex justify-between text-primary"><span>কুপন ছাড়</span><span>− {formatBDT(discount)}</span></div>}
+            {safeRedeem > 0 && <div className="flex justify-between text-primary"><span>ওয়ালেট</span><span>− {formatBDT(safeRedeem)}</span></div>}
             <div className="flex justify-between pt-2 border-t border-border">
               <span className="font-bold">মোট</span>
               <span className="font-display font-bold text-xl text-gradient-brand">{formatBDT(total)}</span>

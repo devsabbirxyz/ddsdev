@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, Link } from "@tanstack/react-router";
-import { LayoutDashboard, ShoppingBag, Download, Heart, Bell, Ticket, LifeBuoy, User as UserIcon, LogOut } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Download, Heart, Bell, Ticket, LifeBuoy, User as UserIcon, LogOut, Wallet } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -13,6 +13,7 @@ const items: Array<{ to: string; label: string; icon: typeof LayoutDashboard; ex
   { to: "/dashboard/downloads", label: "ডাউনলোড", icon: Download },
   { to: "/dashboard/wishlist", label: "উইশলিস্ট", icon: Heart },
   { to: "/dashboard/notifications", label: "নোটিফিকেশন", icon: Bell },
+  { to: "/dashboard/wallet", label: "ওয়ালেট", icon: Wallet },
   { to: "/dashboard/coupons", label: "কুপন", icon: Ticket },
   { to: "/dashboard/support", label: "সাপোর্ট", icon: LifeBuoy },
   { to: "/dashboard/profile", label: "প্রোফাইল", icon: UserIcon },

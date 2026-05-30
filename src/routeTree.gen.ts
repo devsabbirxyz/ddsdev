@@ -76,6 +76,7 @@ import { Route as AdminProductsIdRouteImport } from './routes/admin/products.$id
 import { Route as AdminOrdersIdRouteImport } from './routes/admin/orders.$id'
 import { Route as AuthenticatedOrderIdRouteImport } from './routes/_authenticated/order.$id'
 import { Route as AuthenticatedDashboardWishlistRouteImport } from './routes/_authenticated/dashboard.wishlist'
+import { Route as AuthenticatedDashboardWalletRouteImport } from './routes/_authenticated/dashboard.wallet'
 import { Route as AuthenticatedDashboardSupportRouteImport } from './routes/_authenticated/dashboard.support'
 import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
 import { Route as AuthenticatedDashboardOrdersRouteImport } from './routes/_authenticated/dashboard.orders'
@@ -420,6 +421,12 @@ const AuthenticatedDashboardWishlistRoute =
     path: '/wishlist',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardWalletRoute =
+  AuthenticatedDashboardWalletRouteImport.update({
+    id: '/wallet',
+    path: '/wallet',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardSupportRoute =
   AuthenticatedDashboardSupportRouteImport.update({
     id: '/support',
@@ -524,6 +531,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
+  '/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
   '/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/order/$id': typeof AuthenticatedOrderIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
@@ -592,6 +600,7 @@ export interface FileRoutesByTo {
   '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
+  '/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
   '/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/order/$id': typeof AuthenticatedOrderIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
@@ -669,6 +678,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/_authenticated/dashboard/support': typeof AuthenticatedDashboardSupportRoute
+  '/_authenticated/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
   '/_authenticated/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
   '/_authenticated/order/$id': typeof AuthenticatedOrderIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
@@ -746,6 +756,7 @@ export interface FileRouteTypes {
     | '/dashboard/orders'
     | '/dashboard/profile'
     | '/dashboard/support'
+    | '/dashboard/wallet'
     | '/dashboard/wishlist'
     | '/order/$id'
     | '/admin/orders/$id'
@@ -814,6 +825,7 @@ export interface FileRouteTypes {
     | '/dashboard/orders'
     | '/dashboard/profile'
     | '/dashboard/support'
+    | '/dashboard/wallet'
     | '/dashboard/wishlist'
     | '/order/$id'
     | '/admin/orders/$id'
@@ -890,6 +902,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/orders'
     | '/_authenticated/dashboard/profile'
     | '/_authenticated/dashboard/support'
+    | '/_authenticated/dashboard/wallet'
     | '/_authenticated/dashboard/wishlist'
     | '/_authenticated/order/$id'
     | '/admin/orders/$id'
@@ -1402,6 +1415,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardWishlistRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/wallet': {
+      id: '/_authenticated/dashboard/wallet'
+      path: '/wallet'
+      fullPath: '/dashboard/wallet'
+      preLoaderRoute: typeof AuthenticatedDashboardWalletRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/support': {
       id: '/_authenticated/dashboard/support'
       path: '/support'
@@ -1461,6 +1481,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardOrdersRoute: typeof AuthenticatedDashboardOrdersRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
   AuthenticatedDashboardSupportRoute: typeof AuthenticatedDashboardSupportRoute
+  AuthenticatedDashboardWalletRoute: typeof AuthenticatedDashboardWalletRoute
   AuthenticatedDashboardWishlistRoute: typeof AuthenticatedDashboardWishlistRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedDashboardTicketsIdRoute: typeof AuthenticatedDashboardTicketsIdRoute
@@ -1475,6 +1496,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardOrdersRoute: AuthenticatedDashboardOrdersRoute,
     AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
     AuthenticatedDashboardSupportRoute: AuthenticatedDashboardSupportRoute,
+    AuthenticatedDashboardWalletRoute: AuthenticatedDashboardWalletRoute,
     AuthenticatedDashboardWishlistRoute: AuthenticatedDashboardWishlistRoute,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
     AuthenticatedDashboardTicketsIdRoute: AuthenticatedDashboardTicketsIdRoute,
