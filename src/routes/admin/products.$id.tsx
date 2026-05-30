@@ -24,6 +24,16 @@ export const Route = createFileRoute("/admin/products/$id")({
 
 type Tab = "basic" | "media" | "variants" | "delivery" | "seo";
 
+function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\u0980-\u09FF\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 80) || `p-${Date.now()}`;
+}
+
 const DELIVERY_OPTIONS: { value: string; label: string; desc: string }[] = [
   { value: "instant_text", label: "ইন্সট্যান্ট টেক্সট", desc: "পেমেন্টের পর সাথে সাথে টেক্সট/লাইসেন্স কী চলে যাবে।" },
   { value: "account", label: "অ্যাকাউন্ট ডেলিভারি", desc: "প্রি-আপলোড করা ইউজারনেম/পাসওয়ার্ড স্টক থেকে অটো-ডেলিভারি।" },
