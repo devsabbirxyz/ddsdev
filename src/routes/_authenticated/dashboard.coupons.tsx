@@ -42,7 +42,7 @@ function CouponsPage() {
                 <div>
                   <div className="text-xs text-muted-foreground">ছাড়</div>
                   <div className="font-display font-bold text-3xl text-gradient-brand">
-                    {c.discount_type === "percent" ? `${Number(c.discount_value)}%` : formatBDT(c.discount_value)}
+                    {(c.discount_type === "percentage" || c.discount_type === "percent") ? `${Number(c.discount_value)}%` : formatBDT(c.discount_value)}
                   </div>
                 </div>
                 <Ticket className="h-6 w-6 text-primary" />
