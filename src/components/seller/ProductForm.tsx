@@ -115,7 +115,16 @@ export function ProductForm({ initial }: { initial?: Initial }) {
 
       <div className="glass-card rounded-2xl p-5 space-y-4">
         <Field label="টাইটেল (বাংলা)">
-          <input className="ip" value={form.title} onChange={(e) => update("title", e.target.value)} required />
+          <input className="ip" value={form.title} onChange={(e) => {
+            const v = e.target.value;
+            update("title", v);
+            if (!slugEdited) {
+              update("slug", `${slugify(v)}-${Math.random().toString(36).slice(2, 6)}`);
+            }
+          }} required />
+        </Field>
+        <Field label="Slug">
+          <input className="ip font-mono" value={form.slug} onChange={(e) => { update("slug", e.target.value); setSlugEdited(true); }} />
         </Field>
         <Field label="Title (English)">
           <input className="ip" value={form.title_en} onChange={(e) => update("title_en", e.target.value)} />
