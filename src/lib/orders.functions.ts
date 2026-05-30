@@ -227,6 +227,28 @@ export const placeOrder = createServerFn({ method: "POST" })
         .eq("id", couponId);
     }
 
+    // 7) Apply wallet redemption (deduct balance + ledger entry)
+    if (walletRedeem > 0 && inserted && inserted[0]) {
+      const { data: u } = await supabaseAdmin
+        .from("users" as any)
+        .select("wallet_points")
+        .eq("id", userId)
+        .maybeSingle();
+      const bal = Number((u as any)?.wallet_points ?? 0);
+      const newBal = Math.max(0, bal - walletRedeem);
+      await supabaseAdmin
+        .from("users" as any)
+        .update({ wallet_points: newBal } as any)
+        .eq("id", userId);
+      await supabaseAdmin.from("wallet_transactions" as any).insert({
+        user_id: userId,
+        points: -walletRedeem,
+        type: "redeem",
+        order_id: inserted[0].id,
+        description: `অর্ডার #${orderNumber} এ ব্যবহার`,
+      } as any);
+    }
+
     const totalAmount = rows.reduce((s, r) => s + (r.total_price || 0), 0);
 
     return {
