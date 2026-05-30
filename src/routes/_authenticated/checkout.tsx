@@ -127,7 +127,15 @@ function CheckoutPage() {
 
   const method = methods.find((m) => m.id === methodId);
   const discount = coupon?.discount ?? 0;
-  const total = useMemo(() => Math.max(0, subtotal - discount), [subtotal, discount]);
+  const maxRedeem = useMemo(
+    () => Math.max(0, Math.min(walletBalance, subtotal - discount)),
+    [walletBalance, subtotal, discount],
+  );
+  const safeRedeem = Math.max(0, Math.min(redeemPoints, maxRedeem));
+  const total = useMemo(
+    () => Math.max(0, subtotal - discount - safeRedeem),
+    [subtotal, discount, safeRedeem],
+  );
 
   const applyCoupon = async () => {
     const code = couponCode.trim().toUpperCase();
