@@ -50,6 +50,7 @@ export function ProductForm({ initial }: { initial?: Initial }) {
 
   const [form, setForm] = useState({
     title: initial?.title ?? "",
+    slug: initial?.slug ?? "",
     title_en: initial?.title_en ?? "",
     short_description: initial?.short_description ?? "",
     long_description: initial?.long_description ?? "",
@@ -60,6 +61,7 @@ export function ProductForm({ initial }: { initial?: Initial }) {
     delivery_content: initial?.delivery_content ?? "",
     is_active: initial?.is_active ?? true,
   });
+  const [slugEdited, setSlugEdited] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const update = (k: keyof typeof form, v: any) => setForm((f) => ({ ...f, [k]: v }));
