@@ -24,6 +24,16 @@ export const Route = createFileRoute("/admin/products/$id")({
 
 type Tab = "basic" | "media" | "variants" | "delivery" | "seo";
 
+function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\u0980-\u09FF\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 80) || `p-${Date.now()}`;
+}
+
 const DELIVERY_OPTIONS: { value: string; label: string; desc: string }[] = [
   { value: "instant_text", label: "ইন্সট্যান্ট টেক্সট", desc: "পেমেন্টের পর সাথে সাথে টেক্সট/লাইসেন্স কী চলে যাবে।" },
   { value: "account", label: "অ্যাকাউন্ট ডেলিভারি", desc: "প্রি-আপলোড করা ইউজারনেম/পাসওয়ার্ড স্টক থেকে অটো-ডেলিভারি।" },
@@ -57,6 +67,7 @@ function ProductEditor() {
 
   const [form, setForm] = useState<any>(null);
   const [saving, setSaving] = useState(false);
+  const [slugEdited, setSlugEdited] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
@@ -203,9 +214,13 @@ function ProductEditor() {
       {tab === "basic" && (
         <div className="grid lg:grid-cols-3 gap-4">
           <div className="glass-card rounded-2xl p-5 space-y-4 lg:col-span-2">
-            <Field label="শিরোনাম (বাংলা)" value={form.title} onChange={(v) => set("title", v)} />
-            
-            <Field label="Slug" value={form.slug} onChange={(v) => set("slug", v)} mono />
+            <Field label="শিরোনাম (বাংলা)" value={form.title} onChange={(v) => {
+              set("title", v);
+              if (!slugEdited) {
+                set("slug", `${slugify(v)}-${Math.random().toString(36).slice(2, 6)}`);
+              }
+            }} />
+            <Field label="Slug" value={form.slug} onChange={(v) => { set("slug", v); setSlugEdited(true); }} mono />
             <div>
               <label className="text-sm font-medium mb-1.5 block">ক্যাটাগরি</label>
               <select value={form.category_id ?? ""} onChange={(e) => set("category_id", e.target.value || null)} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm">

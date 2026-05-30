@@ -16,9 +16,20 @@ const categoriesQuery = queryOptions({
   },
 });
 
+function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\u0980-\u09FF\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 80) || `p-${Date.now()}`;
+}
+
 type Initial = {
   id?: string;
   title?: string;
+  slug?: string | null;
   title_en?: string | null;
   short_description?: string | null;
   long_description?: string | null;
@@ -39,6 +50,7 @@ export function ProductForm({ initial }: { initial?: Initial }) {
 
   const [form, setForm] = useState({
     title: initial?.title ?? "",
+    slug: initial?.slug ?? "",
     title_en: initial?.title_en ?? "",
     short_description: initial?.short_description ?? "",
     long_description: initial?.long_description ?? "",
@@ -49,6 +61,7 @@ export function ProductForm({ initial }: { initial?: Initial }) {
     delivery_content: initial?.delivery_content ?? "",
     is_active: initial?.is_active ?? true,
   });
+  const [slugEdited, setSlugEdited] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const update = (k: keyof typeof form, v: any) => setForm((f) => ({ ...f, [k]: v }));
@@ -66,6 +79,7 @@ export function ProductForm({ initial }: { initial?: Initial }) {
         data: {
           id: initial?.id,
           title: form.title.trim(),
+          slug: form.slug || null,
           title_en: form.title_en || null,
           short_description: form.short_description || null,
           long_description: form.long_description || null,
@@ -101,7 +115,16 @@ export function ProductForm({ initial }: { initial?: Initial }) {
 
       <div className="glass-card rounded-2xl p-5 space-y-4">
         <Field label="টাইটেল (বাংলা)">
-          <input className="ip" value={form.title} onChange={(e) => update("title", e.target.value)} required />
+          <input className="ip" value={form.title} onChange={(e) => {
+            const v = e.target.value;
+            update("title", v);
+            if (!slugEdited) {
+              update("slug", `${slugify(v)}-${Math.random().toString(36).slice(2, 6)}`);
+            }
+          }} required />
+        </Field>
+        <Field label="Slug">
+          <input className="ip font-mono" value={form.slug} onChange={(e) => { update("slug", e.target.value); setSlugEdited(true); }} />
         </Field>
         <Field label="Title (English)">
           <input className="ip" value={form.title_en} onChange={(e) => update("title_en", e.target.value)} />
