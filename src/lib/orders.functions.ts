@@ -78,12 +78,30 @@ export const placeOrder = createServerFn({ method: "POST" })
       productId: string;
       variantId: string | null;
       variantLabel: string | null;
+      planId: string | null;
+      planLabel: string | null;
+      planDurationDays: number | null;
       title: string;
       quantity: number;
       unitPrice: number;
       regularPrice: number;
       sellerId: string | null;
     };
+
+    // Preload subscription plans referenced by items
+    const planIds = Array.from(
+      new Set(data.items.map((i) => i.planId).filter((v): v is string => !!v)),
+    );
+    let planMap = new Map<string, { id: string; product_id: string; name: string; price: number; duration_days: number; is_active: boolean }>();
+    if (planIds.length > 0) {
+      const { data: plans, error: plErr } = await supabaseAdmin
+        .from("subscription_plans" as any)
+        .select("id,product_id,name,price,duration_days,is_active")
+        .in("id", planIds);
+      if (plErr) throw new Error(plErr.message);
+      planMap = new Map(((plans ?? []) as any[]).filter((p) => p.is_active).map((p) => [p.id, p as any]));
+    }
+
     const lines: Line[] = [];
     for (const it of data.items) {
       const p = productMap.get(it.productId);
@@ -92,7 +110,18 @@ export const placeOrder = createServerFn({ method: "POST" })
       let regular = Number(p.regular_price ?? unit);
       let variantLabel: string | null = null;
       let vId: string | null = null;
-      if (it.variantId) {
+      let planId: string | null = null;
+      let planLabel: string | null = null;
+      let planDuration: number | null = null;
+      if (it.planId) {
+        const pl = planMap.get(it.planId);
+        if (!pl || pl.product_id !== p.id) throw new Error("Invalid subscription plan");
+        unit = Number(pl.price);
+        regular = unit;
+        planId = pl.id;
+        planLabel = pl.name;
+        planDuration = pl.duration_days;
+      } else if (it.variantId) {
         const v = variantMap.get(it.variantId);
         if (!v || v.product_id !== p.id) {
           throw new Error("Invalid variant");
@@ -107,6 +136,9 @@ export const placeOrder = createServerFn({ method: "POST" })
         productId: p.id,
         variantId: vId,
         variantLabel,
+        planId,
+        planLabel,
+        planDurationDays: planDuration,
         title: p.title,
         quantity: it.quantity,
         unitPrice: unit,
