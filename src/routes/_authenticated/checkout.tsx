@@ -181,6 +181,7 @@ function CheckoutPage() {
           items: items.map((it) => ({
             productId: it.productId,
             variantId: it.variantId ?? null,
+            planId: it.planId ?? null,
             quantity: it.quantity,
           })),
           customer: {

@@ -6,6 +6,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 const ItemSchema = z.object({
   productId: z.string().uuid(),
   variantId: z.string().uuid().nullish(),
+  planId: z.string().uuid().nullish(),
   quantity: z.number().int().min(1).max(99),
 });
 
@@ -77,12 +78,30 @@ export const placeOrder = createServerFn({ method: "POST" })
       productId: string;
       variantId: string | null;
       variantLabel: string | null;
+      planId: string | null;
+      planLabel: string | null;
+      planDurationDays: number | null;
       title: string;
       quantity: number;
       unitPrice: number;
       regularPrice: number;
       sellerId: string | null;
     };
+
+    // Preload subscription plans referenced by items
+    const planIds = Array.from(
+      new Set(data.items.map((i) => i.planId).filter((v): v is string => !!v)),
+    );
+    let planMap = new Map<string, { id: string; product_id: string; name: string; price: number; duration_days: number; is_active: boolean }>();
+    if (planIds.length > 0) {
+      const { data: plans, error: plErr } = await supabaseAdmin
+        .from("subscription_plans" as any)
+        .select("id,product_id,name,price,duration_days,is_active")
+        .in("id", planIds);
+      if (plErr) throw new Error(plErr.message);
+      planMap = new Map(((plans ?? []) as any[]).filter((p) => p.is_active).map((p) => [p.id, p as any]));
+    }
+
     const lines: Line[] = [];
     for (const it of data.items) {
       const p = productMap.get(it.productId);
@@ -91,7 +110,18 @@ export const placeOrder = createServerFn({ method: "POST" })
       let regular = Number(p.regular_price ?? unit);
       let variantLabel: string | null = null;
       let vId: string | null = null;
-      if (it.variantId) {
+      let planId: string | null = null;
+      let planLabel: string | null = null;
+      let planDuration: number | null = null;
+      if (it.planId) {
+        const pl = planMap.get(it.planId);
+        if (!pl || pl.product_id !== p.id) throw new Error("Invalid subscription plan");
+        unit = Number(pl.price);
+        regular = unit;
+        planId = pl.id;
+        planLabel = pl.name;
+        planDuration = pl.duration_days;
+      } else if (it.variantId) {
         const v = variantMap.get(it.variantId);
         if (!v || v.product_id !== p.id) {
           throw new Error("Invalid variant");
@@ -106,6 +136,9 @@ export const placeOrder = createServerFn({ method: "POST" })
         productId: p.id,
         variantId: vId,
         variantLabel,
+        planId,
+        planLabel,
+        planDurationDays: planDuration,
         title: p.title,
         quantity: it.quantity,
         unitPrice: unit,
@@ -181,7 +214,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       user_id: userId,
       product_id: l.productId,
       variant_id: l.variantId,
-      product_title: l.title,
+      product_title: l.planLabel ? `${l.title} (${l.planLabel})` : l.title,
       variant_label: l.variantLabel,
       quantity: l.quantity,
       regular_price: l.regularPrice,
@@ -247,6 +280,42 @@ export const placeOrder = createServerFn({ method: "POST" })
         order_id: inserted[0].id,
         description: `অর্ডার #${orderNumber} এ ব্যবহার`,
       } as any);
+    }
+
+    // 8) Create subscription records for items with planId (status=pending; trigger activates on order completed)
+    if (inserted && inserted.length === lines.length) {
+      for (let i = 0; i < lines.length; i++) {
+        const l = lines[i];
+        if (!l.planId) continue;
+        const orderId = inserted[i]?.id;
+        if (!orderId) continue;
+        const subRes: any = await supabaseAdmin
+          .from("subscriptions" as any)
+          .insert({
+            user_id: userId,
+            product_id: l.productId,
+            plan_id: l.planId,
+            status: "pending_renewal",
+            auto_renew: true,
+            // placeholder expiry — trigger overwrites on payment
+            expires_at: new Date().toISOString(),
+            customer_name: data.customer.name,
+            customer_email: data.customer.email,
+            customer_phone: data.customer.phone,
+            customer_input: data.customer.input || null,
+            payment_method: pm.name,
+            last_order_id: orderId,
+          } as any)
+          .select("id")
+          .single();
+        const subId = subRes?.data?.id as string | undefined;
+        if (subId) {
+          await supabaseAdmin
+            .from("orders")
+            .update({ subscription_id: subId, is_renewal: false } as any)
+            .eq("id", orderId);
+        }
+      }
     }
 
     const totalAmount = rows.reduce((s, r) => s + (r.total_price || 0), 0);

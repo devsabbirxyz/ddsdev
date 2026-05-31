@@ -53,7 +53,12 @@ export const Route = createFileRoute("/product/$slug")({
 
 function ProductPage() {
   const { product } = Route.useLoaderData();
+  const isSubscription = (product as any)?.delivery_type === "subscription";
+  const plans = (((product as any)?.subscription_plans ?? []) as any[])
+    .filter((p) => p.is_active)
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
   const [variantId, setVariantId] = useState<string | null>(product?.product_variants?.[0]?.id ?? null);
+  const [planId, setPlanId] = useState<string | null>(plans[0]?.id ?? null);
   const [qty, setQty] = useState(1);
   const { data: reviews = [] } = useQuery(productReviewsQuery(product?.id));
   const { data: related = [] } = useQuery(productsQuery({ limit: 4 }));
@@ -64,8 +69,11 @@ function ProductPage() {
   const images = (product.product_images ?? []).sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
   const variants = (product.product_variants ?? []).filter((v: any) => v.is_active);
   const selectedVariant = variants.find((v: any) => v.id === variantId);
-  const price = selectedVariant?.offer_price ?? selectedVariant?.regular_price ?? product.offer_price ?? product.regular_price;
-  const hasDiscount = product.offer_price != null && product.regular_price != null && product.offer_price < product.regular_price;
+  const selectedPlan = plans.find((p) => p.id === planId);
+  const price = isSubscription && selectedPlan
+    ? Number(selectedPlan.price)
+    : (selectedVariant?.offer_price ?? selectedVariant?.regular_price ?? product.offer_price ?? product.regular_price);
+  const hasDiscount = !isSubscription && product.offer_price != null && product.regular_price != null && product.offer_price < product.regular_price;
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
@@ -136,7 +144,27 @@ function ProductPage() {
               )}
             </div>
 
-            {variants.length > 0 && (
+            {isSubscription && plans.length > 0 && (
+              <div className="mt-5">
+                <div className="text-xs font-semibold mb-2 inline-flex items-center gap-1.5">
+                  <Zap className="h-3.5 w-3.5 text-primary" /> সাবস্ক্রিপশন প্ল্যান বেছে নিন
+                </div>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  {plans.map((p: any) => (
+                    <button
+                      key={p.id}
+                      onClick={() => setPlanId(p.id)}
+                      className={`rounded-xl px-4 py-3 text-left transition border ${planId === p.id ? "bg-gradient-brand text-primary-foreground shadow-glow border-transparent" : "glass hover:bg-accent border-border/60"}`}
+                    >
+                      <div className="text-sm font-bold">{p.name}</div>
+                      <div className="text-xs opacity-80 mt-0.5">{p.duration_days} দিন · {formatBDT(Number(p.price))}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!isSubscription && variants.length > 0 && (
               <div className="mt-5">
                 <div className="text-xs font-semibold mb-2">ভ্যারিয়েন্ট নির্বাচন করুন</div>
                 <div className="flex flex-wrap gap-2">
@@ -153,52 +181,63 @@ function ProductPage() {
               </div>
             )}
 
-            <div className="mt-5 flex items-center gap-3">
-              <span className="text-xs font-semibold">পরিমাণ</span>
-              <div className="inline-flex items-center rounded-xl glass">
-                <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2 hover:bg-accent rounded-l-xl" aria-label="কমান">−</button>
-                <span className="px-4 py-2 text-sm font-semibold min-w-[2.5rem] text-center">{qty}</span>
-                <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2 hover:bg-accent rounded-r-xl" aria-label="বাড়ান">+</button>
+            {!isSubscription && (
+              <div className="mt-5 flex items-center gap-3">
+                <span className="text-xs font-semibold">পরিমাণ</span>
+                <div className="inline-flex items-center rounded-xl glass">
+                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2 hover:bg-accent rounded-l-xl" aria-label="কমান">−</button>
+                  <span className="px-4 py-2 text-sm font-semibold min-w-[2.5rem] text-center">{qty}</span>
+                  <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2 hover:bg-accent rounded-r-xl" aria-label="বাড়ান">+</button>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="mt-6 flex flex-wrap gap-3">
               <button
+                disabled={isSubscription && !selectedPlan}
                 onClick={() => {
+                  if (isSubscription && !selectedPlan) {
+                    toast.error("প্ল্যান বেছে নিন");
+                    return;
+                  }
                   addItem({
                     productId: product.id,
                     slug: product.slug,
                     title: product.title,
                     price: Number(price ?? 0),
                     image: images[0]?.image_url ?? null,
-                    variantId: selectedVariant?.id ?? null,
-                    variantLabel: selectedVariant?.label ?? null,
-                    quantity: qty,
+                    variantId: isSubscription ? null : selectedVariant?.id ?? null,
+                    variantLabel: isSubscription ? null : selectedVariant?.label ?? null,
+                    planId: isSubscription ? selectedPlan?.id ?? null : null,
+                    planLabel: isSubscription ? selectedPlan?.name ?? null : null,
+                    quantity: isSubscription ? 1 : qty,
                   });
                   navigate({ to: "/checkout" });
                 }}
-                className="flex-1 min-w-[180px] rounded-2xl bg-gradient-brand px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition inline-flex items-center justify-center gap-2"
+                className="flex-1 min-w-[180px] rounded-2xl bg-gradient-brand px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ShoppingCart className="h-4 w-4" /> এখনই কিনুন
+                <ShoppingCart className="h-4 w-4" /> {isSubscription ? "এখনই সাবস্ক্রাইব করুন" : "এখনই কিনুন"}
               </button>
-              <button
-                onClick={() => {
-                  addItem({
-                    productId: product.id,
-                    slug: product.slug,
-                    title: product.title,
-                    price: Number(price ?? 0),
-                    image: images[0]?.image_url ?? null,
-                    variantId: selectedVariant?.id ?? null,
-                    variantLabel: selectedVariant?.label ?? null,
-                    quantity: qty,
-                  });
-                  toast.success("কার্টে যোগ হয়েছে");
-                }}
-                className="rounded-2xl glass-card px-5 py-3.5 text-sm font-semibold hover:bg-accent transition inline-flex items-center gap-2"
-              >
-                <ShoppingCart className="h-4 w-4" /> কার্টে যোগ
-              </button>
+              {!isSubscription && (
+                <button
+                  onClick={() => {
+                    addItem({
+                      productId: product.id,
+                      slug: product.slug,
+                      title: product.title,
+                      price: Number(price ?? 0),
+                      image: images[0]?.image_url ?? null,
+                      variantId: selectedVariant?.id ?? null,
+                      variantLabel: selectedVariant?.label ?? null,
+                      quantity: qty,
+                    });
+                    toast.success("কার্টে যোগ হয়েছে");
+                  }}
+                  className="rounded-2xl glass-card px-5 py-3.5 text-sm font-semibold hover:bg-accent transition inline-flex items-center gap-2"
+                >
+                  <ShoppingCart className="h-4 w-4" /> কার্টে যোগ
+                </button>
+              )}
               <button className="rounded-2xl glass-card px-4 py-3.5 hover:bg-accent transition" aria-label="Wishlist">
                 <Heart className="h-4 w-4" />
               </button>
