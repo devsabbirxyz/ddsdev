@@ -78,11 +78,13 @@ import { Route as AuthenticatedOrderIdRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardWishlistRouteImport } from './routes/_authenticated/dashboard.wishlist'
 import { Route as AuthenticatedDashboardWalletRouteImport } from './routes/_authenticated/dashboard.wallet'
 import { Route as AuthenticatedDashboardSupportRouteImport } from './routes/_authenticated/dashboard.support'
+import { Route as AuthenticatedDashboardSubscriptionsRouteImport } from './routes/_authenticated/dashboard.subscriptions'
 import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
 import { Route as AuthenticatedDashboardOrdersRouteImport } from './routes/_authenticated/dashboard.orders'
 import { Route as AuthenticatedDashboardNotificationsRouteImport } from './routes/_authenticated/dashboard.notifications'
 import { Route as AuthenticatedDashboardDownloadsRouteImport } from './routes/_authenticated/dashboard.downloads'
 import { Route as AuthenticatedDashboardCouponsRouteImport } from './routes/_authenticated/dashboard.coupons'
+import { Route as ApiPublicHooksProcessSubscriptionsRouteImport } from './routes/api/public/hooks/process-subscriptions'
 import { Route as AuthenticatedDashboardTicketsIdRouteImport } from './routes/_authenticated/dashboard.tickets.$id'
 
 const TermsRoute = TermsRouteImport.update({
@@ -433,6 +435,12 @@ const AuthenticatedDashboardSupportRoute =
     path: '/support',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardSubscriptionsRoute =
+  AuthenticatedDashboardSubscriptionsRouteImport.update({
+    id: '/subscriptions',
+    path: '/subscriptions',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardProfileRoute =
   AuthenticatedDashboardProfileRouteImport.update({
     id: '/profile',
@@ -462,6 +470,12 @@ const AuthenticatedDashboardCouponsRoute =
     id: '/coupons',
     path: '/coupons',
     getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const ApiPublicHooksProcessSubscriptionsRoute =
+  ApiPublicHooksProcessSubscriptionsRouteImport.update({
+    id: '/api/public/hooks/process-subscriptions',
+    path: '/api/public/hooks/process-subscriptions',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const AuthenticatedDashboardTicketsIdRoute =
   AuthenticatedDashboardTicketsIdRouteImport.update({
@@ -530,6 +544,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
   '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/dashboard/subscriptions': typeof AuthenticatedDashboardSubscriptionsRoute
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
   '/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
@@ -545,6 +560,7 @@ export interface FileRoutesByFullPath {
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/tickets/': typeof AdminTicketsIndexRoute
   '/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
+  '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -599,6 +615,7 @@ export interface FileRoutesByTo {
   '/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
   '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/dashboard/subscriptions': typeof AuthenticatedDashboardSubscriptionsRoute
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
   '/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
@@ -614,6 +631,7 @@ export interface FileRoutesByTo {
   '/admin/products': typeof AdminProductsIndexRoute
   '/admin/tickets': typeof AdminTicketsIndexRoute
   '/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
+  '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -677,6 +695,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
   '/_authenticated/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/_authenticated/dashboard/subscriptions': typeof AuthenticatedDashboardSubscriptionsRoute
   '/_authenticated/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/_authenticated/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
   '/_authenticated/dashboard/wishlist': typeof AuthenticatedDashboardWishlistRoute
@@ -692,6 +711,7 @@ export interface FileRoutesById {
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/tickets/': typeof AdminTicketsIndexRoute
   '/_authenticated/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
+  '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -755,6 +775,7 @@ export interface FileRouteTypes {
     | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/profile'
+    | '/dashboard/subscriptions'
     | '/dashboard/support'
     | '/dashboard/wallet'
     | '/dashboard/wishlist'
@@ -770,6 +791,7 @@ export interface FileRouteTypes {
     | '/admin/products/'
     | '/admin/tickets/'
     | '/dashboard/tickets/$id'
+    | '/api/public/hooks/process-subscriptions'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -824,6 +846,7 @@ export interface FileRouteTypes {
     | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/profile'
+    | '/dashboard/subscriptions'
     | '/dashboard/support'
     | '/dashboard/wallet'
     | '/dashboard/wishlist'
@@ -839,6 +862,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/tickets'
     | '/dashboard/tickets/$id'
+    | '/api/public/hooks/process-subscriptions'
   id:
     | '__root__'
     | '/'
@@ -901,6 +925,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/notifications'
     | '/_authenticated/dashboard/orders'
     | '/_authenticated/dashboard/profile'
+    | '/_authenticated/dashboard/subscriptions'
     | '/_authenticated/dashboard/support'
     | '/_authenticated/dashboard/wallet'
     | '/_authenticated/dashboard/wishlist'
@@ -916,6 +941,7 @@ export interface FileRouteTypes {
     | '/admin/products/'
     | '/admin/tickets/'
     | '/_authenticated/dashboard/tickets/$id'
+    | '/api/public/hooks/process-subscriptions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -942,6 +968,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  ApiPublicHooksProcessSubscriptionsRoute: typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1429,6 +1456,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardSupportRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/subscriptions': {
+      id: '/_authenticated/dashboard/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/dashboard/subscriptions'
+      preLoaderRoute: typeof AuthenticatedDashboardSubscriptionsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/profile': {
       id: '/_authenticated/dashboard/profile'
       path: '/profile'
@@ -1464,6 +1498,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardCouponsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/api/public/hooks/process-subscriptions': {
+      id: '/api/public/hooks/process-subscriptions'
+      path: '/api/public/hooks/process-subscriptions'
+      fullPath: '/api/public/hooks/process-subscriptions'
+      preLoaderRoute: typeof ApiPublicHooksProcessSubscriptionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/dashboard/tickets/$id': {
       id: '/_authenticated/dashboard/tickets/$id'
       path: '/tickets/$id'
@@ -1480,6 +1521,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardNotificationsRoute: typeof AuthenticatedDashboardNotificationsRoute
   AuthenticatedDashboardOrdersRoute: typeof AuthenticatedDashboardOrdersRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
+  AuthenticatedDashboardSubscriptionsRoute: typeof AuthenticatedDashboardSubscriptionsRoute
   AuthenticatedDashboardSupportRoute: typeof AuthenticatedDashboardSupportRoute
   AuthenticatedDashboardWalletRoute: typeof AuthenticatedDashboardWalletRoute
   AuthenticatedDashboardWishlistRoute: typeof AuthenticatedDashboardWishlistRoute
@@ -1495,6 +1537,8 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
       AuthenticatedDashboardNotificationsRoute,
     AuthenticatedDashboardOrdersRoute: AuthenticatedDashboardOrdersRoute,
     AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
+    AuthenticatedDashboardSubscriptionsRoute:
+      AuthenticatedDashboardSubscriptionsRoute,
     AuthenticatedDashboardSupportRoute: AuthenticatedDashboardSupportRoute,
     AuthenticatedDashboardWalletRoute: AuthenticatedDashboardWalletRoute,
     AuthenticatedDashboardWishlistRoute: AuthenticatedDashboardWishlistRoute,
@@ -1700,17 +1744,9 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ProductSlugRoute: ProductSlugRoute,
+  ApiPublicHooksProcessSubscriptionsRoute:
+    ApiPublicHooksProcessSubscriptionsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
