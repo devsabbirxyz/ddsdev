@@ -214,7 +214,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       user_id: userId,
       product_id: l.productId,
       variant_id: l.variantId,
-      product_title: l.title,
+      product_title: l.planLabel ? `${l.title} (${l.planLabel})` : l.title,
       variant_label: l.variantLabel,
       quantity: l.quantity,
       regular_price: l.regularPrice,
