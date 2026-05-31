@@ -307,7 +307,7 @@ export const placeOrder = createServerFn({ method: "POST" })
             last_order_id: orderId,
           } as any)
           .select("id")
-          .single();
+          .single() as { data: { id: string } | null };
         if (sub?.id) {
           await supabaseAdmin
             .from("orders")
