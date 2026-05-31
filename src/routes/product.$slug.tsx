@@ -53,7 +53,12 @@ export const Route = createFileRoute("/product/$slug")({
 
 function ProductPage() {
   const { product } = Route.useLoaderData();
+  const isSubscription = (product as any)?.delivery_type === "subscription";
+  const plans = (((product as any)?.subscription_plans ?? []) as any[])
+    .filter((p) => p.is_active)
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
   const [variantId, setVariantId] = useState<string | null>(product?.product_variants?.[0]?.id ?? null);
+  const [planId, setPlanId] = useState<string | null>(plans[0]?.id ?? null);
   const [qty, setQty] = useState(1);
   const { data: reviews = [] } = useQuery(productReviewsQuery(product?.id));
   const { data: related = [] } = useQuery(productsQuery({ limit: 4 }));
@@ -64,8 +69,11 @@ function ProductPage() {
   const images = (product.product_images ?? []).sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
   const variants = (product.product_variants ?? []).filter((v: any) => v.is_active);
   const selectedVariant = variants.find((v: any) => v.id === variantId);
-  const price = selectedVariant?.offer_price ?? selectedVariant?.regular_price ?? product.offer_price ?? product.regular_price;
-  const hasDiscount = product.offer_price != null && product.regular_price != null && product.offer_price < product.regular_price;
+  const selectedPlan = plans.find((p) => p.id === planId);
+  const price = isSubscription && selectedPlan
+    ? Number(selectedPlan.price)
+    : (selectedVariant?.offer_price ?? selectedVariant?.regular_price ?? product.offer_price ?? product.regular_price);
+  const hasDiscount = !isSubscription && product.offer_price != null && product.regular_price != null && product.offer_price < product.regular_price;
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
