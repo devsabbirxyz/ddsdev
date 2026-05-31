@@ -615,6 +615,7 @@ export type Database = {
           delivery_status: string
           discount_amount: number
           id: string
+          is_renewal: boolean
           is_reviewed: boolean
           offer_price: number | null
           order_number: string
@@ -628,6 +629,7 @@ export type Database = {
           seller_earning: number
           seller_id: string | null
           status: string
+          subscription_id: string | null
           total_price: number
           transaction_id: string | null
           updated_at: string | null
@@ -648,6 +650,7 @@ export type Database = {
           delivery_status?: string
           discount_amount?: number
           id?: string
+          is_renewal?: boolean
           is_reviewed?: boolean
           offer_price?: number | null
           order_number: string
@@ -661,6 +664,7 @@ export type Database = {
           seller_earning?: number
           seller_id?: string | null
           status?: string
+          subscription_id?: string | null
           total_price: number
           transaction_id?: string | null
           updated_at?: string | null
@@ -681,6 +685,7 @@ export type Database = {
           delivery_status?: string
           discount_amount?: number
           id?: string
+          is_renewal?: boolean
           is_reviewed?: boolean
           offer_price?: number | null
           order_number?: string
@@ -694,6 +699,7 @@ export type Database = {
           seller_earning?: number
           seller_id?: string | null
           status?: string
+          subscription_id?: string | null
           total_price?: number
           transaction_id?: string | null
           updated_at?: string | null
@@ -1396,6 +1402,105 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: string | null
+        }
+        Relationships: []
+      }
+      subscription_plans: {
+        Row: {
+          created_at: string
+          duration_days: number
+          id: string
+          is_active: boolean
+          name: string
+          name_en: string | null
+          price: number
+          product_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          duration_days: number
+          id?: string
+          is_active?: boolean
+          name: string
+          name_en?: string | null
+          price: number
+          product_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          duration_days?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          name_en?: string | null
+          price?: number
+          product_id?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          auto_renew: boolean
+          cancelled_at: string | null
+          created_at: string
+          customer_email: string | null
+          customer_input: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          expires_at: string
+          id: string
+          last_order_id: string | null
+          payment_method: string | null
+          plan_id: string
+          product_id: string
+          renewal_reminder_sent_at: string | null
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_renew?: boolean
+          cancelled_at?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_input?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          expires_at: string
+          id?: string
+          last_order_id?: string | null
+          payment_method?: string | null
+          plan_id: string
+          product_id: string
+          renewal_reminder_sent_at?: string | null
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_renew?: boolean
+          cancelled_at?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_input?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          expires_at?: string
+          id?: string
+          last_order_id?: string | null
+          payment_method?: string | null
+          plan_id?: string
+          product_id?: string
+          renewal_reminder_sent_at?: string | null
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
