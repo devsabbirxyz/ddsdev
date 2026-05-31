@@ -48,7 +48,7 @@ function OrderPage() {
       </div>
 
       <div className="glass-card rounded-2xl p-6 space-y-3">
-        <Row label="প্রোডাক্ট" value={order.product_title} />
+        <Row label="প্রোডাক্ট" value={order.product_title ?? "—"} />
         {order.variant_label && <Row label="ভ্যারিয়েন্ট" value={order.variant_label} />}
         <Row label="পরিমাণ" value={String(order.quantity)} />
         <Row label="পেমেন্ট মেথড" value={order.payment_method} />
