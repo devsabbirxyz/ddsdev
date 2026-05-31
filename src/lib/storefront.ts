@@ -71,7 +71,7 @@ export const productBySlugQuery = (slug: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*, product_images(id,image_url,sort_order), product_variants(id,label,label_en,regular_price,offer_price,is_active,sort_order)")
+        .select("*, product_images(id,image_url,sort_order), product_variants(id,label,label_en,regular_price,offer_price,is_active,sort_order), subscription_plans(id,name,name_en,price,duration_days,is_active,sort_order)")
         .eq("slug", slug)
         .eq("is_active", true)
         .maybeSingle();
