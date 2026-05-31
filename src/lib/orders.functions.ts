@@ -289,7 +289,7 @@ export const placeOrder = createServerFn({ method: "POST" })
         if (!l.planId) continue;
         const orderId = inserted[i]?.id;
         if (!orderId) continue;
-        const { data: sub } = await supabaseAdmin
+        const subRes: any = await supabaseAdmin
           .from("subscriptions" as any)
           .insert({
             user_id: userId,
@@ -307,11 +307,12 @@ export const placeOrder = createServerFn({ method: "POST" })
             last_order_id: orderId,
           } as any)
           .select("id")
-          .single() as { data: { id: string } | null };
-        if (sub?.id) {
+          .single();
+        const subId = subRes?.data?.id as string | undefined;
+        if (subId) {
           await supabaseAdmin
             .from("orders")
-            .update({ subscription_id: sub.id, is_renewal: false } as any)
+            .update({ subscription_id: subId, is_renewal: false } as any)
             .eq("id", orderId);
         }
       }
