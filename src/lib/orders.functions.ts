@@ -282,6 +282,41 @@ export const placeOrder = createServerFn({ method: "POST" })
       } as any);
     }
 
+    // 8) Create subscription records for items with planId (status=pending; trigger activates on order completed)
+    if (inserted && inserted.length === lines.length) {
+      for (let i = 0; i < lines.length; i++) {
+        const l = lines[i];
+        if (!l.planId) continue;
+        const orderId = inserted[i]?.id;
+        if (!orderId) continue;
+        const { data: sub } = await supabaseAdmin
+          .from("subscriptions" as any)
+          .insert({
+            user_id: userId,
+            product_id: l.productId,
+            plan_id: l.planId,
+            status: "pending_renewal",
+            auto_renew: true,
+            // placeholder expiry — trigger overwrites on payment
+            expires_at: new Date().toISOString(),
+            customer_name: data.customer.name,
+            customer_email: data.customer.email,
+            customer_phone: data.customer.phone,
+            customer_input: data.customer.input || null,
+            payment_method: pm.name,
+            last_order_id: orderId,
+          } as any)
+          .select("id")
+          .single();
+        if (sub?.id) {
+          await supabaseAdmin
+            .from("orders")
+            .update({ subscription_id: sub.id, is_renewal: false } as any)
+            .eq("id", orderId);
+        }
+      }
+    }
+
     const totalAmount = rows.reduce((s, r) => s + (r.total_price || 0), 0);
 
     return {
