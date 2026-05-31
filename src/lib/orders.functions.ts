@@ -6,6 +6,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 const ItemSchema = z.object({
   productId: z.string().uuid(),
   variantId: z.string().uuid().nullish(),
+  planId: z.string().uuid().nullish(),
   quantity: z.number().int().min(1).max(99),
 });
 
