@@ -147,6 +147,8 @@ export type Database = {
           id: string
           referral_code: string
           status: string
+          total_earnings: number
+          total_referrals: number
           total_withdrawn: number
           user_id: string
         }
@@ -157,6 +159,8 @@ export type Database = {
           id?: string
           referral_code: string
           status?: string
+          total_earnings?: number
+          total_referrals?: number
           total_withdrawn?: number
           user_id: string
         }
@@ -167,6 +171,8 @@ export type Database = {
           id?: string
           referral_code?: string
           status?: string
+          total_earnings?: number
+          total_referrals?: number
           total_withdrawn?: number
           user_id?: string
         }
@@ -619,6 +625,7 @@ export type Database = {
           quantity: number
           regular_price: number | null
           rejection_reason: string | null
+          seller_earning: number
           seller_id: string | null
           status: string
           total_price: number
@@ -651,6 +658,7 @@ export type Database = {
           quantity?: number
           regular_price?: number | null
           rejection_reason?: string | null
+          seller_earning?: number
           seller_id?: string | null
           status?: string
           total_price: number
@@ -683,6 +691,7 @@ export type Database = {
           quantity?: number
           regular_price?: number | null
           rejection_reason?: string | null
+          seller_earning?: number
           seller_id?: string | null
           status?: string
           total_price?: number
@@ -1321,6 +1330,7 @@ export type Database = {
       sellers: {
         Row: {
           balance: number
+          commission_rate: number
           created_at: string
           id: string
           status: string
@@ -1328,12 +1338,14 @@ export type Database = {
           store_description: string | null
           store_logo_url: string | null
           store_name: string
+          total_earnings: number
           total_withdrawn: number
           updated_at: string | null
           user_id: string
         }
         Insert: {
           balance?: number
+          commission_rate?: number
           created_at?: string
           id?: string
           status?: string
@@ -1341,12 +1353,14 @@ export type Database = {
           store_description?: string | null
           store_logo_url?: string | null
           store_name: string
+          total_earnings?: number
           total_withdrawn?: number
           updated_at?: string | null
           user_id: string
         }
         Update: {
           balance?: number
+          commission_rate?: number
           created_at?: string
           id?: string
           status?: string
@@ -1354,6 +1368,7 @@ export type Database = {
           store_description?: string | null
           store_logo_url?: string | null
           store_name?: string
+          total_earnings?: number
           total_withdrawn?: number
           updated_at?: string | null
           user_id?: string
