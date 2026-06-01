@@ -278,6 +278,7 @@ function ProductEditor() {
           onChange={() => qc.invalidateQueries({ queryKey: ["admin", "product", id] })}
         />
       )}
+      {tab === "guide" && <UseGuideTab form={form} set={set} />}
       {tab === "seo" && (
         <div className="glass-card rounded-2xl p-5 space-y-4 max-w-2xl">
           <Field label="SEO Title" value={form.seo_title} onChange={(v) => set("seo_title", v)} />
