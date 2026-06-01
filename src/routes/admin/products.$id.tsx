@@ -124,6 +124,11 @@ function ProductEditor() {
           is_new_arrival: form.is_new_arrival,
           is_best_seller: form.is_best_seller,
           status: form.status,
+          use_guide_type: form.use_guide_type ?? "none",
+          use_guide_text: form.use_guide_text ?? null,
+          use_guide_image_url: form.use_guide_image_url ?? null,
+          use_guide_video_url: form.use_guide_video_url ?? null,
+          use_guide_visible_after_purchase: form.use_guide_visible_after_purchase ?? true,
         },
       });
       qc.invalidateQueries({ queryKey: ["admin", "product", id] });
