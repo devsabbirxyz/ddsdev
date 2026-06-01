@@ -84,14 +84,20 @@ function OrdersPage() {
                   <StatusBadge status={o.status ?? "pending"} />
                 </div>
               </div>
-              {o.status === "approved" && o.product_id && (
-                <div className="mt-3 pt-3 border-t border-border flex justify-end">
-                  {o.is_reviewed ? (
+              <div className="mt-3 pt-3 border-t border-border flex justify-end gap-2 flex-wrap">
+                <button
+                  onClick={() => handleDownloadInvoice(o.id)}
+                  className="inline-flex items-center gap-1.5 text-xs rounded-lg glass px-3 py-1.5 hover:bg-accent"
+                >
+                  <FileText className="h-3.5 w-3.5" /> ইনভয়েস
+                </button>
+                {o.status === "approved" && o.product_id && (
+                  o.is_reviewed ? (
                     <button
                       onClick={() => setReviewing(o as OrderRow)}
                       className="inline-flex items-center gap-1.5 text-xs rounded-lg glass px-3 py-1.5 hover:bg-accent"
                     >
-                      <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> রিভিউ এডিট করুন
+                      <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> রিভিউ এডিট
                     </button>
                   ) : (
                     <button
@@ -100,9 +106,9 @@ function OrdersPage() {
                     >
                       <MessageSquarePlus className="h-3.5 w-3.5" /> রিভিউ দিন
                     </button>
-                  )}
-                </div>
-              )}
+                  )
+                )}
+              </div>
             </div>
           ))}
         </div>
