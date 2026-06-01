@@ -156,6 +156,7 @@ function ProductEditor() {
     { key: "media", label: "ছবি", icon: ImageIcon },
     { key: "variants", label: "ভ্যারিয়েন্ট", icon: Layers },
     { key: "delivery", label: "ডেলিভারি", icon: Database },
+    { key: "guide", label: "Use Guide", icon: BookOpen },
     { key: "seo", label: "SEO", icon: Search },
   ];
 
