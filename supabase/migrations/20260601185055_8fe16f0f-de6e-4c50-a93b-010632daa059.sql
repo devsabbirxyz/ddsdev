@@ -1,0 +1,3 @@
+ALTER TABLE public.products DROP CONSTRAINT IF EXISTS products_delivery_type_check;
+ALTER TABLE public.products ADD CONSTRAINT products_delivery_type_check
+  CHECK (delivery_type = ANY (ARRAY['account','subscription','downloadable','method','text_link','instant_text','invite_link','manual']));
