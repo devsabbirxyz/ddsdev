@@ -515,6 +515,11 @@ export const saveProduct = createServerFn({ method: "POST" })
       is_new_arrival: z.boolean().optional(),
       is_best_seller: z.boolean().optional(),
       status: z.enum(["pending", "approved", "rejected"]).optional(),
+      use_guide_type: z.enum(["text", "image", "video", "none"]).optional().nullable(),
+      use_guide_text: z.string().max(20000).optional().nullable(),
+      use_guide_image_url: z.string().max(1000).optional().nullable(),
+      use_guide_video_url: z.string().max(500).optional().nullable(),
+      use_guide_visible_after_purchase: z.boolean().optional(),
     }).parse(i),
   )
   .handler(async ({ data }) => {
@@ -541,6 +546,11 @@ export const saveProduct = createServerFn({ method: "POST" })
       is_new_arrival: data.is_new_arrival ?? false,
       is_best_seller: data.is_best_seller ?? false,
       status: data.status ?? "approved",
+      use_guide_type: data.use_guide_type ?? "none",
+      use_guide_text: data.use_guide_text ?? null,
+      use_guide_image_url: data.use_guide_image_url ?? null,
+      use_guide_video_url: data.use_guide_video_url ?? null,
+      use_guide_visible_after_purchase: data.use_guide_visible_after_purchase ?? true,
     };
     if (data.id) {
       if (data.slug) payload.slug = data.slug;

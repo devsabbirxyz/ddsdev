@@ -14,15 +14,17 @@ import { confirmDialog } from "@/components/ui/modal-dialogs";
 import {
   ArrowLeft, Save, Trash2, Plus, Star, ImagePlus,
   Package, Image as ImageIcon, Layers, Database, Search, CheckCircle2, Loader2,
+  BookOpen, FileText as FileTextIcon, Image as ImgIcon, Video as VideoIcon, X as XIcon,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/products/$id")({
   head: () => ({ meta: [{ title: "Edit Product — Admin" }, { name: "robots", content: "noindex" }] }),
   component: ProductEditor,
 });
 
-type Tab = "basic" | "media" | "variants" | "delivery" | "seo";
+type Tab = "basic" | "media" | "variants" | "delivery" | "guide" | "seo";
 
 function slugify(s: string) {
   return s
@@ -122,6 +124,11 @@ function ProductEditor() {
           is_new_arrival: form.is_new_arrival,
           is_best_seller: form.is_best_seller,
           status: form.status,
+          use_guide_type: form.use_guide_type ?? "none",
+          use_guide_text: form.use_guide_text ?? null,
+          use_guide_image_url: form.use_guide_image_url ?? null,
+          use_guide_video_url: form.use_guide_video_url ?? null,
+          use_guide_visible_after_purchase: form.use_guide_visible_after_purchase ?? true,
         },
       });
       qc.invalidateQueries({ queryKey: ["admin", "product", id] });
@@ -149,6 +156,7 @@ function ProductEditor() {
     { key: "media", label: "ছবি", icon: ImageIcon },
     { key: "variants", label: "ভ্যারিয়েন্ট", icon: Layers },
     { key: "delivery", label: "ডেলিভারি", icon: Database },
+    { key: "guide", label: "Use Guide", icon: BookOpen },
     { key: "seo", label: "SEO", icon: Search },
   ];
 
@@ -270,6 +278,7 @@ function ProductEditor() {
           onChange={() => qc.invalidateQueries({ queryKey: ["admin", "product", id] })}
         />
       )}
+      {tab === "guide" && <UseGuideTab form={form} set={set} />}
       {tab === "seo" && (
         <div className="glass-card rounded-2xl p-5 space-y-4 max-w-2xl">
           <Field label="SEO Title" value={form.seo_title} onChange={(v) => set("seo_title", v)} />
@@ -580,3 +589,124 @@ function DeliveryTab({ form, set, productId, variants, accounts, onChange }: any
     </div>
   );
 }
+
+function ytEmbedUrl(raw: string): string | null {
+  if (!raw) return null;
+  try {
+    const u = new URL(raw.trim());
+    let id = "";
+    if (u.hostname.includes("youtu.be")) id = u.pathname.slice(1);
+    else if (u.searchParams.get("v")) id = u.searchParams.get("v") || "";
+    else if (u.pathname.startsWith("/embed/")) id = u.pathname.split("/embed/")[1] || "";
+    else if (u.pathname.startsWith("/shorts/")) id = u.pathname.split("/shorts/")[1] || "";
+    id = id.split(/[/?&]/)[0];
+    if (!/^[\w-]{6,}$/.test(id)) return null;
+    return `https://www.youtube.com/embed/${id}`;
+  } catch { return null; }
+}
+
+function UseGuideTab({ form, set }: { form: any; set: (k: string, v: any) => void }) {
+  const enabled = form.use_guide_type && form.use_guide_type !== "none";
+  const tab = enabled ? (form.use_guide_type as "text" | "image" | "video") : "text";
+  const embed = form.use_guide_video_url ? ytEmbedUrl(form.use_guide_video_url) : null;
+  const videoInvalid = form.use_guide_type === "video" && form.use_guide_video_url && !embed;
+
+  return (
+    <div className="space-y-4 max-w-3xl">
+      <div className="glass-card rounded-2xl p-5 space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="font-bold inline-flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary" /> Use Guide যোগ করবেন?</h3>
+            <p className="text-xs text-muted-foreground mt-1">কাস্টমার অর্ডার complete হওয়ার পর "কীভাবে ব্যবহার করবেন" সেকশন দেখতে পাবেন।</p>
+          </div>
+          <input
+            type="checkbox"
+            checked={!!enabled}
+            onChange={(e) => set("use_guide_type", e.target.checked ? "text" : "none")}
+            className="h-5 w-9 appearance-none rounded-full bg-muted checked:bg-primary relative transition cursor-pointer before:content-[''] before:absolute before:top-0.5 before:left-0.5 before:h-4 before:w-4 before:rounded-full before:bg-white before:transition checked:before:translate-x-4"
+          />
+        </div>
+
+        {enabled && (
+          <>
+            <div className="inline-flex rounded-xl border border-border p-1 text-sm">
+              {[
+                { v: "text", label: "📝 Text", icon: FileTextIcon },
+                { v: "image", label: "🖼️ Image", icon: ImgIcon },
+                { v: "video", label: "🎬 Video", icon: VideoIcon },
+              ].map((t) => (
+                <button
+                  key={t.v}
+                  type="button"
+                  onClick={() => set("use_guide_type", t.v)}
+                  className={`px-3.5 py-1.5 rounded-lg font-semibold transition ${tab === t.v ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
+            {tab === "text" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium block">গাইড টেক্সট (Markdown/HTML সাপোর্ট)</label>
+                <textarea
+                  value={form.use_guide_text ?? ""}
+                  onChange={(e) => set("use_guide_text", e.target.value)}
+                  rows={10}
+                  placeholder="এখানে ব্যবহারের নির্দেশনা লিখুন... (স্টেপ বাই স্টেপ লিখতে পারেন)&#10;&#10;উদাহরণ:&#10;1. প্রথমে অ্যাপটি ডাউনলোড করুন&#10;2. লগইন করুন&#10;3. ..."
+                  className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-mono"
+                />
+                <p className="text-xs text-muted-foreground">Tip: লিস্ট ও স্টেপ লিখতে নতুন লাইন ব্যবহার করুন। <code>**bold**</code>, <code>*italic*</code>, <code>- list</code> সাপোর্ট করে।</p>
+              </div>
+            )}
+
+            {tab === "image" && (
+              <div className="space-y-2">
+                <ImageUpload
+                  label="গাইড ইমেজ"
+                  bucket="admin-uploads"
+                  folder="use-guides"
+                  value={form.use_guide_image_url ?? ""}
+                  onChange={(url) => set("use_guide_image_url", url || null)}
+                  maxSizeMB={5}
+                />
+              </div>
+            )}
+
+            {tab === "video" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium block">YouTube ভিডিও লিংক</label>
+                <input
+                  type="url"
+                  value={form.use_guide_video_url ?? ""}
+                  onChange={(e) => set("use_guide_video_url", e.target.value)}
+                  placeholder="https://youtube.com/watch?v=..."
+                  className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm"
+                />
+                {videoInvalid && (
+                  <p className="text-xs text-destructive">⚠️ সঠিক YouTube লিংক দিন</p>
+                )}
+                {embed && (
+                  <div className="rounded-xl overflow-hidden border border-border aspect-video bg-black">
+                    <iframe src={embed} title="Preview" allowFullScreen className="w-full h-full" />
+                  </div>
+                )}
+              </div>
+            )}
+
+            <label className="flex items-center justify-between gap-3 pt-2 border-t border-border">
+              <span className="text-sm font-medium">কেনার পর শুধু কাস্টমারকে দেখান</span>
+              <input
+                type="checkbox"
+                checked={form.use_guide_visible_after_purchase !== false}
+                onChange={(e) => set("use_guide_visible_after_purchase", e.target.checked)}
+                className="h-5 w-9 appearance-none rounded-full bg-muted checked:bg-primary relative transition cursor-pointer before:content-[''] before:absolute before:top-0.5 before:left-0.5 before:h-4 before:w-4 before:rounded-full before:bg-white before:transition checked:before:translate-x-4"
+              />
+            </label>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
