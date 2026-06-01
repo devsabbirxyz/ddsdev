@@ -3,11 +3,18 @@ import { useQuery, useQueryClient, queryOptions } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Package, Star, Loader2, MessageSquarePlus, CheckCircle2 } from "lucide-react";
+import { Package, Star, Loader2, MessageSquarePlus, CheckCircle2, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { formatBDT } from "@/lib/storefront";
 import { submitReview } from "@/lib/reviews.functions";
+import { downloadInvoicePDF } from "@/lib/invoice";
+
+async function handleDownloadInvoice(orderId: string) {
+  const { data, error } = await supabase.from("orders").select("*").eq("id", orderId).maybeSingle();
+  if (error || !data) { toast.error("ইনভয়েস লোড ব্যর্থ"); return; }
+  downloadInvoicePDF(data as any);
+}
 
 const myOrdersQuery = (userId?: string) =>
   queryOptions({
