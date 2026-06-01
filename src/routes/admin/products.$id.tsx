@@ -14,15 +14,17 @@ import { confirmDialog } from "@/components/ui/modal-dialogs";
 import {
   ArrowLeft, Save, Trash2, Plus, Star, ImagePlus,
   Package, Image as ImageIcon, Layers, Database, Search, CheckCircle2, Loader2,
+  BookOpen, FileText as FileTextIcon, Image as ImgIcon, Video as VideoIcon, X as XIcon,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/products/$id")({
   head: () => ({ meta: [{ title: "Edit Product — Admin" }, { name: "robots", content: "noindex" }] }),
   component: ProductEditor,
 });
 
-type Tab = "basic" | "media" | "variants" | "delivery" | "seo";
+type Tab = "basic" | "media" | "variants" | "delivery" | "guide" | "seo";
 
 function slugify(s: string) {
   return s
