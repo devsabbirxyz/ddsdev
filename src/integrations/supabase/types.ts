@@ -1087,6 +1087,11 @@ export type Database = {
           total_reviews: number
           total_sales: number
           updated_at: string | null
+          use_guide_image_url: string | null
+          use_guide_text: string | null
+          use_guide_type: string | null
+          use_guide_video_url: string | null
+          use_guide_visible_after_purchase: boolean
           video_url: string | null
           view_count: number
         }
@@ -1121,6 +1126,11 @@ export type Database = {
           total_reviews?: number
           total_sales?: number
           updated_at?: string | null
+          use_guide_image_url?: string | null
+          use_guide_text?: string | null
+          use_guide_type?: string | null
+          use_guide_video_url?: string | null
+          use_guide_visible_after_purchase?: boolean
           video_url?: string | null
           view_count?: number
         }
@@ -1155,6 +1165,11 @@ export type Database = {
           total_reviews?: number
           total_sales?: number
           updated_at?: string | null
+          use_guide_image_url?: string | null
+          use_guide_text?: string | null
+          use_guide_type?: string | null
+          use_guide_video_url?: string | null
+          use_guide_visible_after_purchase?: boolean
           video_url?: string | null
           view_count?: number
         }
