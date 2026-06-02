@@ -245,6 +245,7 @@ function ProductPage() {
               </button>
               {!isSubscription && (
                 <button
+                  disabled={isOutOfStock || selectedIsOut}
                   onClick={() => {
                     addItem({
                       productId: product.id,
@@ -258,7 +259,7 @@ function ProductPage() {
                     });
                     toast.success("কার্টে যোগ হয়েছে");
                   }}
-                  className="rounded-2xl glass-card px-5 py-3.5 text-sm font-semibold hover:bg-accent transition inline-flex items-center gap-2"
+                  className="rounded-2xl glass-card px-5 py-3.5 text-sm font-semibold hover:bg-accent transition inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ShoppingCart className="h-4 w-4" /> কার্টে যোগ
                 </button>
@@ -317,6 +318,9 @@ function ProductPage() {
           </div>
         )}
       </section>
+
+      {/* Product Q&A */}
+      <ProductQA productId={product.id} />
 
       {/* Related */}
       {related.length > 0 && (
