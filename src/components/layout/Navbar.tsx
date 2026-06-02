@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Moon, Sun, X, ShoppingCart, User, LogOut } from "lucide-react";
+import { Menu, Moon, Sun, X, ShoppingCart, User } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/lib/theme";
@@ -12,7 +12,7 @@ import { NotificationBell } from "@/components/layout/NotificationBell";
 export function Navbar() {
   const { theme, setTheme } = useTheme();
   const { t } = useI18n();
-  const { isAuthenticated, signOut } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { count } = useCart();
   const [open, setOpen] = useState(false);
   const { data: settings } = useQuery(siteSettingsQuery);
@@ -73,14 +73,9 @@ export function Navbar() {
           </Link>
           <NotificationBell />
           {isAuthenticated ? (
-            <>
-              <Link to="/dashboard" className="rounded-lg p-2 glass hover:bg-accent transition" aria-label="Dashboard">
-                <User className="h-4 w-4" />
-              </Link>
-              <button onClick={signOut} className="rounded-lg p-2 glass hover:bg-accent transition" aria-label="Logout">
-                <LogOut className="h-4 w-4" />
-              </button>
-            </>
+            <Link to="/dashboard" className="rounded-lg p-2 glass hover:bg-accent transition" aria-label="Dashboard">
+              <User className="h-4 w-4" />
+            </Link>
           ) : (
             <Link
               to="/login"
@@ -129,12 +124,13 @@ export function Navbar() {
             </div>
 
             {isAuthenticated ? (
-              <button
-                onClick={() => { signOut(); setOpen(false); }}
-                className="block w-full rounded-lg bg-gradient-brand px-4 py-2 text-sm font-semibold text-primary-foreground shadow-glow"
+              <Link
+                to="/dashboard"
+                onClick={() => setOpen(false)}
+                className="block w-full text-center rounded-lg bg-gradient-brand px-4 py-2 text-sm font-semibold text-primary-foreground shadow-glow"
               >
-                {t("nav_logout")}
-              </button>
+                ড্যাশবোর্ড
+              </Link>
             ) : (
               <Link
                 to="/login"
