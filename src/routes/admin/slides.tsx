@@ -80,7 +80,7 @@ function AdminSlides() {
           <ImageUpload
             value={form.image_url}
             onChange={(url) => setForm({ ...form, image_url: url })}
-            bucket={kind === "hero" ? "hero-slides" : kind === "offer" ? "offer-slides" : "admin-uploads"}
+            bucket={kind === "offer" ? "offer-slides" : "admin-uploads"}
             label={`${kind} banner image *`}
             folder={kind}
           />
