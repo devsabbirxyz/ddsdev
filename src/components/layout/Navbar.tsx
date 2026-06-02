@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Moon, Sun, X, ShoppingCart, User, LogOut } from "lucide-react";
+import { Menu, Moon, Sun, X, ShoppingCart, User } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/lib/theme";
@@ -12,7 +12,7 @@ import { NotificationBell } from "@/components/layout/NotificationBell";
 export function Navbar() {
   const { theme, setTheme } = useTheme();
   const { t } = useI18n();
-  const { isAuthenticated, signOut } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { count } = useCart();
   const [open, setOpen] = useState(false);
   const { data: settings } = useQuery(siteSettingsQuery);
