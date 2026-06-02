@@ -61,6 +61,7 @@ import { Route as AdminCustomersRouteImport } from './routes/admin/customers'
 import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminBannerTimerRouteImport } from './routes/admin/banner-timer'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
 import { Route as AdminAffiliatesRouteImport } from './routes/admin/affiliates'
 import { Route as AdminAdminsRouteImport } from './routes/admin/admins'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -347,6 +348,11 @@ const AdminBannerTimerRoute = AdminBannerTimerRouteImport.update({
   path: '/banner-timer',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAffiliatesRoute = AdminAffiliatesRouteImport.update({
   id: '/affiliates',
   path: '/affiliates',
@@ -516,6 +522,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/affiliates': typeof AdminAffiliatesRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/banner-timer': typeof AdminBannerTimerRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -591,6 +598,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/affiliates': typeof AdminAffiliatesRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/banner-timer': typeof AdminBannerTimerRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -669,6 +677,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/affiliates': typeof AdminAffiliatesRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/banner-timer': typeof AdminBannerTimerRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -750,6 +759,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/admin/admins'
     | '/admin/affiliates'
+    | '/admin/analytics'
     | '/admin/banner-timer'
     | '/admin/categories'
     | '/admin/coupons'
@@ -825,6 +835,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/admin/admins'
     | '/admin/affiliates'
+    | '/admin/analytics'
     | '/admin/banner-timer'
     | '/admin/categories'
     | '/admin/coupons'
@@ -902,6 +913,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/admin/admins'
     | '/admin/affiliates'
+    | '/admin/analytics'
     | '/admin/banner-timer'
     | '/admin/categories'
     | '/admin/coupons'
@@ -1349,6 +1361,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBannerTimerRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/affiliates': {
       id: '/admin/affiliates'
       path: '/affiliates'
@@ -1633,6 +1652,7 @@ const AdminTicketsRouteWithChildren = AdminTicketsRoute._addFileChildren(
 interface AdminRouteChildren {
   AdminAdminsRoute: typeof AdminAdminsRoute
   AdminAffiliatesRoute: typeof AdminAffiliatesRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminBannerTimerRoute: typeof AdminBannerTimerRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminCouponsRoute: typeof AdminCouponsRoute
@@ -1658,6 +1678,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAdminsRoute: AdminAdminsRoute,
   AdminAffiliatesRoute: AdminAffiliatesRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminBannerTimerRoute: AdminBannerTimerRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminCouponsRoute: AdminCouponsRoute,
