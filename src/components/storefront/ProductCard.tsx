@@ -18,9 +18,11 @@ export interface ProductCardData {
   is_best_seller?: boolean | null;
   is_variant?: boolean | null;
   view_count?: number | null;
+  track_stock?: boolean | null;
+  stock_quantity?: number | null;
   sellers?: { store_name?: string | null; store_logo_url?: string | null } | null;
   product_images?: Array<{ image_url: string; is_main?: boolean | null; sort_order?: number | null }> | null;
-  product_variants?: Array<{ regular_price?: number | null; offer_price?: number | null; is_active?: boolean | null }> | null;
+  product_variants?: Array<{ regular_price?: number | null; offer_price?: number | null; is_active?: boolean | null; stock_quantity?: number | null }> | null;
 }
 
 export function ProductCard({ p }: { p: ProductCardData }) {
@@ -34,6 +36,13 @@ export function ProductCard({ p }: { p: ProductCardData }) {
     .filter((n) => n > 0);
   const variantMin = variantPrices.length ? Math.min(...variantPrices) : null;
   const variantMax = variantPrices.length ? Math.max(...variantPrices) : null;
+
+  // Out of stock logic
+  const outOfStock = !!p.track_stock && (
+    isVariant
+      ? activeVariants.every((v) => v.stock_quantity != null && Number(v.stock_quantity) <= 0)
+      : (p.stock_quantity ?? 0) <= 0
+  );
 
   const sellerName = p.sellers?.store_name ?? null;
   const sellerLogo = p.sellers?.store_logo_url ?? null;
@@ -57,8 +66,15 @@ export function ProductCard({ p }: { p: ProductCardData }) {
         <SmartImage
           src={mainImage}
           alt={p.title}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className={`absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${outOfStock ? "grayscale opacity-60" : ""}`}
         />
+        {outOfStock && (
+          <div className="absolute inset-0 grid place-items-center bg-background/40 backdrop-blur-[1px]">
+            <span className="rounded-full bg-destructive px-4 py-1.5 text-xs font-bold text-destructive-foreground shadow-lg uppercase tracking-wide">
+              Out of Stock
+            </span>
+          </div>
+        )}
 
 
         {/* top-left badges */}

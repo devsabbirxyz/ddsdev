@@ -520,6 +520,8 @@ export const saveProduct = createServerFn({ method: "POST" })
       use_guide_image_url: z.string().max(1000).optional().nullable(),
       use_guide_video_url: z.string().max(500).optional().nullable(),
       use_guide_visible_after_purchase: z.boolean().optional(),
+      track_stock: z.boolean().optional(),
+      stock_quantity: z.number().int().min(0).nullable().optional(),
     }).parse(i),
   )
   .handler(async ({ data }) => {
@@ -551,6 +553,8 @@ export const saveProduct = createServerFn({ method: "POST" })
       use_guide_image_url: data.use_guide_image_url ?? null,
       use_guide_video_url: data.use_guide_video_url ?? null,
       use_guide_visible_after_purchase: data.use_guide_visible_after_purchase ?? true,
+      track_stock: data.track_stock ?? false,
+      stock_quantity: data.stock_quantity ?? null,
     };
     if (data.id) {
       if (data.slug) payload.slug = data.slug;
@@ -651,6 +655,7 @@ export const saveVariant = createServerFn({ method: "POST" })
       offer_price: z.number().min(0).optional().nullable(),
       sort_order: z.number().int().min(0).optional(),
       is_active: z.boolean().optional(),
+      stock_quantity: z.number().int().min(0).nullable().optional(),
     }).parse(i),
   )
   .handler(async ({ data }) => {
@@ -662,6 +667,7 @@ export const saveVariant = createServerFn({ method: "POST" })
       offer_price: data.offer_price ?? null,
       sort_order: data.sort_order ?? 0,
       is_active: data.is_active ?? true,
+      stock_quantity: data.stock_quantity ?? null,
     };
     if (data.id) {
       const { error } = await supabaseAdmin.from("product_variants").update(payload).eq("id", data.id);

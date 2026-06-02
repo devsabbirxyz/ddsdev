@@ -129,6 +129,10 @@ function ProductEditor() {
           use_guide_image_url: form.use_guide_image_url ?? null,
           use_guide_video_url: form.use_guide_video_url ?? null,
           use_guide_visible_after_purchase: form.use_guide_visible_after_purchase ?? true,
+          track_stock: !!form.track_stock,
+          stock_quantity: form.track_stock
+            ? (form.stock_quantity === "" || form.stock_quantity == null ? 0 : Number(form.stock_quantity))
+            : null,
         },
       });
       qc.invalidateQueries({ queryKey: ["admin", "product", id] });
@@ -247,6 +251,24 @@ function ProductEditor() {
               <h3 className="font-bold">মূল্য</h3>
               <Field label="রেগুলার প্রাইস (৳)" type="number" value={form.regular_price ?? ""} onChange={(v) => set("regular_price", v)} />
               <Field label="অফার প্রাইস (৳)" type="number" value={form.offer_price ?? ""} onChange={(v) => set("offer_price", v)} />
+            </div>
+
+            <div className="glass-card rounded-2xl p-5 space-y-3">
+              <h3 className="font-bold">স্টক / ইনভেন্টরি</h3>
+              <Toggle label="স্টক ট্র্যাক করুন" checked={!!form.track_stock} onChange={(v) => set("track_stock", v)} />
+              {form.track_stock && (
+                <>
+                  <Field
+                    label="স্টক পরিমাণ (০ হলে Out of Stock)"
+                    type="number"
+                    value={form.stock_quantity ?? ""}
+                    onChange={(v) => set("stock_quantity", v)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    প্রতি অর্ডারে ১ করে কমবে। ভ্যারিয়েন্ট থাকলে প্রতি ভ্যারিয়েন্টে আলাদা স্টক সেট করুন।
+                  </p>
+                </>
+              )}
             </div>
 
             <div className="glass-card rounded-2xl p-5 space-y-3">
@@ -410,7 +432,7 @@ function MediaTab({ productId, images, onChange }: any) {
 function VariantsTab({ productId, variants, onChange }: any) {
   const save = useServerFn(saveVariant);
   const del = useServerFn(deleteVariant);
-  const [form, setForm] = useState({ label: "", label_en: "", regular_price: "", offer_price: "" });
+  const [form, setForm] = useState({ label: "", label_en: "", regular_price: "", offer_price: "", stock_quantity: "" });
 
   const add = async () => {
     if (!form.label || !form.regular_price) return toast.error("Label ও Regular price দিন");
@@ -422,12 +444,33 @@ function VariantsTab({ productId, variants, onChange }: any) {
           label_en: form.label_en || null,
           regular_price: Number(form.regular_price),
           offer_price: form.offer_price ? Number(form.offer_price) : null,
+          stock_quantity: form.stock_quantity === "" ? null : Number(form.stock_quantity),
           sort_order: variants.length,
         },
       });
-      setForm({ label: "", label_en: "", regular_price: "", offer_price: "" });
+      setForm({ label: "", label_en: "", regular_price: "", offer_price: "", stock_quantity: "" });
       onChange();
       toast.success("ভ্যারিয়েন্ট যোগ হয়েছে");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  const updateStock = async (v: any, newStock: string) => {
+    try {
+      await save({
+        data: {
+          id: v.id,
+          product_id: productId,
+          label: v.label,
+          label_en: v.label_en,
+          regular_price: Number(v.regular_price),
+          offer_price: v.offer_price != null ? Number(v.offer_price) : null,
+          stock_quantity: newStock === "" ? null : Number(newStock),
+          sort_order: v.sort_order ?? 0,
+          is_active: v.is_active,
+        },
+      });
+      onChange();
+      toast.success("স্টক আপডেট হয়েছে");
     } catch (e: any) { toast.error(e.message); }
   };
 
@@ -440,13 +483,15 @@ function VariantsTab({ productId, variants, onChange }: any) {
     <div className="space-y-4">
       <div className="glass-card rounded-2xl p-5 space-y-3">
         <h3 className="font-bold">নতুন ভ্যারিয়েন্ট</h3>
-        <div className="grid md:grid-cols-4 gap-2">
+        <div className="grid md:grid-cols-5 gap-2">
           <input placeholder="Label (e.g. 1 মাস)" value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} className="rounded-xl border border-border bg-background px-3 py-2 text-sm" />
           <input placeholder="Label English" value={form.label_en} onChange={(e) => setForm({ ...form, label_en: e.target.value })} className="rounded-xl border border-border bg-background px-3 py-2 text-sm" />
           <input placeholder="Regular ৳" type="number" value={form.regular_price} onChange={(e) => setForm({ ...form, regular_price: e.target.value })} className="rounded-xl border border-border bg-background px-3 py-2 text-sm" />
           <input placeholder="Offer ৳" type="number" value={form.offer_price} onChange={(e) => setForm({ ...form, offer_price: e.target.value })} className="rounded-xl border border-border bg-background px-3 py-2 text-sm" />
+          <input placeholder="Stock (খালি = unlimited)" type="number" value={form.stock_quantity} onChange={(e) => setForm({ ...form, stock_quantity: e.target.value })} className="rounded-xl border border-border bg-background px-3 py-2 text-sm" />
         </div>
         <button onClick={add} className="rounded-xl bg-gradient-brand text-primary-foreground px-4 py-2 text-sm font-bold inline-flex items-center gap-2"><Plus className="h-4 w-4" /> অ্যাড</button>
+        <p className="text-xs text-muted-foreground">💡 স্টক ট্র্যাক করতে চাইলে "মূল তথ্য" ট্যাব থেকে "স্টক ট্র্যাক করুন" চালু করুন।</p>
       </div>
 
       {variants.length === 0 ? (
@@ -458,6 +503,7 @@ function VariantsTab({ productId, variants, onChange }: any) {
               <th className="text-left px-4 py-3">Label</th>
               <th className="text-left px-4 py-3">Regular</th>
               <th className="text-left px-4 py-3">Offer</th>
+              <th className="text-left px-4 py-3">Stock</th>
               <th className="text-right px-4 py-3"></th>
             </tr></thead>
             <tbody>
@@ -466,6 +512,19 @@ function VariantsTab({ productId, variants, onChange }: any) {
                   <td className="px-4 py-3 font-semibold">{v.label} {v.label_en && <span className="text-xs text-muted-foreground">({v.label_en})</span>}</td>
                   <td className="px-4 py-3">৳{v.regular_price}</td>
                   <td className="px-4 py-3">{v.offer_price ? `৳${v.offer_price}` : "—"}</td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="number"
+                      defaultValue={v.stock_quantity ?? ""}
+                      onBlur={(e) => {
+                        const newVal = e.target.value;
+                        const cur = v.stock_quantity == null ? "" : String(v.stock_quantity);
+                        if (newVal !== cur) updateStock(v, newVal);
+                      }}
+                      placeholder="∞"
+                      className="w-20 rounded-lg border border-border bg-background px-2 py-1 text-sm"
+                    />
+                  </td>
                   <td className="px-4 py-3 text-right">
                     <button onClick={() => remove(v.id)} className="rounded-lg border border-destructive/40 text-destructive hover:bg-destructive/10 px-2.5 py-1.5 text-xs font-bold"><Trash2 className="h-3 w-3" /></button>
                   </td>

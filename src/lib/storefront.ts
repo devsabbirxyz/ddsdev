@@ -17,7 +17,7 @@ export const productsQuery = (opts?: {
     queryFn: async () => {
       let q = supabase
         .from("products")
-        .select("id,slug,title,title_en,short_description,short_description_en,regular_price,offer_price,average_rating,total_sales,total_reviews,is_featured,is_new_arrival,is_best_seller,is_variant,view_count,category_id,created_at,sellers(store_name,store_logo_url),product_images(image_url,is_main,sort_order),product_variants(regular_price,offer_price,is_active)")
+        .select("id,slug,title,title_en,short_description,short_description_en,regular_price,offer_price,average_rating,total_sales,total_reviews,is_featured,is_new_arrival,is_best_seller,is_variant,view_count,category_id,created_at,track_stock,stock_quantity,sellers(store_name,store_logo_url),product_images(image_url,is_main,sort_order),product_variants(regular_price,offer_price,is_active,stock_quantity)")
         .eq("is_active", true)
         .eq("status", "approved");
 
@@ -71,7 +71,7 @@ export const productBySlugQuery = (slug: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*, product_images(id,image_url,sort_order), product_variants(id,label,label_en,regular_price,offer_price,is_active,sort_order), subscription_plans(id,name,name_en,price,duration_days,is_active,sort_order)")
+        .select("*, product_images(id,image_url,sort_order), product_variants(id,label,label_en,regular_price,offer_price,is_active,sort_order,stock_quantity), subscription_plans(id,name,name_en,price,duration_days,is_active,sort_order)")
         .eq("slug", slug)
         .eq("is_active", true)
         .maybeSingle();
@@ -95,6 +95,24 @@ export const productReviewsQuery = (productId: string | undefined) =>
         .limit(20);
       if (error) throw error;
       return data ?? [];
+    },
+  });
+
+export const productQuestionsQuery = (productId: string | undefined) =>
+  queryOptions({
+    queryKey: ["product_questions", productId],
+    enabled: !!productId,
+    queryFn: async () => {
+      if (!productId) return [];
+      const { data, error } = await supabase
+        .from("product_questions" as any)
+        .select("id,user_name,question,answer,answered_at,created_at,user_id")
+        .eq("product_id", productId)
+        .eq("is_public", true)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) return [];
+      return (data ?? []) as any[];
     },
   });
 

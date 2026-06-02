@@ -1,12 +1,15 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Star, Zap, ShieldCheck, Headphones, Heart, ShoppingCart, Eye } from "lucide-react";
-import { productBySlugQuery, productReviewsQuery, productsQuery, formatBDT } from "@/lib/storefront";
+import { useServerFn } from "@tanstack/react-start";
+import { Star, Zap, ShieldCheck, Headphones, Heart, ShoppingCart, Eye, MessageCircleQuestion, Send } from "lucide-react";
+import { productBySlugQuery, productReviewsQuery, productsQuery, productQuestionsQuery, formatBDT } from "@/lib/storefront";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { ProductViewTracker } from "@/components/storefront/ProductViewTracker";
 import { RecentlyViewed } from "@/components/storefront/RecentlyViewed";
 import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/auth";
+import { askQuestion, answerQuestion } from "@/lib/qna.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$slug")({
@@ -75,6 +78,24 @@ function ProductPage() {
     : (selectedVariant?.offer_price ?? selectedVariant?.regular_price ?? product.offer_price ?? product.regular_price);
   const hasDiscount = !isSubscription && product.offer_price != null && product.regular_price != null && product.offer_price < product.regular_price;
 
+  // Out-of-stock detection
+  const trackStock = !!(product as any).track_stock;
+  const productStock = (product as any).stock_quantity;
+  const selectedVariantStock = selectedVariant?.stock_quantity;
+  const selectedStock = !trackStock
+    ? null
+    : isSubscription
+      ? null
+      : (variants.length > 0 ? selectedVariantStock : productStock);
+  const isOutOfStock = trackStock && !isSubscription && (
+    variants.length > 0
+      ? variants.every((v: any) => v.stock_quantity != null && Number(v.stock_quantity) <= 0)
+      : (productStock ?? 0) <= 0
+  );
+  const selectedIsOut = trackStock && !isSubscription && selectedStock != null && Number(selectedStock) <= 0;
+  const maxQty = selectedStock != null ? Math.max(1, Number(selectedStock)) : 99;
+
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
       <ProductViewTracker productId={product.id} />
@@ -114,6 +135,10 @@ function ProductPage() {
           <div className="flex flex-wrap gap-2 mb-3">
             {product.is_best_seller && <span className="rounded-full bg-gradient-brand px-3 py-1 text-xs font-bold text-primary-foreground">BEST SELLER</span>}
             {product.is_new_arrival && <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-secondary-foreground">NEW</span>}
+            {isOutOfStock && <span className="rounded-full bg-destructive px-3 py-1 text-xs font-bold text-destructive-foreground">OUT OF STOCK</span>}
+            {!isOutOfStock && selectedStock != null && Number(selectedStock) > 0 && Number(selectedStock) <= 5 && (
+              <span className="rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-white">শুধু {selectedStock} টা বাকি</span>
+            )}
           </div>
           <h1 className="font-display font-bold text-3xl sm:text-4xl">{product.title}</h1>
 
@@ -187,14 +212,14 @@ function ProductPage() {
                 <div className="inline-flex items-center rounded-xl glass">
                   <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2 hover:bg-accent rounded-l-xl" aria-label="কমান">−</button>
                   <span className="px-4 py-2 text-sm font-semibold min-w-[2.5rem] text-center">{qty}</span>
-                  <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2 hover:bg-accent rounded-r-xl" aria-label="বাড়ান">+</button>
+                  <button onClick={() => setQty((q) => Math.min(maxQty, q + 1))} className="px-3 py-2 hover:bg-accent rounded-r-xl disabled:opacity-40" disabled={qty >= maxQty} aria-label="বাড়ান">+</button>
                 </div>
               </div>
             )}
 
             <div className="mt-6 flex flex-wrap gap-3">
               <button
-                disabled={isSubscription && !selectedPlan}
+                disabled={(isSubscription && !selectedPlan) || isOutOfStock || selectedIsOut}
                 onClick={() => {
                   if (isSubscription && !selectedPlan) {
                     toast.error("প্ল্যান বেছে নিন");
@@ -216,10 +241,11 @@ function ProductPage() {
                 }}
                 className="flex-1 min-w-[180px] rounded-2xl bg-gradient-brand px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ShoppingCart className="h-4 w-4" /> {isSubscription ? "এখনই সাবস্ক্রাইব করুন" : "এখনই কিনুন"}
+                <ShoppingCart className="h-4 w-4" /> {isOutOfStock || selectedIsOut ? "স্টকে নেই" : isSubscription ? "এখনই সাবস্ক্রাইব করুন" : "এখনই কিনুন"}
               </button>
               {!isSubscription && (
                 <button
+                  disabled={isOutOfStock || selectedIsOut}
                   onClick={() => {
                     addItem({
                       productId: product.id,
@@ -233,7 +259,7 @@ function ProductPage() {
                     });
                     toast.success("কার্টে যোগ হয়েছে");
                   }}
-                  className="rounded-2xl glass-card px-5 py-3.5 text-sm font-semibold hover:bg-accent transition inline-flex items-center gap-2"
+                  className="rounded-2xl glass-card px-5 py-3.5 text-sm font-semibold hover:bg-accent transition inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ShoppingCart className="h-4 w-4" /> কার্টে যোগ
                 </button>
@@ -293,6 +319,9 @@ function ProductPage() {
         )}
       </section>
 
+      {/* Product Q&A */}
+      <ProductQA productId={product.id} />
+
       {/* Related */}
       {related.length > 0 && (
         <section className="mt-12">
@@ -307,5 +336,135 @@ function ProductPage() {
 
       <RecentlyViewed excludeId={product.id} />
     </div>
+  );
+}
+
+function ProductQA({ productId }: { productId: string }) {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const ask = useServerFn(askQuestion);
+  const answer = useServerFn(answerQuestion);
+  const { data: questions = [] } = useQuery(productQuestionsQuery(productId));
+  const { data: isAdmin = false } = useQuery({
+    queryKey: ["is-admin", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      if (!user?.id) return false;
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .in("role", ["admin", "super_admin", "moderator"])
+        .eq("is_active", true);
+      return (data?.length ?? 0) > 0;
+    },
+  });
+
+  const [q, setQ] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [answerDraft, setAnswerDraft] = useState<Record<string, string>>({});
+
+  const submit = async () => {
+    if (!user) { toast.error("প্রশ্ন করার জন্য সাইন-ইন করুন"); return; }
+    if (q.trim().length < 3) { toast.error("প্রশ্ন একটু বিস্তারিত লিখুন"); return; }
+    setBusy(true);
+    try {
+      await ask({ data: { product_id: productId, question: q.trim() } });
+      setQ("");
+      toast.success("প্রশ্ন পাঠানো হয়েছে");
+      qc.invalidateQueries({ queryKey: ["product_questions", productId] });
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBusy(false); }
+  };
+
+  const submitAnswer = async (id: string) => {
+    const text = (answerDraft[id] ?? "").trim();
+    if (!text) return;
+    try {
+      await answer({ data: { id, answer: text } });
+      setAnswerDraft((d) => ({ ...d, [id]: "" }));
+      qc.invalidateQueries({ queryKey: ["product_questions", productId] });
+      toast.success("উত্তর সেভ হয়েছে");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  return (
+    <section className="mt-12">
+      <h2 className="font-display font-bold text-2xl mb-4 inline-flex items-center gap-2">
+        <MessageCircleQuestion className="h-6 w-6 text-primary" /> প্রশ্ন ও উত্তর
+      </h2>
+
+      <div className="glass-card rounded-2xl p-5 mb-4">
+        <label className="block text-sm font-semibold mb-2">আপনার প্রশ্ন</label>
+        <textarea
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          rows={3}
+          maxLength={1000}
+          placeholder={user ? "এই প্রোডাক্ট সম্পর্কে কিছু জানতে চান?" : "প্রশ্ন করতে আগে সাইন-ইন করুন"}
+          disabled={!user}
+          className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm disabled:opacity-60"
+        />
+        <div className="mt-3 flex justify-end">
+          <button
+            onClick={submit}
+            disabled={busy || !user}
+            className="rounded-xl bg-gradient-brand text-primary-foreground px-5 py-2.5 text-sm font-bold inline-flex items-center gap-2 disabled:opacity-50"
+          >
+            <Send className="h-4 w-4" /> {busy ? "পাঠানো হচ্ছে..." : "প্রশ্ন পাঠান"}
+          </button>
+        </div>
+      </div>
+
+      {questions.length === 0 ? (
+        <div className="glass-card rounded-2xl p-8 text-center text-sm text-muted-foreground">
+          এখনো কোনো প্রশ্ন নেই। প্রথম প্রশ্ন আপনি করুন!
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {questions.map((qa: any) => (
+            <div key={qa.id} className="glass-card rounded-2xl p-5">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-full bg-gradient-brand grid place-items-center text-xs font-bold text-primary-foreground shrink-0">
+                  {(qa.user_name ?? "U").slice(0, 1).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-semibold">{qa.user_name ?? "Customer"}</span>
+                    <span className="text-xs text-muted-foreground">{new Date(qa.created_at).toLocaleDateString("bn-BD")}</span>
+                  </div>
+                  <p className="mt-1 text-sm">{qa.question}</p>
+
+                  {qa.answer ? (
+                    <div className="mt-3 rounded-xl bg-primary/5 border border-primary/20 p-3">
+                      <div className="text-xs font-bold text-primary mb-1">✓ অ্যাডমিনের উত্তর</div>
+                      <p className="text-sm leading-relaxed">{qa.answer}</p>
+                    </div>
+                  ) : isAdmin ? (
+                    <div className="mt-3 flex gap-2">
+                      <input
+                        value={answerDraft[qa.id] ?? ""}
+                        onChange={(e) => setAnswerDraft((d) => ({ ...d, [qa.id]: e.target.value }))}
+                        placeholder="উত্তর লিখুন..."
+                        className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                      />
+                      <button
+                        onClick={() => submitAnswer(qa.id)}
+                        className="rounded-lg bg-gradient-brand text-primary-foreground px-3 py-2 text-xs font-bold"
+                      >
+                        উত্তর দিন
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-xs text-muted-foreground italic">এখনো উত্তর দেয়া হয়নি</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

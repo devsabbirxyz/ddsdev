@@ -29,9 +29,11 @@ function ShopPage() {
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
   const [badge, setBadge] = useState<"new" | "best" | "featured" | null>(null);
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [minRating, setMinRating] = useState<number>(0);
 
   const { data: cats = [] } = useQuery(categoriesQuery());
-  const { data: products = [], isLoading } = useQuery(
+  const { data: productsRaw = [], isLoading } = useQuery(
     productsQuery({
       category,
       search: search || null,
@@ -42,8 +44,22 @@ function ShopPage() {
     })
   );
 
+  // Client-side filters
+  const products = productsRaw.filter((p: any) => {
+    if (minRating > 0 && Number(p.average_rating ?? 0) < minRating) return false;
+    if (inStockOnly && p.track_stock) {
+      const variants = (p.product_variants ?? []).filter((v: any) => v.is_active);
+      const out = variants.length > 0
+        ? variants.every((v: any) => v.stock_quantity != null && Number(v.stock_quantity) <= 0)
+        : (p.stock_quantity ?? 0) <= 0;
+      if (out) return false;
+    }
+    return true;
+  });
+
   const resetFilters = () => {
     setSearch(""); setCategory(null); setMinPrice(""); setMaxPrice(""); setBadge(null); setSort("new");
+    setInStockOnly(false); setMinRating(0);
   };
 
   return (
@@ -160,6 +176,29 @@ function ShopPage() {
                 </button>
               ))}
             </div>
+
+            <h3 className="font-display font-bold text-base mt-6 mb-3">রেটিং</h3>
+            <div className="flex flex-wrap gap-2">
+              {[0, 4, 4.5].map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setMinRating(r)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${minRating === r ? "bg-gradient-brand text-primary-foreground shadow-glow" : "glass hover:bg-accent"}`}
+                >
+                  {r === 0 ? "সব" : `${r}+ ★`}
+                </button>
+              ))}
+            </div>
+
+            <label className="mt-5 flex items-center gap-2 cursor-pointer text-sm">
+              <input
+                type="checkbox"
+                checked={inStockOnly}
+                onChange={(e) => setInStockOnly(e.target.checked)}
+                className="h-4 w-4 accent-primary"
+              />
+              <span className="font-semibold">শুধু স্টকে আছে এমন দেখান</span>
+            </label>
 
             <button
               onClick={resetFilters}
