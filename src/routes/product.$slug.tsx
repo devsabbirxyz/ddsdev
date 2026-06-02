@@ -78,6 +78,24 @@ function ProductPage() {
     : (selectedVariant?.offer_price ?? selectedVariant?.regular_price ?? product.offer_price ?? product.regular_price);
   const hasDiscount = !isSubscription && product.offer_price != null && product.regular_price != null && product.offer_price < product.regular_price;
 
+  // Out-of-stock detection
+  const trackStock = !!(product as any).track_stock;
+  const productStock = (product as any).stock_quantity;
+  const selectedVariantStock = selectedVariant?.stock_quantity;
+  const selectedStock = !trackStock
+    ? null
+    : isSubscription
+      ? null
+      : (variants.length > 0 ? selectedVariantStock : productStock);
+  const isOutOfStock = trackStock && !isSubscription && (
+    variants.length > 0
+      ? variants.every((v: any) => v.stock_quantity != null && Number(v.stock_quantity) <= 0)
+      : (productStock ?? 0) <= 0
+  );
+  const selectedIsOut = trackStock && !isSubscription && selectedStock != null && Number(selectedStock) <= 0;
+  const maxQty = selectedStock != null ? Math.max(1, Number(selectedStock)) : 99;
+
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
       <ProductViewTracker productId={product.id} />
