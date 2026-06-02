@@ -148,6 +148,34 @@ export const placeOrder = createServerFn({ method: "POST" })
     }
     if (lines.length === 0) throw new Error("No valid items in cart");
 
+    // 3b) Validate stock (aggregate qty per product/variant)
+    const productQty = new Map<string, number>();
+    const variantQty = new Map<string, number>();
+    for (const l of lines) {
+      if (l.variantId) {
+        variantQty.set(l.variantId, (variantQty.get(l.variantId) ?? 0) + l.quantity);
+      } else if (!l.planId) {
+        productQty.set(l.productId, (productQty.get(l.productId) ?? 0) + l.quantity);
+      }
+    }
+    for (const [pid, qty] of productQty) {
+      const p: any = productMap.get(pid);
+      if (p?.track_stock) {
+        const stock = Number(p.stock_quantity ?? 0);
+        if (stock <= 0) throw new Error(`"${p.title}" — স্টকে নেই`);
+        if (stock < qty) throw new Error(`"${p.title}" — মাত্র ${stock} টা স্টকে আছে`);
+      }
+    }
+    for (const [vid, qty] of variantQty) {
+      const v: any = variantMap.get(vid);
+      const p: any = v ? productMap.get(v.product_id) : null;
+      if (p?.track_stock && v?.stock_quantity != null) {
+        const stock = Number(v.stock_quantity);
+        if (stock <= 0) throw new Error(`"${p.title} (${v.label})" — স্টকে নেই`);
+        if (stock < qty) throw new Error(`"${p.title} (${v.label})" — মাত্র ${stock} টা স্টকে আছে`);
+      }
+    }
+
     const subtotal = lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0);
 
     // 4) Validate coupon server-side
@@ -240,6 +268,23 @@ export const placeOrder = createServerFn({ method: "POST" })
       .insert(rows as any)
       .select("id,order_number");
     if (iErr) throw new Error(iErr.message);
+
+    // 5b) Decrement stock (best effort)
+    for (const [pid, qty] of productQty) {
+      const p: any = productMap.get(pid);
+      if (p?.track_stock) {
+        const newStock = Math.max(0, Number(p.stock_quantity ?? 0) - qty);
+        await supabaseAdmin.from("products").update({ stock_quantity: newStock } as any).eq("id", pid);
+      }
+    }
+    for (const [vid, qty] of variantQty) {
+      const v: any = variantMap.get(vid);
+      const p: any = v ? productMap.get(v.product_id) : null;
+      if (p?.track_stock && v?.stock_quantity != null) {
+        const newStock = Math.max(0, Number(v.stock_quantity) - qty);
+        await supabaseAdmin.from("product_variants").update({ stock_quantity: newStock } as any).eq("id", vid);
+      }
+    }
 
     // 6) Record coupon usage + increment used_count (best effort)
     if (couponId && inserted && inserted[0]) {
