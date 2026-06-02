@@ -1,12 +1,15 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Star, Zap, ShieldCheck, Headphones, Heart, ShoppingCart, Eye } from "lucide-react";
-import { productBySlugQuery, productReviewsQuery, productsQuery, formatBDT } from "@/lib/storefront";
+import { useServerFn } from "@tanstack/react-start";
+import { Star, Zap, ShieldCheck, Headphones, Heart, ShoppingCart, Eye, MessageCircleQuestion, Send } from "lucide-react";
+import { productBySlugQuery, productReviewsQuery, productsQuery, productQuestionsQuery, formatBDT } from "@/lib/storefront";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { ProductViewTracker } from "@/components/storefront/ProductViewTracker";
 import { RecentlyViewed } from "@/components/storefront/RecentlyViewed";
 import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/auth";
+import { askQuestion, answerQuestion } from "@/lib/qna.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$slug")({
