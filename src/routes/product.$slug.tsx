@@ -338,3 +338,133 @@ function ProductPage() {
     </div>
   );
 }
+
+function ProductQA({ productId }: { productId: string }) {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const ask = useServerFn(askQuestion);
+  const answer = useServerFn(answerQuestion);
+  const { data: questions = [] } = useQuery(productQuestionsQuery(productId));
+  const { data: isAdmin = false } = useQuery({
+    queryKey: ["is-admin", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      if (!user?.id) return false;
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .in("role", ["admin", "super_admin", "moderator"])
+        .eq("is_active", true);
+      return (data?.length ?? 0) > 0;
+    },
+  });
+
+  const [q, setQ] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [answerDraft, setAnswerDraft] = useState<Record<string, string>>({});
+
+  const submit = async () => {
+    if (!user) { toast.error("প্রশ্ন করার জন্য সাইন-ইন করুন"); return; }
+    if (q.trim().length < 3) { toast.error("প্রশ্ন একটু বিস্তারিত লিখুন"); return; }
+    setBusy(true);
+    try {
+      await ask({ data: { product_id: productId, question: q.trim() } });
+      setQ("");
+      toast.success("প্রশ্ন পাঠানো হয়েছে");
+      qc.invalidateQueries({ queryKey: ["product_questions", productId] });
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBusy(false); }
+  };
+
+  const submitAnswer = async (id: string) => {
+    const text = (answerDraft[id] ?? "").trim();
+    if (!text) return;
+    try {
+      await answer({ data: { id, answer: text } });
+      setAnswerDraft((d) => ({ ...d, [id]: "" }));
+      qc.invalidateQueries({ queryKey: ["product_questions", productId] });
+      toast.success("উত্তর সেভ হয়েছে");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  return (
+    <section className="mt-12">
+      <h2 className="font-display font-bold text-2xl mb-4 inline-flex items-center gap-2">
+        <MessageCircleQuestion className="h-6 w-6 text-primary" /> প্রশ্ন ও উত্তর
+      </h2>
+
+      <div className="glass-card rounded-2xl p-5 mb-4">
+        <label className="block text-sm font-semibold mb-2">আপনার প্রশ্ন</label>
+        <textarea
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          rows={3}
+          maxLength={1000}
+          placeholder={user ? "এই প্রোডাক্ট সম্পর্কে কিছু জানতে চান?" : "প্রশ্ন করতে আগে সাইন-ইন করুন"}
+          disabled={!user}
+          className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm disabled:opacity-60"
+        />
+        <div className="mt-3 flex justify-end">
+          <button
+            onClick={submit}
+            disabled={busy || !user}
+            className="rounded-xl bg-gradient-brand text-primary-foreground px-5 py-2.5 text-sm font-bold inline-flex items-center gap-2 disabled:opacity-50"
+          >
+            <Send className="h-4 w-4" /> {busy ? "পাঠানো হচ্ছে..." : "প্রশ্ন পাঠান"}
+          </button>
+        </div>
+      </div>
+
+      {questions.length === 0 ? (
+        <div className="glass-card rounded-2xl p-8 text-center text-sm text-muted-foreground">
+          এখনো কোনো প্রশ্ন নেই। প্রথম প্রশ্ন আপনি করুন!
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {questions.map((qa: any) => (
+            <div key={qa.id} className="glass-card rounded-2xl p-5">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-full bg-gradient-brand grid place-items-center text-xs font-bold text-primary-foreground shrink-0">
+                  {(qa.user_name ?? "U").slice(0, 1).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-semibold">{qa.user_name ?? "Customer"}</span>
+                    <span className="text-xs text-muted-foreground">{new Date(qa.created_at).toLocaleDateString("bn-BD")}</span>
+                  </div>
+                  <p className="mt-1 text-sm">{qa.question}</p>
+
+                  {qa.answer ? (
+                    <div className="mt-3 rounded-xl bg-primary/5 border border-primary/20 p-3">
+                      <div className="text-xs font-bold text-primary mb-1">✓ অ্যাডমিনের উত্তর</div>
+                      <p className="text-sm leading-relaxed">{qa.answer}</p>
+                    </div>
+                  ) : isAdmin ? (
+                    <div className="mt-3 flex gap-2">
+                      <input
+                        value={answerDraft[qa.id] ?? ""}
+                        onChange={(e) => setAnswerDraft((d) => ({ ...d, [qa.id]: e.target.value }))}
+                        placeholder="উত্তর লিখুন..."
+                        className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                      />
+                      <button
+                        onClick={() => submitAnswer(qa.id)}
+                        className="rounded-lg bg-gradient-brand text-primary-foreground px-3 py-2 text-xs font-bold"
+                      >
+                        উত্তর দিন
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-xs text-muted-foreground italic">এখনো উত্তর দেয়া হয়নি</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
