@@ -67,18 +67,31 @@ const navGroups: NavGroup[] = [
 function AdminLayout() {
   const navigate = useNavigate();
   const getAuthState = useServerFn(getAdminAuthState);
-  const { data, isLoading } = useQuery({
-    queryKey: ["admin", "auth-check"],
-    staleTime: 10 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+  const currentUser = useQuery({
+    queryKey: ["admin", "current-user"],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
     queryFn: async () => {
       const { data: userData, error: userErr } = await supabase.auth.getUser();
-      if (userErr || !userData.user) return { ok: false, isSuper: false, email: "" };
-      return getAuthState();
+      return {
+        userId: userErr || !userData.user ? "" : userData.user.id,
+      };
     },
+  });
+  const userId = currentUser.data?.userId ?? "";
+  const adminAuth = useQuery({
+    queryKey: ["admin", "auth-check", userId],
+    enabled: Boolean(userId) && !currentUser.isFetching,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
+    queryFn: async () => getAuthState(),
   });
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const data = userId ? adminAuth.data : { ok: false, isSuper: false, email: "" };
+  const isLoading = currentUser.isLoading || currentUser.isFetching || (Boolean(userId) && (adminAuth.isLoading || adminAuth.isFetching));
 
   useEffect(() => {
     if (!isLoading && data && !data.ok) {
