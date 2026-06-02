@@ -179,73 +179,67 @@ function AdminLayout() {
       {/* Ambient glow */}
       <div className="pointer-events-none fixed inset-0 -z-10 opacity-60" style={{ background: "var(--gradient-glow)" }} />
 
-      <div className="flex">
-        {/* Desktop sidebar (fixed full-height) */}
-        <aside className="hidden lg:flex fixed inset-y-0 left-0 w-[260px] flex-col border-r border-white/5 bg-card/40 backdrop-blur-xl p-4">
-          {SidebarContent}
-        </aside>
+      {/* Drawer sidebar (all viewports) */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <aside className="relative w-72 max-w-[85vw] h-full overflow-hidden bg-card border-r border-white/10 p-4 shadow-2xl animate-in slide-in-from-left">
+            {SidebarContent}
+          </aside>
+        </div>
+      )}
 
-        {/* Mobile drawer */}
-        {mobileOpen && (
-          <div className="lg:hidden fixed inset-0 z-50 flex">
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-            <aside className="relative w-72 max-w-[85vw] h-full overflow-hidden bg-card border-r border-white/10 p-4 shadow-2xl animate-in slide-in-from-left">
-              {SidebarContent}
-            </aside>
-          </div>
-        )}
+      {/* Main */}
+      <div className="flex-1 min-w-0">
+        {/* Top header */}
+        <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/70 border-b border-white/5">
+          <div className="flex items-center gap-3 px-4 sm:px-6 py-3">
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="rounded-xl p-2 hover:bg-white/5 transition border border-white/10"
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
 
-        {/* Main */}
-        <div className="flex-1 lg:pl-[260px] min-w-0">
-          {/* Top header */}
-          <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/70 border-b border-white/5">
-            <div className="flex items-center gap-3 px-4 sm:px-6 py-3">
-              <button
-                onClick={() => setMobileOpen(true)}
-                className="lg:hidden rounded-xl p-2 hover:bg-white/5"
-                aria-label="Open menu"
-              >
-                <Menu className="h-5 w-5" />
-              </button>
-
-              <div className="hidden sm:flex items-center gap-3 min-w-0">
-                <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-brand text-primary-foreground font-bold shadow-glow">
-                  {initial}
-                </div>
-                <div className="min-w-0">
-                  <div className="font-display font-bold text-sm truncate">
-                    Welcome, <span className="text-primary">{displayName}</span> 👋
-                  </div>
-                  <div className="text-[11px] text-muted-foreground">Security is a process, not a product.</div>
-                </div>
+            <div className="hidden sm:flex items-center gap-3 min-w-0">
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-brand text-primary-foreground font-bold shadow-glow">
+                {initial}
               </div>
-
-              <div className="flex-1 max-w-xl mx-auto">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <input
-                    placeholder="Search Here"
-                    className="w-full rounded-full bg-white/5 border border-white/10 pl-10 pr-4 py-2.5 text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40"
-                  />
+              <div className="min-w-0">
+                <div className="font-display font-bold text-sm truncate">
+                  Welcome, <span className="text-primary">{displayName}</span> 👋
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button className="grid h-10 w-10 place-items-center rounded-full bg-white/5 hover:bg-white/10 transition border border-white/10" aria-label="Messages">
-                  <MessageSquare className="h-4 w-4" />
-                </button>
-                <button className="grid h-10 w-10 place-items-center rounded-full bg-white/5 hover:bg-white/10 transition border border-white/10" aria-label="Notifications">
-                  <Bell className="h-4 w-4" />
-                </button>
+                <div className="text-[11px] text-muted-foreground">Security is a process, not a product.</div>
               </div>
             </div>
-          </header>
 
-          <main className="px-4 sm:px-6 py-6 lg:py-8 max-w-[1400px]">
-            <Outlet />
-          </main>
-        </div>
+            <div className="flex-1 max-w-xl mx-auto">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  placeholder="Search Here"
+                  className="w-full rounded-full bg-white/5 border border-white/10 pl-10 pr-4 py-2.5 text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button className="grid h-10 w-10 place-items-center rounded-full bg-white/5 hover:bg-white/10 transition border border-white/10" aria-label="Messages">
+                <MessageSquare className="h-4 w-4" />
+              </button>
+              <button className="grid h-10 w-10 place-items-center rounded-full bg-white/5 hover:bg-white/10 transition border border-white/10" aria-label="Notifications">
+                <Bell className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <main className="px-4 sm:px-6 py-6 lg:py-8 max-w-[1400px] mx-auto">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
 }
+
