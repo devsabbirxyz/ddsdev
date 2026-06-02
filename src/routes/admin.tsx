@@ -7,7 +7,7 @@ import { getAdminAuthState } from "@/lib/admin.functions";
 import {
   LayoutDashboard, ShoppingBag, Store, Users, Package, Wallet,
   Tag, Image as ImageIcon, Settings, Home, CreditCard, Ticket, LifeBuoy,
-  Sparkles, ShieldCheck, Mail, PanelBottom, Menu, X, Search, Bell, MessageSquare, LogOut, Rocket, MessageCircle, CalendarClock,
+  Sparkles, ShieldCheck, Mail, PanelBottom, Menu, X, Search, Bell, MessageSquare, LogOut, Rocket, MessageCircle, CalendarClock, BarChart3,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
