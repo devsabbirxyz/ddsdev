@@ -98,6 +98,24 @@ export const productReviewsQuery = (productId: string | undefined) =>
     },
   });
 
+export const productQuestionsQuery = (productId: string | undefined) =>
+  queryOptions({
+    queryKey: ["product_questions", productId],
+    enabled: !!productId,
+    queryFn: async () => {
+      if (!productId) return [];
+      const { data, error } = await supabase
+        .from("product_questions" as any)
+        .select("id,user_name,question,answer,answered_at,created_at,user_id")
+        .eq("product_id", productId)
+        .eq("is_public", true)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) return [];
+      return (data ?? []) as any[];
+    },
+  });
+
 export const blogPostsQuery = (limit?: number, opts?: { featured?: boolean }) =>
   queryOptions({
     queryKey: ["blog", limit ?? null, opts ?? {}],
