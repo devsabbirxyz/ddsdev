@@ -118,6 +118,33 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
 
+  // Auto-recover from stale dynamic-import chunks after a new deploy
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const RELOAD_KEY = "__chunk_reload_at";
+    const shouldReload = (msg: string) =>
+      /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(msg);
+    const tryReload = () => {
+      try {
+        const last = Number(sessionStorage.getItem(RELOAD_KEY) || "0");
+        if (Date.now() - last < 10000) return;
+        sessionStorage.setItem(RELOAD_KEY, String(Date.now()));
+      } catch {}
+      window.location.reload();
+    };
+    const onErr = (e: ErrorEvent) => { if (e?.message && shouldReload(e.message)) tryReload(); };
+    const onRej = (e: PromiseRejectionEvent) => {
+      const msg = (e?.reason && (e.reason.message || String(e.reason))) || "";
+      if (shouldReload(msg)) tryReload();
+    };
+    window.addEventListener("error", onErr);
+    window.addEventListener("unhandledrejection", onRej);
+    return () => {
+      window.removeEventListener("error", onErr);
+      window.removeEventListener("unhandledrejection", onRej);
+    };
+  }, []);
+
   // Invalidate caches on auth state change (sign-in / sign-out / token refresh)
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
