@@ -979,6 +979,45 @@ export type Database = {
           },
         ]
       }
+      product_questions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          answered_by: string | null
+          created_at: string
+          id: string
+          is_public: boolean
+          product_id: string
+          question: string
+          user_id: string
+          user_name: string | null
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          answered_by?: string | null
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          product_id: string
+          question: string
+          user_id: string
+          user_name?: string | null
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          answered_by?: string | null
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          product_id?: string
+          question?: string
+          user_id?: string
+          user_name?: string | null
+        }
+        Relationships: []
+      }
       product_variants: {
         Row: {
           created_at: string
@@ -990,6 +1029,7 @@ export type Database = {
           product_id: string
           regular_price: number
           sort_order: number
+          stock_quantity: number | null
         }
         Insert: {
           created_at?: string
@@ -1001,6 +1041,7 @@ export type Database = {
           product_id: string
           regular_price: number
           sort_order?: number
+          stock_quantity?: number | null
         }
         Update: {
           created_at?: string
@@ -1012,6 +1053,7 @@ export type Database = {
           product_id?: string
           regular_price?: number
           sort_order?: number
+          stock_quantity?: number | null
         }
         Relationships: [
           {
@@ -1080,12 +1122,14 @@ export type Database = {
           short_description_en: string | null
           slug: string
           status: string
+          stock_quantity: number | null
           subscription_input_label: string | null
           subscription_input_label_en: string | null
           title: string
           title_en: string | null
           total_reviews: number
           total_sales: number
+          track_stock: boolean
           updated_at: string | null
           use_guide_image_url: string | null
           use_guide_text: string | null
@@ -1119,12 +1163,14 @@ export type Database = {
           short_description_en?: string | null
           slug: string
           status?: string
+          stock_quantity?: number | null
           subscription_input_label?: string | null
           subscription_input_label_en?: string | null
           title: string
           title_en?: string | null
           total_reviews?: number
           total_sales?: number
+          track_stock?: boolean
           updated_at?: string | null
           use_guide_image_url?: string | null
           use_guide_text?: string | null
@@ -1158,12 +1204,14 @@ export type Database = {
           short_description_en?: string | null
           slug?: string
           status?: string
+          stock_quantity?: number | null
           subscription_input_label?: string | null
           subscription_input_label_en?: string | null
           title?: string
           title_en?: string | null
           total_reviews?: number
           total_sales?: number
+          track_stock?: boolean
           updated_at?: string | null
           use_guide_image_url?: string | null
           use_guide_text?: string | null
