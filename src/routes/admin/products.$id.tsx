@@ -129,6 +129,10 @@ function ProductEditor() {
           use_guide_image_url: form.use_guide_image_url ?? null,
           use_guide_video_url: form.use_guide_video_url ?? null,
           use_guide_visible_after_purchase: form.use_guide_visible_after_purchase ?? true,
+          track_stock: !!form.track_stock,
+          stock_quantity: form.track_stock
+            ? (form.stock_quantity === "" || form.stock_quantity == null ? 0 : Number(form.stock_quantity))
+            : null,
         },
       });
       qc.invalidateQueries({ queryKey: ["admin", "product", id] });
@@ -247,6 +251,24 @@ function ProductEditor() {
               <h3 className="font-bold">মূল্য</h3>
               <Field label="রেগুলার প্রাইস (৳)" type="number" value={form.regular_price ?? ""} onChange={(v) => set("regular_price", v)} />
               <Field label="অফার প্রাইস (৳)" type="number" value={form.offer_price ?? ""} onChange={(v) => set("offer_price", v)} />
+            </div>
+
+            <div className="glass-card rounded-2xl p-5 space-y-3">
+              <h3 className="font-bold">স্টক / ইনভেন্টরি</h3>
+              <Toggle label="স্টক ট্র্যাক করুন" checked={!!form.track_stock} onChange={(v) => set("track_stock", v)} />
+              {form.track_stock && (
+                <>
+                  <Field
+                    label="স্টক পরিমাণ (০ হলে Out of Stock)"
+                    type="number"
+                    value={form.stock_quantity ?? ""}
+                    onChange={(v) => set("stock_quantity", v)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    প্রতি অর্ডারে ১ করে কমবে। ভ্যারিয়েন্ট থাকলে প্রতি ভ্যারিয়েন্টে আলাদা স্টক সেট করুন।
+                  </p>
+                </>
+              )}
             </div>
 
             <div className="glass-card rounded-2xl p-5 space-y-3">
