@@ -55,8 +55,9 @@ function ShopPage() {
             <span className="text-gradient-brand">শপ</span> — সব প্রোডাক্ট
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {products.length} টি প্রোডাক্ট পাওয়া গেছে
+            {isLoading ? "লোড হচ্ছে..." : `${products.length} টি প্রোডাক্ট পাওয়া গেছে`}
           </p>
+
         </div>
         <div className="flex gap-2">
           <button

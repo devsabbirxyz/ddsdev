@@ -173,12 +173,13 @@
   }
 
   .bg-gradient-brand {
-    background: var(--gradient-brand);
+    background-image: var(--gradient-brand);
   }
 
   .bg-gradient-glow {
-    background: var(--gradient-glow);
+    background-image: var(--gradient-glow);
   }
+
 
   .text-gradient-brand {
     background: var(--gradient-brand);
