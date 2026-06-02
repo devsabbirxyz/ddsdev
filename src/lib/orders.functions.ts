@@ -38,7 +38,7 @@ export const placeOrder = createServerFn({ method: "POST" })
 
     const { data: products, error: pErr } = await supabaseAdmin
       .from("products")
-      .select("id,title,regular_price,offer_price,is_active,status,seller_id")
+      .select("id,title,regular_price,offer_price,is_active,status,seller_id,track_stock,stock_quantity")
       .in("id", productIds);
     if (pErr) throw new Error(pErr.message);
 
@@ -48,11 +48,11 @@ export const placeOrder = createServerFn({ method: "POST" })
         .map((p) => [p.id, p]),
     );
 
-    let variantMap = new Map<string, { id: string; product_id: string | null; label: string; regular_price: number; offer_price: number | null }>();
+    let variantMap = new Map<string, { id: string; product_id: string | null; label: string; regular_price: number; offer_price: number | null; stock_quantity: number | null }>();
     if (variantIds.length > 0) {
       const { data: variants, error: vErr } = await supabaseAdmin
         .from("product_variants")
-        .select("id,product_id,label,regular_price,offer_price,is_active")
+        .select("id,product_id,label,regular_price,offer_price,is_active,stock_quantity")
         .in("id", variantIds);
       if (vErr) throw new Error(vErr.message);
       variantMap = new Map(
