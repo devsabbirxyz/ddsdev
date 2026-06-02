@@ -135,6 +135,10 @@ function ProductPage() {
           <div className="flex flex-wrap gap-2 mb-3">
             {product.is_best_seller && <span className="rounded-full bg-gradient-brand px-3 py-1 text-xs font-bold text-primary-foreground">BEST SELLER</span>}
             {product.is_new_arrival && <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-secondary-foreground">NEW</span>}
+            {isOutOfStock && <span className="rounded-full bg-destructive px-3 py-1 text-xs font-bold text-destructive-foreground">OUT OF STOCK</span>}
+            {!isOutOfStock && selectedStock != null && Number(selectedStock) > 0 && Number(selectedStock) <= 5 && (
+              <span className="rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-white">শুধু {selectedStock} টা বাকি</span>
+            )}
           </div>
           <h1 className="font-display font-bold text-3xl sm:text-4xl">{product.title}</h1>
 
@@ -208,14 +212,14 @@ function ProductPage() {
                 <div className="inline-flex items-center rounded-xl glass">
                   <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2 hover:bg-accent rounded-l-xl" aria-label="কমান">−</button>
                   <span className="px-4 py-2 text-sm font-semibold min-w-[2.5rem] text-center">{qty}</span>
-                  <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2 hover:bg-accent rounded-r-xl" aria-label="বাড়ান">+</button>
+                  <button onClick={() => setQty((q) => Math.min(maxQty, q + 1))} className="px-3 py-2 hover:bg-accent rounded-r-xl disabled:opacity-40" disabled={qty >= maxQty} aria-label="বাড়ান">+</button>
                 </div>
               </div>
             )}
 
             <div className="mt-6 flex flex-wrap gap-3">
               <button
-                disabled={isSubscription && !selectedPlan}
+                disabled={(isSubscription && !selectedPlan) || isOutOfStock || selectedIsOut}
                 onClick={() => {
                   if (isSubscription && !selectedPlan) {
                     toast.error("প্ল্যান বেছে নিন");
@@ -237,7 +241,7 @@ function ProductPage() {
                 }}
                 className="flex-1 min-w-[180px] rounded-2xl bg-gradient-brand px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ShoppingCart className="h-4 w-4" /> {isSubscription ? "এখনই সাবস্ক্রাইব করুন" : "এখনই কিনুন"}
+                <ShoppingCart className="h-4 w-4" /> {isOutOfStock || selectedIsOut ? "স্টকে নেই" : isSubscription ? "এখনই সাবস্ক্রাইব করুন" : "এখনই কিনুন"}
               </button>
               {!isSubscription && (
                 <button
