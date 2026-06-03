@@ -71,6 +71,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "google-site-verification", content: "mDKc8NrrusVb6zRqiRn5QlIEokWk-IGzTRIJSqN1T6M" },
       { title: "DDS-Digital — Bangladesh's #1 Digital Product Store" },
       { name: "description", content: "DDS-Digital (Dev Sabbir Soft) — বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট মার্কেটপ্লেস। সাবস্ক্রিপশন, অ্যাকাউন্ট, সফটওয়্যার সবকিছু এক জায়গায়।" },
       { name: "author", content: "Dev Sabbir Soft" },
