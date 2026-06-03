@@ -5,7 +5,7 @@ import * as LucideIcons from "lucide-react";
 import { Zap, ShieldCheck, Headphones, Users, BadgeCheck, ArrowRight, Star, Mail, CheckCircle2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { productsQuery, blogPostsQuery, reviewSlidesQuery, categoriesQuery } from "@/lib/storefront";
-import { siteSettingsQuery, parseTrustBar, parsePromoSection, HOMEPAGE_KEYS, toYouTubeEmbed } from "@/lib/site-settings";
+import { siteSettingsQuery, parseTrustBar, parsePromoSection, HOMEPAGE_KEYS, toYouTubeEmbed, offerBannerQuery } from "@/lib/site-settings";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { OfferBannerSlider } from "@/components/storefront/OfferBannerSlider";
 import { OfferPopup } from "@/components/storefront/OfferPopup";
@@ -15,27 +15,39 @@ import { supabase } from "@/integrations/supabase/client";
 
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "DDS-Digital — Bangladesh's #1 Digital Product Store" },
-      { name: "description", content: "DDS-Digital (Dev Sabbir Soft) — বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট মার্কেটপ্লেস। সাবস্ক্রিপশন, সফটওয়্যার, অ্যাকাউন্ট সবকিছু এক জায়গায়।" },
-      { property: "og:title", content: "DDS-Digital — Bangladesh's #1 Digital Product Store" },
-      { property: "og:description", content: "বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট সেলিং প্ল্যাটফর্ম। ইনস্ট্যান্ট ডেলিভারি, সিকিউর পেমেন্ট, ২৪/৭ সাপোর্ট।" },
-      { property: "og:url", content: "/" },
-    ],
-    links: [{ rel: "canonical", href: "/" }],
-    scripts: [{
-      type: "application/ld+json",
-      children: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        name: "DDS-Digital",
-        alternateName: "Dev Sabbir Soft",
-        description: "Bangladesh's Number 1 Digital Product Selling System",
-        areaServed: "BD",
-      }),
-    }],
-  }),
+  loader: async ({ context }) => {
+    const firstSlide = await context.queryClient.ensureQueryData(offerBannerQuery);
+    return { firstSlide };
+  },
+  head: ({ loaderData }) => {
+    const preloadLinks = loaderData?.firstSlide?.image_url
+      ? [{ rel: "preload", as: "image", href: loaderData.firstSlide.image_url, fetchpriority: "high" }]
+      : [];
+    return {
+      meta: [
+        { title: "DDS-Digital — Bangladesh's #1 Digital Product Store" },
+        { name: "description", content: "DDS-Digital (Dev Sabbir Soft) — বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট মার্কেটপ্লেস। সাবস্ক্রিপশন, সফটওয়্যার, অ্যাকাউন্ট সবকিছু এক জায়গায়।" },
+        { property: "og:title", content: "DDS-Digital — Bangladesh's #1 Digital Product Store" },
+        { property: "og:description", content: "বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট সেলিং প্ল্যাটফর্ম। ইনস্ট্যান্ট ডেলিভারি, সিকিউর পেমেন্ট, ২৪/৭ সাপোর্ট।" },
+        { property: "og:url", content: "/" },
+      ],
+      links: [
+        { rel: "canonical", href: "/" },
+        ...preloadLinks,
+      ],
+      scripts: [{
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "DDS-Digital",
+          alternateName: "Dev Sabbir Soft",
+          description: "Bangladesh's Number 1 Digital Product Selling System",
+          areaServed: "BD",
+        }),
+      }],
+    };
+  },
   component: HomePage,
 });
 

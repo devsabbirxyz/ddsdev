@@ -67,6 +67,8 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           src={mainImage}
           alt={p.title}
           className={`absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${outOfStock ? "grayscale opacity-60" : ""}`}
+          width={400}
+          height={300}
         />
         {outOfStock && (
           <div className="absolute inset-0 grid place-items-center bg-background/40 backdrop-blur-[1px]">

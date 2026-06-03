@@ -40,13 +40,17 @@ export function OfferBannerSlider() {
     <div className="mt-8 w-full overflow-hidden rounded-3xl border border-glass-border" ref={emblaRef}>
       <div className="flex">
         {slides.map((s, idx) => {
+          const isFirst = idx === 0;
           const img = (
             <SmartImage
               src={s.image_url}
               alt={s.alt_text ?? "offer banner"}
               className="w-full h-full object-cover"
-              loading={idx === 0 ? "eager" : "lazy"}
-              fetchPriority={idx === 0 ? "high" : "auto"}
+              loading={isFirst ? "eager" : "lazy"}
+              fetchPriority={isFirst ? "high" : "auto"}
+              width={isFirst ? 1600 : undefined}
+              height={isFirst ? 600 : undefined}
+              decoding={isFirst ? "sync" : "async"}
             />
           );
           return (
