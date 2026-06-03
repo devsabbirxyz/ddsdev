@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 
-const BASE_URL = "https://ddsshop.lovable.app";
+const BASE_URL = "https://ddsdev.lovable.app";
 
 interface SitemapEntry {
   path: string;
@@ -27,6 +27,10 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/refund", changefreq: "yearly", priority: "0.3" },
           { path: "/terms", changefreq: "yearly", priority: "0.3" },
           { path: "/developer", changefreq: "monthly", priority: "0.4" },
+          { path: "/login", changefreq: "yearly", priority: "0.3" },
+          { path: "/register", changefreq: "yearly", priority: "0.3" },
+          { path: "/forgot-password", changefreq: "yearly", priority: "0.2" },
+          { path: "/cart", changefreq: "weekly", priority: "0.4" },
         ];
 
         try {
