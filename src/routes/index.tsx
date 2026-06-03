@@ -109,6 +109,10 @@ function HomePage() {
             {heroBadge}
           </div>
 
+          <h1 className="mt-6 font-display font-bold text-3xl sm:text-5xl leading-tight">
+            DDS-Digital — <span className="text-gradient-brand">বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট মার্কেটপ্লেস</span>
+          </h1>
+
           {/* Offer banner — auto-sliding carousel */}
           <div className="relative mt-8">
             <div className="relative rounded-3xl shadow-glow">

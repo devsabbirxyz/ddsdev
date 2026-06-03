@@ -5,7 +5,9 @@ export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
       { title: "টার্মস ও কন্ডিশনস — DDS-Digital" },
-      { name: "description", content: "DDS-Digital ব্যবহারের শর্তাবলী।" },
+      { name: "description", content: "DDS-Digital ব্যবহারের শর্তাবলী — অ্যাকাউন্ট, পেমেন্ট, প্রোডাক্ট ডেলিভারি, রিফান্ড ও ব্যবহারকারীর দায়িত্ব সম্পর্কে বিস্তারিত নির্দেশনা।" },
+      { property: "og:title", content: "টার্মস ও কন্ডিশনস — DDS-Digital" },
+      { property: "og:description", content: "DDS-Digital ব্যবহারের শর্তাবলী — অ্যাকাউন্ট, পেমেন্ট, ডেলিভারি ও রিফান্ড সম্পর্কে জানুন।" },
       { property: "og:url", content: "/terms" },
     ],
     links: [{ rel: "canonical", href: "/terms" }],

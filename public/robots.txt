@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /admin-login
 Disallow: /api/
 
-Sitemap: https://ddsshop.lovable.app/sitemap.xml
+Sitemap: https://ddsdev.lovable.app/sitemap.xml
