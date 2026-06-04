@@ -93,34 +93,34 @@
   --glass-border: oklch(1 0 0 / 16%);
 }
 
-/* Light theme — soft pink/lavender backdrop, vivid pink + purple accents */
+/* Light theme — warm cream backdrop, vivid orange + purple accents */
 .light {
-  --background: oklch(0.98 0.01 250);
-  --foreground: oklch(0.20 0.04 265);
+  --background: oklch(0.98 0.01 80);
+  --foreground: oklch(0.20 0.04 280);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.20 0.04 265);
+  --card-foreground: oklch(0.20 0.04 280);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.20 0.04 265);
-  --primary: oklch(0.58 0.22 260);                 /* electric blue */
+  --popover-foreground: oklch(0.20 0.04 280);
+  --primary: oklch(0.66 0.24 55);                  /* vivid orange */
   --primary-foreground: oklch(1 0 0);
-  --primary-glow: oklch(0.72 0.18 255);
-  --secondary: oklch(0.55 0.24 295);               /* purple */
+  --primary-glow: oklch(0.80 0.20 50);             /* bright orange glow */
+  --secondary: oklch(0.52 0.24 300);               /* rich purple */
   --secondary-foreground: oklch(1 0 0);
-  --secondary-glow: oklch(0.70 0.20 290);
-  --muted: oklch(0.95 0.02 255);
-  --muted-foreground: oklch(0.48 0.04 265);
-  --accent: oklch(0.93 0.04 270);
-  --accent-foreground: oklch(0.20 0.04 265);
+  --secondary-glow: oklch(0.70 0.20 295);           /* bright purple glow */
+  --muted: oklch(0.95 0.02 80);
+  --muted-foreground: oklch(0.48 0.04 280);
+  --accent: oklch(0.93 0.04 70);                   /* warm cream accent */
+  --accent-foreground: oklch(0.20 0.04 280);
   --destructive: oklch(0.60 0.24 25);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.20 0.04 265 / 12%);
-  --input: oklch(0.20 0.04 265 / 14%);
-  --ring: oklch(0.58 0.22 260);
+  --border: oklch(0.20 0.04 280 / 10%);
+  --input: oklch(0.20 0.04 280 / 12%);
+  --ring: oklch(0.66 0.24 55);                     /* orange focus ring */
 
-  --surface: oklch(0.96 0.02 255);
+  --surface: oklch(0.96 0.02 85);
   --surface-elevated: oklch(1 0 0);
   --glass: oklch(1 0 0 / 65%);
-  --glass-border: oklch(0.20 0.04 265 / 12%);
+  --glass-border: oklch(0.20 0.04 280 / 10%);
 }
 
 @layer base {
