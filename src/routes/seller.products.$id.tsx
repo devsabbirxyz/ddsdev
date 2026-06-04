@@ -1,19 +1,13 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { useQuery, queryOptions } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { ProductForm } from "@/components/seller/ProductForm";
+import { getMySellerProduct } from "@/lib/seller-owner.functions";
 
 const productQuery = (id: string) =>
   queryOptions({
     queryKey: ["seller", "product", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .eq("id", id)
-        .maybeSingle();
-      if (error) throw error;
-      return data;
+      return await getMySellerProduct({ data: { id } });
     },
   });
 

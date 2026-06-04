@@ -1,25 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, queryOptions } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { formatBDT } from "@/lib/storefront";
+import { getMySellerOverview } from "@/lib/seller-owner.functions";
 
 const overviewQuery = queryOptions({
   queryKey: ["seller", "overview"],
   queryFn: async () => {
-    const { data: sess } = await supabase.auth.getSession();
-    const uid = sess.session?.user.id;
-    if (!uid) throw new Error("Not authenticated");
-    const { data: seller } = await supabase
-      .from("sellers")
-      .select("*")
-      .eq("user_id", uid)
-      .maybeSingle();
-    if (!seller) throw new Error("Seller not found");
-    const [{ count: productCount }, { count: orderCount }] = await Promise.all([
-      supabase.from("products").select("id", { count: "exact", head: true }).eq("seller_id", seller.id),
-      supabase.from("orders").select("id", { count: "exact", head: true }).eq("seller_id", seller.id),
-    ]);
-    return { seller, productCount: productCount ?? 0, orderCount: orderCount ?? 0 };
+    const res = await getMySellerOverview();
+    if (!res?.seller) throw new Error("Seller not found");
+    return res;
   },
 });
 

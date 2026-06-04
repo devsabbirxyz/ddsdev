@@ -1048,3 +1048,28 @@ export const getOverviewStats = createServerFn({ method: "GET" })
     };
   });
 
+
+export const getOrderProductForAdmin = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { data: product, error } = await supabaseAdmin
+      .from("products")
+      .select("id,title,delivery_type,delivery_content")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return product;
+  });
+
+export const getSellersListForAdmin = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin
+      .from("sellers")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });

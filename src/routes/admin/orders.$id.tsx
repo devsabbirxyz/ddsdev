@@ -25,13 +25,8 @@ const productQuery = (id: string | null | undefined) =>
     enabled: !!id,
     queryFn: async () => {
       if (!id) return null;
-      const { data, error } = await supabase
-        .from("products")
-        .select("id,title,delivery_type,delivery_content")
-        .eq("id", id)
-        .maybeSingle();
-      if (error) throw error;
-      return data;
+      const { getOrderProductForAdmin } = await import("@/lib/admin.functions");
+      return await getOrderProductForAdmin({ data: { id } });
     },
   });
 
