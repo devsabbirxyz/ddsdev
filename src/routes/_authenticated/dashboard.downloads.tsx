@@ -94,7 +94,10 @@ function renderGuideText(src: string) {
   return html;
   function inline(s: string) {
     return s
-      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary underline">$1</a>')
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_m, label: string, url: string) => {
+        const safeUrl = url.replace(/"/g, "%22").replace(/'/g, "%27");
+        return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="text-primary underline">${label}</a>`;
+      })
       .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
       .replace(/\*([^*]+)\*/g, "<em>$1</em>");
   }

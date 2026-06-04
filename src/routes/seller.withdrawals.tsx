@@ -5,16 +5,14 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBDT } from "@/lib/storefront";
 import { requestSellerWithdrawal } from "@/lib/seller.functions";
+import { getMySellerBalance } from "@/lib/seller-owner.functions";
 import { toast } from "sonner";
 
 const wdQuery = queryOptions({
   queryKey: ["seller", "withdrawals"],
   queryFn: async () => {
-    const { data: sess } = await supabase.auth.getSession();
-    const uid = sess.session?.user.id;
-    if (!uid) return { seller: null as any, list: [] as any[] };
-    const { data: seller } = await supabase.from("sellers").select("id,balance").eq("user_id", uid).maybeSingle();
-    if (!seller) return { seller: null, list: [] };
+    const seller = await getMySellerBalance();
+    if (!seller) return { seller: null as any, list: [] as any[] };
     const { data } = await supabase
       .from("seller_withdrawals")
       .select("id,amount,payment_method,account_number,status,created_at,processed_at,rejection_reason")

@@ -11,7 +11,16 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const Route = createFileRoute("/api/public/hooks/process-subscriptions")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        // Require Supabase anon/publishable apikey to invoke (matches pg_cron pattern).
+        const apiKey = request.headers.get("apikey") || request.headers.get("x-api-key");
+        const expected =
+          process.env.SUPABASE_ANON_KEY ||
+          process.env.SUPABASE_PUBLISHABLE_KEY ||
+          process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+        if (!apiKey || !expected || apiKey !== expected) {
+          return new Response("Unauthorized", { status: 401 });
+        }
         const now = new Date();
         const in3Days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
         const result = { expired: 0, renewals_created: 0, reminders_sent: 0 };
