@@ -1061,3 +1061,15 @@ export const getOrderProductForAdmin = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return product;
   });
+
+export const getSellersListForAdmin = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin
+      .from("sellers")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });

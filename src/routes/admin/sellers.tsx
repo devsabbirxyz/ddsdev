@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { approveSellerApp, rejectSellerApp } from "@/lib/admin.functions";
+import { approveSellerApp, rejectSellerApp, getSellersListForAdmin } from "@/lib/admin.functions";
 import { toast } from "sonner";
 
 const dataQuery = queryOptions({
@@ -11,11 +11,10 @@ const dataQuery = queryOptions({
   queryFn: async () => {
     const [apps, sellers] = await Promise.all([
       supabase.from("seller_applications").select("*").order("created_at", { ascending: false }).limit(100),
-      supabase.from("sellers").select("*").order("created_at", { ascending: false }).limit(100),
+      getSellersListForAdmin(),
     ]);
     if (apps.error) throw apps.error;
-    if (sellers.error) throw sellers.error;
-    return { apps: apps.data ?? [], sellers: sellers.data ?? [] };
+    return { apps: apps.data ?? [], sellers: sellers ?? [] };
   },
 });
 
