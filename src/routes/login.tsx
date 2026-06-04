@@ -127,7 +127,7 @@ export function Field({
           onChange={(e) => onChange(e.target.value)}
           required={required}
           autoComplete={autoComplete}
-          className={`w-full rounded-2xl border border-white/40 bg-white/5 px-5 py-3.5 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/80 focus:bg-white/10 focus:ring-2 focus:ring-white/20 transition ${isPassword ? "pr-12" : ""}`}
+          className={`w-full rounded-2xl border border-white/60 bg-white/5 px-5 py-3.5 text-sm text-white placeholder:text-white/75 outline-none focus:border-white focus:bg-white/10 focus:ring-2 focus:ring-white/30 transition ${isPassword ? "pr-12" : ""}`}
           style={{ backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}
         />
         {isPassword && (
