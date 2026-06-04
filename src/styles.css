@@ -62,35 +62,35 @@
   --shadow-elegant: 0 10px 40px -12px rgba(0, 0, 0, 0.6);
 }
 
-/* Dark theme is DEFAULT — deep navy-purple with pink/purple accents */
+/* Dark theme is DEFAULT — deep black-purple with orange + purple accents */
 :root {
   --radius: 0.875rem;
-  --background: oklch(0.18 0.04 265);              /* deep navy */
-  --foreground: oklch(0.98 0.01 250);
-  --card: oklch(0.23 0.05 265);
-  --card-foreground: oklch(0.98 0.01 250);
-  --popover: oklch(0.23 0.05 265);
-  --popover-foreground: oklch(0.98 0.01 250);
-  --primary: oklch(0.62 0.22 260);                 /* electric blue */
+  --background: oklch(0.16 0.03 280);              /* deeper black-navy */
+  --foreground: oklch(0.98 0.01 260);
+  --card: oklch(0.22 0.05 280);
+  --card-foreground: oklch(0.98 0.01 260);
+  --popover: oklch(0.22 0.05 280);
+  --popover-foreground: oklch(0.98 0.01 260);
+  --primary: oklch(0.70 0.24 55);                  /* vivid orange #FF6B35 */
   --primary-foreground: oklch(1 0 0);
-  --primary-glow: oklch(0.74 0.18 255);
-  --secondary: oklch(0.58 0.24 295);               /* vivid purple */
+  --primary-glow: oklch(0.82 0.20 50);             /* bright orange glow */
+  --secondary: oklch(0.55 0.24 300);               /* rich purple #7B2FBE */
   --secondary-foreground: oklch(1 0 0);
-  --secondary-glow: oklch(0.72 0.20 290);
-  --muted: oklch(0.26 0.04 265);
-  --muted-foreground: oklch(0.78 0.03 255);
-  --accent: oklch(0.34 0.12 280);
-  --accent-foreground: oklch(0.98 0.01 250);
+  --secondary-glow: oklch(0.72 0.20 295);           /* bright purple glow */
+  --muted: oklch(0.24 0.04 280);
+  --muted-foreground: oklch(0.75 0.03 260);
+  --accent: oklch(0.30 0.10 60);                   /* warm amber accent */
+  --accent-foreground: oklch(0.98 0.01 260);
   --destructive: oklch(0.60 0.24 25);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(1 0 0 / 16%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.62 0.22 260);
+  --border: oklch(1 0 0 / 14%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.70 0.24 55);                     /* orange focus ring */
 
-  --surface: oklch(0.20 0.04 268);
-  --surface-elevated: oklch(0.26 0.05 270);
+  --surface: oklch(0.19 0.04 282);
+  --surface-elevated: oklch(0.25 0.05 285);
   --glass: oklch(1 0 0 / 6%);
-  --glass-border: oklch(1 0 0 / 18%);
+  --glass-border: oklch(1 0 0 / 16%);
 }
 
 /* Light theme — soft pink/lavender backdrop, vivid pink + purple accents */
