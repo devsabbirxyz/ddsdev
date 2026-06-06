@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { notify } from "@/lib/telegram-notify";
-import { AuthShell, Field } from "@/routes/login";
+import { AuthShell, Field } from "@/components/auth/AuthShell";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({

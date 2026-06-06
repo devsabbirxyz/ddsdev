@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { AuthShell, Field } from "@/routes/login";
+import { AuthShell, Field } from "@/components/auth/AuthShell";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
