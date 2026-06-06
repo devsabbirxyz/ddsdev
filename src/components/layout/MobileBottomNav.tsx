@@ -191,7 +191,7 @@ export function MobileBottomNav() {
               );
             }
             return (
-              <Link key={it.key} to={it.to!} className={cls} aria-label={it.label}>
+              <Link key={it.key} to={it.to!} search={(it.search as any) ?? (() => ({}))} className={cls} aria-label={it.label}>
                 {content}
               </Link>
             );
