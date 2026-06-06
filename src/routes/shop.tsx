@@ -31,6 +31,17 @@ function ShopPage() {
   const [mobileFilters, setMobileFilters] = useState(false);
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const { focus } = Route.useSearch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (focus === "search") {
+      setMobileFilters(true);
+      setTimeout(() => searchInputRef.current?.focus(), 150);
+      navigate({ to: "/shop", search: {}, replace: true });
+    }
+  }, [focus, navigate]);
   const [badge, setBadge] = useState<"new" | "best" | "featured" | null>(null);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [minRating, setMinRating] = useState<number>(0);
