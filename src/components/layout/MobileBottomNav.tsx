@@ -32,11 +32,14 @@ export function MobileBottomNav() {
     ? `https://wa.me/${wa}?text=${encodeURIComponent("আসসালামু আলাইকুম, আমি একটা প্রোডাক্ট সম্পর্কে জানতে চাই।")}`
     : "#";
 
+  const search = useRouterState({ select: (st) => st.location.search as Record<string, unknown> });
+  const hasSearchQuery = Boolean((search as any)?.q);
+
   const items: NavItem[] = [
     { key: "home", label: "হোম", to: "/", Icon: Home, match: (p) => p === "/" },
-    { key: "search", label: "সার্চ", to: "/shop", Icon: Search, match: (p) => p === "/shop" },
+    { key: "search", label: "সার্চ", to: "/shop", Icon: Search, match: (p) => p.startsWith("/shop") && hasSearchQuery },
     { key: "cart", label: "কার্ট", to: "/cart", Icon: ShoppingCart, match: (p) => p.startsWith("/cart"), badge: count },
-    { key: "shop", label: "শপ", to: "/shop", Icon: Store, match: (p) => p.startsWith("/shop") },
+    { key: "shop", label: "শপ", to: "/shop", Icon: Store, match: (p) => p.startsWith("/shop") && !hasSearchQuery },
     { key: "wa", label: "WhatsApp", href: waHref, external: true, Icon: WhatsAppIcon },
   ];
 
