@@ -225,7 +225,13 @@ function HomePage() {
         </div>
       </section>
 
+      <BestSellers />
+      <JustArrived />
+
       <RecentlyViewed />
+
+
+
 
 
       {/* TRUST BAR — glassmorphism */}
