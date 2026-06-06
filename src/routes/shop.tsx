@@ -76,6 +76,11 @@ function ShopPage() {
     setInStockOnly(false); setMinRating(0);
   };
 
+  const closeSearchPanel = () => {
+    setMobileFilters(false);
+    navigate({ to: "/shop", search: {}, replace: true });
+  };
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
       {/* Header */}
@@ -115,9 +120,16 @@ function ShopPage() {
           className={`${mobileFilters ? "fixed inset-0 z-50 bg-background/90 backdrop-blur p-4 overflow-auto" : "hidden"} lg:relative lg:inset-auto lg:block lg:bg-transparent lg:p-0`}
         >
           {mobileFilters && (
-            <button onClick={() => setMobileFilters(false)} className="lg:hidden absolute top-4 right-4 glass rounded-lg p-2">
-              <X className="h-4 w-4" />
-            </button>
+            <div className="lg:hidden mb-4 flex items-center justify-between gap-3">
+              <span className="text-base font-display font-bold text-foreground">প্রোডাক্ট সার্চ</span>
+              <button
+                onClick={closeSearchPanel}
+                className="inline-flex items-center gap-2 rounded-xl glass px-4 py-2 text-sm font-semibold hover:bg-accent"
+                aria-label="সার্চ থেকে বের হন"
+              >
+                <X className="h-4 w-4" /> বের হন
+              </button>
+            </div>
           )}
           <div className="glass-card rounded-2xl p-5 lg:sticky lg:top-20">
             <h3 className="font-display font-bold text-base mb-4">ক্যাটাগরি</h3>
