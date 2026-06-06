@@ -169,10 +169,13 @@ function ProductPage() {
           )}
 
           <div className="mt-6 glass-card rounded-2xl p-5">
-            <div className="flex items-baseline gap-3">
+            <div className="flex items-baseline gap-3 flex-wrap">
               <span className="font-display font-bold text-4xl text-gradient-brand">{formatBDT(price)}</span>
               {hasDiscount && (
-                <span className="text-lg text-muted-foreground line-through">{formatBDT(product.regular_price)}</span>
+                <span className="text-lg text-muted-foreground line-through">{formatBDT(regularTotal)}</span>
+              )}
+              {!isSubscription && qty > 1 && (
+                <span className="text-xs text-muted-foreground">({formatBDT(unitPrice)} × {qty})</span>
               )}
             </div>
 
