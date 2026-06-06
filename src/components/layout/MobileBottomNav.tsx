@@ -47,13 +47,13 @@ export function MobileBottomNav() {
 
   const routeIndex = items.findIndex((it) => it.match?.(pathname));
   const [activeIdx, setActiveIdx] = useState(routeIndex >= 0 ? routeIndex : 0);
+  const activeKey = items[activeIdx]?.key;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
     const nextIndex = routeIndex >= 0 ? routeIndex : 0;
-    const activeKey = items[activeIdx]?.key;
 
     // Search shares /shop with Shop. After focusing search, the shop page clears
     // the temporary URL flag, so keep the clicked Search item active until the
@@ -61,7 +61,7 @@ export function MobileBottomNav() {
     if (pathname.startsWith("/shop") && activeKey === "search" && !isSearchFocus) return;
 
     setActiveIdx((current) => (current === nextIndex ? current : nextIndex));
-  }, [pathname, routeIndex, isSearchFocus, activeIdx, items]);
+  }, [pathname, routeIndex, isSearchFocus, activeKey]);
 
   const handleNavClick = (index: number, item: NavItem) => {
     setActiveIdx(index);
@@ -200,7 +200,7 @@ export function MobileBottomNav() {
                 ) : null}
               </div>
             );
-            const cls = "flex-1 h-full flex items-center justify-center";
+            const cls = "flex-1 h-full flex items-center justify-center border-0 bg-transparent p-0";
             if (it.external) {
               return (
                 <a key={it.key} href={it.href} target="_blank" rel="noopener noreferrer" className={cls} aria-label={it.label}>
