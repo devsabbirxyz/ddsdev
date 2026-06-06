@@ -73,10 +73,17 @@ function ProductPage() {
   const variants = (product.product_variants ?? []).filter((v: any) => v.is_active);
   const selectedVariant = variants.find((v: any) => v.id === variantId);
   const selectedPlan = plans.find((p) => p.id === planId);
-  const price = isSubscription && selectedPlan
+  const unitRegular = isSubscription && selectedPlan
     ? Number(selectedPlan.price)
-    : (selectedVariant?.offer_price ?? selectedVariant?.regular_price ?? product.offer_price ?? product.regular_price);
-  const hasDiscount = !isSubscription && product.offer_price != null && product.regular_price != null && product.offer_price < product.regular_price;
+    : (selectedVariant?.regular_price ?? product.regular_price ?? selectedVariant?.offer_price ?? product.offer_price);
+  const unitOffer = isSubscription && selectedPlan
+    ? Number(selectedPlan.price)
+    : (selectedVariant?.offer_price ?? product.offer_price ?? selectedVariant?.regular_price ?? product.regular_price);
+  const unitPrice = unitOffer ?? unitRegular;
+  const qtyMul = isSubscription ? 1 : qty;
+  const price = Number(unitPrice ?? 0) * qtyMul;
+  const regularTotal = Number(unitRegular ?? 0) * qtyMul;
+  const hasDiscount = !isSubscription && unitOffer != null && unitRegular != null && Number(unitOffer) < Number(unitRegular);
 
   // Out-of-stock detection
   const trackStock = !!(product as any).track_stock;
@@ -162,10 +169,13 @@ function ProductPage() {
           )}
 
           <div className="mt-6 glass-card rounded-2xl p-5">
-            <div className="flex items-baseline gap-3">
+            <div className="flex items-baseline gap-3 flex-wrap">
               <span className="font-display font-bold text-4xl text-gradient-brand">{formatBDT(price)}</span>
               {hasDiscount && (
-                <span className="text-lg text-muted-foreground line-through">{formatBDT(product.regular_price)}</span>
+                <span className="text-lg text-muted-foreground line-through">{formatBDT(regularTotal)}</span>
+              )}
+              {!isSubscription && qty > 1 && (
+                <span className="text-xs text-muted-foreground">({formatBDT(unitPrice)} × {qty})</span>
               )}
             </div>
 
@@ -229,7 +239,7 @@ function ProductPage() {
                     productId: product.id,
                     slug: product.slug,
                     title: product.title,
-                    price: Number(price ?? 0),
+                    price: Number(unitPrice ?? 0),
                     image: images[0]?.image_url ?? null,
                     variantId: isSubscription ? null : selectedVariant?.id ?? null,
                     variantLabel: isSubscription ? null : selectedVariant?.label ?? null,
@@ -251,7 +261,7 @@ function ProductPage() {
                       productId: product.id,
                       slug: product.slug,
                       title: product.title,
-                      price: Number(price ?? 0),
+                      price: Number(unitPrice ?? 0),
                       image: images[0]?.image_url ?? null,
                       variantId: selectedVariant?.id ?? null,
                       variantLabel: selectedVariant?.label ?? null,
