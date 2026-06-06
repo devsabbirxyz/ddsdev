@@ -14,7 +14,7 @@ export function OfferBannerSlider() {
 
   if (isLoading) {
     return (
-      <div className="mt-8 w-full rounded-3xl overflow-hidden border border-glass-border aspect-[16/6]">
+      <div className="mt-8 w-full rounded-3xl overflow-hidden border border-glass-border aspect-[4/3] sm:aspect-[16/6]">
         <Skeleton className="w-full h-full" />
       </div>
     );
@@ -22,7 +22,7 @@ export function OfferBannerSlider() {
 
   if (slides.length === 0) {
     return (
-      <div className="mt-8 w-full rounded-3xl overflow-hidden border border-glass-border aspect-[16/6] relative bg-gradient-to-br from-primary/30 via-primary/10 to-accent/30">
+      <div className="mt-8 w-full rounded-3xl overflow-hidden border border-glass-border aspect-[4/3] sm:aspect-[16/6] relative bg-gradient-to-br from-primary/30 via-primary/10 to-accent/30">
         <div className="absolute inset-0 grid place-items-center text-center px-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-background/40 backdrop-blur-sm border border-glass-border text-xs font-semibold">
@@ -54,7 +54,7 @@ export function OfferBannerSlider() {
             />
           );
           return (
-            <div key={s.id} className="min-w-0 flex-[0_0_100%] aspect-[16/6] bg-muted/40">
+            <div key={s.id} className="min-w-0 flex-[0_0_100%] aspect-[4/3] sm:aspect-[16/6] bg-muted/40">
               {s.link_url ? (
                 <a href={s.link_url} className="block w-full h-full">{img}</a>
               ) : (

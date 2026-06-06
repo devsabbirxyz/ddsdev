@@ -111,7 +111,7 @@ function HomePage() {
             {heroBadge}
           </div>
 
-          <h1 className="mt-6 font-display font-bold text-3xl sm:text-5xl leading-tight">
+          <h1 className="mt-4 font-display font-bold text-base sm:text-5xl leading-snug sm:leading-tight">
             DDS-Digital — <span className="text-gradient-brand">বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট মার্কেটপ্লেস</span>
           </h1>
 
