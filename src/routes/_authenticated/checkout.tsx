@@ -84,6 +84,12 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
 
+  // Sync email once the user object loads
+  useEffect(() => {
+    if (user?.email && !email) setEmail(user.email);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.email]);
+
   const validateInfo = (): boolean => {
     const defs = [
       { key: "name", label: "পূর্ণ নাম", value: name },
