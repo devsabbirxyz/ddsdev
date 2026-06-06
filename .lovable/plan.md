@@ -1,11 +1,32 @@
-Problem: On mobile, the homepage hero offer banner is too short (aspect 16/6 = ~146px tall on 390px width), while the headline text already takes up significant vertical space.
+## লক্ষ্য
 
-Changes:
-1. **src/components/storefront/OfferBannerSlider.tsx**
-   - Make the banner aspect ratio responsive: use a taller ratio on mobile (`aspect-[16/9]` or `aspect-[4/3]`) and keep the existing wide `aspect-[16/6]` on `sm:` breakpoints and up.
-   - Apply this to all three places where `aspect-[16/6]` is hardcoded (loading skeleton, empty state, and slide container).
+User signup করার সময় email এ confirmation **link** এর বদলে **6-digit OTP code** যাবে। User সেই code একটা verify page এ enter করে account activate করবে।
 
-2. **src/routes/index.tsx**
-   - Keep the hero headline "DDS-Digital — বাংলাদেশের ১ নম্বর ডিজিটাল প্রোডাক্ট মার্কেটপ্লেস" small on mobile by reducing from `text-3xl` to `text-2xl` (or `text-xl`) for the base size, keeping `sm:text-5xl`.
+## পরিবর্তন
 
-No backend changes. Purely Tailwind responsive class adjustments.
+### 1. Supabase Auth template
+- Supabase এর "Confirm signup" email template এ `{{ .ConfirmationURL }}` এর বদলে `{{ .Token }}` ব্যবহার করতে হবে — যাতে email এ 6-digit code পাঠায়।
+- এটা Lovable Cloud → Users → Auth Settings → Email Templates থেকে manual এ change করতে হবে (Lovable এর default template এই এক click setup নেই)। আমি exact steps দিয়ে দিব।
+
+### 2. Signup flow (frontend)
+- বর্তমান signup page এ `supabase.auth.signUp()` call করার পর success হলে user কে নতুন `/verify-otp` page এ redirect করব, email টা query param/state এ পাঠিয়ে।
+
+### 3. নতুন page: `/verify-otp`
+- একটা 6-digit OTP input (shadcn `InputOTP` component)
+- "Verify" button → `supabase.auth.verifyOtp({ email, token, type: 'signup' })` call করবে
+- Success হলে user logged-in হয়ে home এ redirect হবে
+- "Resend code" button → `supabase.auth.resend({ type: 'signup', email })`
+- Error handling (wrong code, expired code)
+
+### 4. Route file
+- `src/routes/verify-otp.tsx` (public route, SSR safe)
+
+## যা পরিবর্তন হবে না
+- Password reset, magic link, login flow — অপরিবর্তিত
+- Database schema, RLS — অপরিবর্তিত
+- Google sign-in — অপরিবর্তিত
+
+## Files
+- **New:** `src/routes/verify-otp.tsx`
+- **Edit:** existing signup component (register page) — signup success এর পর redirect logic
+- **Manual (user):** Cloud → Users → Auth → Email Templates → Confirm signup template এ `{{ .Token }}` বসাবেন (আমি exact template দিয়ে দিব)
