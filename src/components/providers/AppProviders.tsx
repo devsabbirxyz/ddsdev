@@ -5,6 +5,7 @@ import { AuthContext, type AuthUser } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
+import { CompareProvider } from "@/lib/compare";
 import { Toaster } from "@/components/ui/sonner";
 import { ModalDialogHost } from "@/components/ui/modal-dialogs";
 
@@ -65,7 +66,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <I18nContext.Provider value={i18nValue}>
         <AuthContext.Provider value={authValue}>
           <CartProvider>
-            <WishlistProvider>{children}</WishlistProvider>
+            <WishlistProvider>
+              <CompareProvider>{children}</CompareProvider>
+            </WishlistProvider>
           </CartProvider>
           <Toaster />
           <ModalDialogHost />
