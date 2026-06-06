@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Home, Search, ShoppingCart, Store } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -26,6 +26,7 @@ type NavItem = {
 export function MobileBottomNav() {
   const { count } = useCart();
   const { data: s } = useQuery(siteSettingsQuery);
+  const navigate = useNavigate();
   const pathname = useRouterState({ select: (st) => st.location.pathname });
 
   const wa = (s?.whatsapp_number || "").replace(/[^0-9]/g, "");
@@ -44,12 +45,28 @@ export function MobileBottomNav() {
     { key: "wa", label: "WhatsApp", href: waHref, external: true, Icon: WhatsAppIcon },
   ];
 
-  // Determine active index (skip WhatsApp from active matching)
-  let activeIdx = items.findIndex((it) => it.match?.(pathname));
-  if (activeIdx < 0) activeIdx = 0;
+  const routeIndex = items.findIndex((it) => it.match?.(pathname));
+  const [activeIdx, setActiveIdx] = useState(routeIndex >= 0 ? routeIndex : 0);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const nextIndex = routeIndex >= 0 ? routeIndex : 0;
+    const activeKey = items[activeIdx]?.key;
+
+    // Search shares /shop with Shop. After focusing search, the shop page clears
+    // the temporary URL flag, so keep the clicked Search item active until the
+    // user explicitly taps Shop or another destination.
+    if (pathname.startsWith("/shop") && activeKey === "search" && !isSearchFocus) return;
+
+    setActiveIdx((current) => (current === nextIndex ? current : nextIndex));
+  }, [pathname, routeIndex, isSearchFocus, activeIdx, items]);
+
+  const handleNavClick = (index: number, item: NavItem) => {
+    setActiveIdx(index);
+    navigate({ to: item.to as any, search: (item.search as any) ?? {} });
+  };
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -192,9 +209,9 @@ export function MobileBottomNav() {
               );
             }
             return (
-              <Link key={it.key} to={it.to!} search={(it.search as any) ?? (() => ({}))} className={cls} aria-label={it.label}>
+              <button key={it.key} type="button" onClick={() => handleNavClick(i, it)} className={cls} aria-label={it.label}>
                 {content}
-              </Link>
+              </button>
             );
           })}
         </div>
