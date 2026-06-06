@@ -219,11 +219,8 @@ function CheckoutPage() {
         });
       }
       clear();
-      toast.success("✅ আপনার অর্ডার সফলভাবে জমা হয়েছে!", {
-        duration: 3500,
-        className: "!bg-green-600 !text-white !border-green-700",
-      });
-      nav({ to: "/dashboard/orders" });
+      toast.success("✅ অর্ডার সফলভাবে জমা হয়েছে!");
+      setTimeout(() => nav({ to: "/dashboard/orders" }), 800);
     } catch (e: any) {
       console.error("Order create failed:", e);
       toast.error(e?.message ?? "অর্ডার তৈরি ব্যর্থ");
