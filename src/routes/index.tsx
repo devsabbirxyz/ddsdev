@@ -411,6 +411,8 @@ function HomePage() {
 
       </section>
 
+      <HomeFAQ />
+
       {/* NEWSLETTER */}
       {settings[HOMEPAGE_KEYS.newsletter_enabled] !== "false" && (
         <section className="mx-auto max-w-4xl px-4 sm:px-6 pb-16">
