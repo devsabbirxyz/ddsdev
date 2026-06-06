@@ -3,6 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Home, Search, ShoppingCart, Store } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties, type ComponentType } from "react";
 
+import { useCart } from "@/lib/cart";
+import { siteSettingsQuery } from "@/lib/site-settings";
+
 type IconProps = { className?: string; style?: CSSProperties };
 
 const WhatsAppIcon = ({ className, style }: IconProps) => (
@@ -16,8 +19,6 @@ const WhatsAppIcon = ({ className, style }: IconProps) => (
     <path d="M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39a.63.63 0 0 1-.315-.1c-.802-.402-1.504-.817-2.163-1.447-.545-.516-1.146-1.29-1.46-1.963a.426.426 0 0 1-.073-.215c0-.33.99-.945.99-1.49 0-.143-.73-2.09-.832-2.335-.143-.372-.214-.487-.6-.487-.187 0-.36-.043-.53-.043-.302 0-.53.115-.746.315-.688.645-1.032 1.318-1.06 2.264v.114c-.015.99.472 1.977 1.017 2.78 1.23 1.82 2.506 3.41 4.554 4.34.616.287 2.035.888 2.722.888.817 0 2.15-.515 2.478-1.318.13-.33.13-.63.044-1.003-.115-.3-2.064-1.69-2.464-1.69zm-2.64 5.704h-.014a8.527 8.527 0 0 1-4.34-1.184l-.314-.187-3.222.845.86-3.137-.2-.33a8.566 8.566 0 0 1-1.302-4.554c.014-4.726 3.854-8.567 8.581-8.567a8.51 8.51 0 0 1 6.066 2.508 8.55 8.55 0 0 1 2.494 6.066c0 4.726-3.84 8.539-8.61 8.539zm7.297-15.864A10.247 10.247 0 0 0 16.47 4c-5.685 0-10.31 4.625-10.323 10.31 0 1.816.473 3.59 1.376 5.154L6 25l5.71-1.49a10.314 10.314 0 0 0 4.926 1.246h.014c5.685 0 10.31-4.626 10.32-10.31a10.25 10.25 0 0 0-3.21-7.4z" />
   </svg>
 );
-import { useCart } from "@/lib/cart";
-import { siteSettingsQuery } from "@/lib/site-settings";
 
 type NavItem = {
   search?: Record<string, unknown>;
@@ -30,6 +31,14 @@ type NavItem = {
   Icon: ComponentType<IconProps>;
   badge?: number;
 };
+
+function getRouteIndex(pathname: string, isSearchFocus: boolean) {
+  if (pathname === "/") return 0;
+  if (pathname.startsWith("/shop") && isSearchFocus) return 1;
+  if (pathname.startsWith("/cart")) return 2;
+  if (pathname.startsWith("/shop")) return 3;
+  return 0;
+}
 
 export function MobileBottomNav() {
   const { count } = useCart();
@@ -73,53 +82,22 @@ export function MobileBottomNav() {
     { key: "wa", label: "WhatsApp", href: waHref, external: true, Icon: WhatsAppIcon },
   ];
 
-  const routeIndex = items.findIndex((it) => it.match?.(pathname));
-  const [activeIdx, setActiveIdx] = useState(routeIndex >= 0 ? routeIndex : 0);
-  const activeKey = items[activeIdx]?.key;
-  const pendingKeyRef = useRef<NavItem["key"] | null>(null);
+  const [activeIdx, setActiveIdx] = useState(() =>
+    getRouteIndex(pathname, isSearchFocus)
+  );
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const circleRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
+  const lastClickTimeRef = useRef(0);
+  const activeIdxRef = useRef(activeIdx);
 
+  // Keep ref in sync with state so route-sync effect always sees latest value
   useEffect(() => {
-    const nextIndex = routeIndex >= 0 ? routeIndex : 0;
-    const pendingKey = pendingKeyRef.current;
+    activeIdxRef.current = activeIdx;
+  }, [activeIdx]);
 
-    // A click updates the active item before the router finishes changing
-    // pages. While that navigation is pending, don't sync back to the old
-    // route, otherwise the circle jumps to the first/previous item and starts
-    // the animation from there again.
-    if (pendingKey) {
-      const pendingItem = items.find((it) => it.key === pendingKey);
-
-      if (pendingKey === "search" && pathname.startsWith("/shop")) {
-        pendingKeyRef.current = null;
-        return;
-      }
-
-      if (pendingItem?.match?.(pathname)) {
-        pendingKeyRef.current = null;
-        return;
-      }
-
-      if (activeKey === pendingKey) return;
-    }
-
-    // Search shares /shop with Shop. After focusing search, the shop page clears
-    // the temporary URL flag, so keep the clicked Search item active until the
-    // user explicitly taps Shop or another destination.
-    if (pathname.startsWith("/shop") && activeKey === "search" && !isSearchFocus) return;
-
-    setActiveIdx((current) => (current === nextIndex ? current : nextIndex));
-  }, [pathname, routeIndex, isSearchFocus, activeKey]);
-
-  const handleNavClick = (index: number, item: NavItem) => {
-    if (!item.to) return;
-    pendingKeyRef.current = item.key;
-    setActiveIdx(index);
-    navigate({ to: item.to, search: item.search ?? {} });
-  };
-
+  // Measure container width
   useEffect(() => {
     if (!containerRef.current) return;
     const ro = new ResizeObserver((entries) => {
@@ -130,25 +108,67 @@ export function MobileBottomNav() {
     return () => ro.disconnect();
   }, []);
 
+  // Animate circle from one tab index to another using direct DOM reflow
+  const animateCircle = (fromIdx: number, toIdx: number) => {
+    const el = circleRef.current;
+    if (!el || width <= 0 || fromIdx === toIdx) return;
+
+    const slotW = width / items.length;
+    const fromCx = slotW * (fromIdx + 0.5);
+    const toCx = slotW * (toIdx + 0.5);
+
+    // 1. Disable transition and snap to old position
+    el.style.transition = "none";
+    el.style.transform = `translate3d(${fromCx - 26}px, -22px, 0)`;
+
+    // 2. Force reflow so browser registers the old position
+    void el.offsetHeight;
+
+    // 3. Enable transition and set new position
+    el.style.transition = "transform 300ms cubic-bezier(0.4,0,0.2,1)";
+    el.style.transform = `translate3d(${toCx - 26}px, -22px, 0)`;
+  };
+
+  const handleNavClick = (index: number, item: NavItem) => {
+    if (!item.to || index === activeIdx) return;
+
+    lastClickTimeRef.current = Date.now();
+    animateCircle(activeIdx, index);
+    setActiveIdx(index);
+    navigate({ to: item.to, search: item.search ?? {} });
+  };
+
+  // Route sync: back-button / direct URL / search-focus clear
+  useEffect(() => {
+    const nextIndex = getRouteIndex(pathname, isSearchFocus);
+    const currentIdx = activeIdxRef.current;
+    if (nextIndex === currentIdx) return;
+
+    // Skip sync if we just clicked (prevents overriding the click-driven animation)
+    if (Date.now() - lastClickTimeRef.current < 400) return;
+
+    animateCircle(currentIdx, nextIndex);
+    setActiveIdx(nextIndex);
+  }, [pathname, isSearchFocus]);
+
   const N = items.length;
   const slotW = width / N;
   const cx = slotW * (activeIdx + 0.5);
   const barH = 64;
-  const dipR = 34; // dip radius
+  const dipR = 34;
   const dipDepth = 22;
 
   // Build SVG path for bar with curved dip centered at cx
   const path = (() => {
     const w = width || 100;
     const h = barH;
-    const r = 24; // corner radius
+    const r = 24;
     const dipHalf = dipR + 6;
     const left = cx - dipHalf;
     const right = cx + dipHalf;
     return [
       `M ${r} 0`,
       `L ${left} 0`,
-      // dip: cubic to center bottom of arc, then back up
       `C ${left + 10} 0, ${cx - dipR} ${dipDepth}, ${cx} ${dipDepth}`,
       `C ${cx + dipR} ${dipDepth}, ${right - 10} 0, ${right} 0`,
       `L ${w - r} 0`,
@@ -199,8 +219,9 @@ export function MobileBottomNav() {
           />
         </svg>
 
-        {/* Floating active circle — persistent element, animates via transform */}
+        {/* Floating active circle — persistent element, animates via direct DOM manipulation */}
         <div
+          ref={circleRef}
           className="absolute top-0 left-0 z-10 pointer-events-none"
           style={{
             width: 52,
