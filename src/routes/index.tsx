@@ -11,6 +11,7 @@ import { OfferBannerSlider } from "@/components/storefront/OfferBannerSlider";
 import { OfferPopup } from "@/components/storefront/OfferPopup";
 import { CountdownBanner } from "@/components/storefront/CountdownBanner";
 import { RecentlyViewed } from "@/components/storefront/RecentlyViewed";
+import { FlashDeals, BestSellers, JustArrived, LiveStats, TestimonialsHighlight, HomeFAQ, BundleOffers } from "@/components/storefront/HomeSections";
 import { supabase } from "@/integrations/supabase/client";
 
 
@@ -136,6 +137,10 @@ function HomePage() {
         </div>
       </section>
 
+      <LiveStats />
+
+
+
 
       {/* CATEGORIES */}
       {categories.length > 0 && (
@@ -177,8 +182,11 @@ function HomePage() {
         </section>
       )}
 
+      <FlashDeals />
+
       {/* FEATURED PRODUCTS */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
+
         <div className="text-center mb-8 mx-auto max-w-2xl">
           <div className="text-xs text-primary font-bold uppercase tracking-wider">⭐ ফিচারড</div>
           <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
@@ -217,7 +225,13 @@ function HomePage() {
         </div>
       </section>
 
+      <BestSellers />
+      <JustArrived />
+
       <RecentlyViewed />
+
+
+
 
 
       {/* TRUST BAR — glassmorphism */}
@@ -314,8 +328,12 @@ function HomePage() {
         );
       })()}
 
+      <BundleOffers />
+      <TestimonialsHighlight />
+
       {/* HOW TO BUY */}
       <section className="mx-auto max-w-5xl px-4 sm:px-6 pb-16">
+
         <div className="text-center mb-8">
           <div className="text-xs text-primary font-bold uppercase tracking-wider">🛒 গাইড</div>
           <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
@@ -392,6 +410,8 @@ function HomePage() {
         })()}
 
       </section>
+
+      <HomeFAQ />
 
       {/* NEWSLETTER */}
       {settings[HOMEPAGE_KEYS.newsletter_enabled] !== "false" && (
