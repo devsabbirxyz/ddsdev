@@ -76,12 +76,34 @@ export function MobileBottomNav() {
   const routeIndex = items.findIndex((it) => it.match?.(pathname));
   const [activeIdx, setActiveIdx] = useState(routeIndex >= 0 ? routeIndex : 0);
   const activeKey = items[activeIdx]?.key;
+  const pendingKeyRef = useRef<NavItem["key"] | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
     const nextIndex = routeIndex >= 0 ? routeIndex : 0;
+    const pendingKey = pendingKeyRef.current;
+
+    // A click updates the active item before the router finishes changing
+    // pages. While that navigation is pending, don't sync back to the old
+    // route, otherwise the circle jumps to the first/previous item and starts
+    // the animation from there again.
+    if (pendingKey) {
+      const pendingItem = items.find((it) => it.key === pendingKey);
+
+      if (pendingKey === "search" && pathname.startsWith("/shop")) {
+        pendingKeyRef.current = null;
+        return;
+      }
+
+      if (pendingItem?.match?.(pathname)) {
+        pendingKeyRef.current = null;
+        return;
+      }
+
+      if (activeKey === pendingKey) return;
+    }
 
     // Search shares /shop with Shop. After focusing search, the shop page clears
     // the temporary URL flag, so keep the clicked Search item active until the
@@ -93,6 +115,7 @@ export function MobileBottomNav() {
 
   const handleNavClick = (index: number, item: NavItem) => {
     if (!item.to) return;
+    pendingKeyRef.current = item.key;
     setActiveIdx(index);
     navigate({ to: item.to, search: item.search ?? {} });
   };
