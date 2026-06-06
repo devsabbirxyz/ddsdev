@@ -39,9 +39,8 @@ function ShopPage() {
     if (focus === "search") {
       setMobileFilters(true);
       setTimeout(() => searchInputRef.current?.focus(), 150);
-      navigate({ to: "/shop", search: {}, replace: true });
     }
-  }, [focus, navigate]);
+  }, [focus]);
   const [badge, setBadge] = useState<"new" | "best" | "featured" | null>(null);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [minRating, setMinRating] = useState<number>(0);
