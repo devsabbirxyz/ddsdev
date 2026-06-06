@@ -137,6 +137,10 @@ function HomePage() {
         </div>
       </section>
 
+      <LiveStats />
+
+
+
 
       {/* CATEGORIES */}
       {categories.length > 0 && (
