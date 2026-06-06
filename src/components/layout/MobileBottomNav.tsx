@@ -1,11 +1,19 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Home, Search, ShoppingCart, Store } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ComponentType } from "react";
 
-const WhatsAppIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 32 32" className={className} fill="currentColor" aria-hidden="true">
-    <path d="M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39a.63.63 0 0 1-.315-.1c-.802-.402-1.504-.817-2.163-1.447-.545-.516-1.146-1.29-1.46-1.963a.426.426 0 0 1-.073-.215c0-.33.99-.945.99-1.49 0-.143-.73-2.09-.832-2.335-.143-.372-.214-.487-.6-.487-.187 0-.36-.043-.53-.043-.302 0-.53.115-.746.315-.688.645-1.032 1.318-1.06 2.264v.114c-.015.99.472 1.977 1.017 2.78 1.23 1.82 2.506 3.41 4.554 4.34.616.287 2.035.888 2.722.888.817 0 2.15-.515 2.478-1.318.13-.33.13-.63.044-1.003-.115-.3-2.064-1.69-2.464-1.69zm-2.64 5.704h-.014a8.527 8.527 0 0 1-4.34-1.184l-.314-.187-3.222.845.86-3.137-.2-.33a8.566 8.566 0 0 1-1.302-4.554c.014-4.726 3.854-8.567 8.581-8.567a8.51 8.51 0 0 1 6.066 2.508 8.55 8.55 0 0 1 2.494 6.066c0 4.726-3.84 8.539-8.61 8.539zm7.297-15.864A10.247 10.247 0 0 0 16.47 4c-5.685 0-10.31 4.625-10.323 10.31 0 1.816.473 3.59 1.376 5.154L6 25l5.71-1.49a10.314 10.314 0 0 0 4.926 1.246h.014c5.685 0 10.31-4.626 10.32-10.31a10.25 10.25 0 0 0-3.21-7.4z"/>
+type IconProps = { className?: string; style?: CSSProperties };
+
+const WhatsAppIcon = ({ className, style }: IconProps) => (
+  <svg
+    viewBox="0 0 32 32"
+    className={className}
+    style={style}
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path d="M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39a.63.63 0 0 1-.315-.1c-.802-.402-1.504-.817-2.163-1.447-.545-.516-1.146-1.29-1.46-1.963a.426.426 0 0 1-.073-.215c0-.33.99-.945.99-1.49 0-.143-.73-2.09-.832-2.335-.143-.372-.214-.487-.6-.487-.187 0-.36-.043-.53-.043-.302 0-.53.115-.746.315-.688.645-1.032 1.318-1.06 2.264v.114c-.015.99.472 1.977 1.017 2.78 1.23 1.82 2.506 3.41 4.554 4.34.616.287 2.035.888 2.722.888.817 0 2.15-.515 2.478-1.318.13-.33.13-.63.044-1.003-.115-.3-2.064-1.69-2.464-1.69zm-2.64 5.704h-.014a8.527 8.527 0 0 1-4.34-1.184l-.314-.187-3.222.845.86-3.137-.2-.33a8.566 8.566 0 0 1-1.302-4.554c.014-4.726 3.854-8.567 8.581-8.567a8.51 8.51 0 0 1 6.066 2.508 8.55 8.55 0 0 1 2.494 6.066c0 4.726-3.84 8.539-8.61 8.539zm7.297-15.864A10.247 10.247 0 0 0 16.47 4c-5.685 0-10.31 4.625-10.323 10.31 0 1.816.473 3.59 1.376 5.154L6 25l5.71-1.49a10.314 10.314 0 0 0 4.926 1.246h.014c5.685 0 10.31-4.626 10.32-10.31a10.25 10.25 0 0 0-3.21-7.4z" />
   </svg>
 );
 import { useCart } from "@/lib/cart";
@@ -13,19 +21,20 @@ import { siteSettingsQuery } from "@/lib/site-settings";
 
 type NavItem = {
   search?: Record<string, unknown>;
-  key: string;
+  key: "home" | "search" | "cart" | "shop" | "wa";
   label: string;
-  to?: string;
+  to?: "/" | "/shop" | "/cart";
   href?: string;
   external?: boolean;
   match?: (path: string) => boolean;
-  Icon: React.ComponentType<{ className?: string }>;
+  Icon: ComponentType<IconProps>;
   badge?: number;
 };
 
 export function MobileBottomNav() {
   const { count } = useCart();
   const { data: s } = useQuery(siteSettingsQuery);
+  const navigate = useNavigate();
   const pathname = useRouterState({ select: (st) => st.location.pathname });
 
   const wa = (s?.whatsapp_number || "").replace(/[^0-9]/g, "");
@@ -34,22 +43,59 @@ export function MobileBottomNav() {
     : "#";
 
   const search = useRouterState({ select: (st) => st.location.search as Record<string, unknown> });
-  const isSearchFocus = (search as any)?.focus === "search";
+  const isSearchFocus = search.focus === "search";
 
   const items: NavItem[] = [
     { key: "home", label: "হোম", to: "/", Icon: Home, match: (p) => p === "/" },
-    { key: "search", label: "সার্চ", to: "/shop", search: { focus: "search" }, Icon: Search, match: (p) => p.startsWith("/shop") && isSearchFocus },
-    { key: "cart", label: "কার্ট", to: "/cart", Icon: ShoppingCart, match: (p) => p.startsWith("/cart"), badge: count },
-    { key: "shop", label: "শপ", to: "/shop", Icon: Store, match: (p) => p.startsWith("/shop") && !isSearchFocus },
+    {
+      key: "search",
+      label: "সার্চ",
+      to: "/shop",
+      search: { focus: "search" },
+      Icon: Search,
+      match: (p) => p.startsWith("/shop") && isSearchFocus,
+    },
+    {
+      key: "cart",
+      label: "কার্ট",
+      to: "/cart",
+      Icon: ShoppingCart,
+      match: (p) => p.startsWith("/cart"),
+      badge: count,
+    },
+    {
+      key: "shop",
+      label: "শপ",
+      to: "/shop",
+      Icon: Store,
+      match: (p) => p.startsWith("/shop") && !isSearchFocus,
+    },
     { key: "wa", label: "WhatsApp", href: waHref, external: true, Icon: WhatsAppIcon },
   ];
 
-  // Determine active index (skip WhatsApp from active matching)
-  let activeIdx = items.findIndex((it) => it.match?.(pathname));
-  if (activeIdx < 0) activeIdx = 0;
+  const routeIndex = items.findIndex((it) => it.match?.(pathname));
+  const [activeIdx, setActiveIdx] = useState(routeIndex >= 0 ? routeIndex : 0);
+  const activeKey = items[activeIdx]?.key;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const nextIndex = routeIndex >= 0 ? routeIndex : 0;
+
+    // Search shares /shop with Shop. After focusing search, the shop page clears
+    // the temporary URL flag, so keep the clicked Search item active until the
+    // user explicitly taps Shop or another destination.
+    if (pathname.startsWith("/shop") && activeKey === "search" && !isSearchFocus) return;
+
+    setActiveIdx((current) => (current === nextIndex ? current : nextIndex));
+  }, [pathname, routeIndex, isSearchFocus, activeKey]);
+
+  const handleNavClick = (index: number, item: NavItem) => {
+    if (!item.to) return;
+    setActiveIdx(index);
+    navigate({ to: item.to, search: item.search ?? {} });
+  };
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -170,31 +216,52 @@ export function MobileBottomNav() {
                 {!active && (
                   <it.Icon
                     className={`h-5 w-5 ${it.key === "wa" ? "text-emerald-400" : ""}`}
-                    {...({ style: it.key !== "wa" ? { color: "rgba(255,255,255,0.45)" } : undefined } as any)}
+                    style={
+                      it.key !== "wa"
+                        ? ({ color: "rgba(255,255,255,0.45)" } as CSSProperties)
+                        : undefined
+                    }
                   />
                 )}
                 {it.key === "cart" && it.badge && it.badge > 0 ? (
                   <span
                     className="absolute top-2 right-1/2 translate-x-[14px] grid h-4 min-w-4 place-items-center rounded-full px-1 text-[9px] font-bold text-white"
-                    style={{ background: "#FF6B35", boxShadow: "0 0 10px rgba(255,107,53,0.6)" }}
+                    style={{
+                      background: "#FF6B35",
+                      boxShadow: "0 0 10px rgba(255,107,53,0.6)",
+                    }}
                   >
                     {it.badge}
                   </span>
                 ) : null}
               </div>
             );
-            const cls = "flex-1 h-full flex items-center justify-center";
+            const cls =
+              "flex-1 h-full flex items-center justify-center border-0 bg-transparent p-0";
             if (it.external) {
               return (
-                <a key={it.key} href={it.href} target="_blank" rel="noopener noreferrer" className={cls} aria-label={it.label}>
+                <a
+                  key={it.key}
+                  href={it.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cls}
+                  aria-label={it.label}
+                >
                   {content}
                 </a>
               );
             }
             return (
-              <Link key={it.key} to={it.to!} search={(it.search as any) ?? (() => ({}))} className={cls} aria-label={it.label}>
+              <button
+                key={it.key}
+                type="button"
+                onClick={() => handleNavClick(i, it)}
+                className={cls}
+                aria-label={it.label}
+              >
                 {content}
-              </Link>
+              </button>
             );
           })}
         </div>
