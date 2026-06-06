@@ -203,16 +203,35 @@ function ProductPage() {
               <div className="mt-5">
                 <div className="text-xs font-semibold mb-2">ভ্যারিয়েন্ট নির্বাচন করুন</div>
                 <div className="flex flex-wrap gap-2">
-                  {variants.map((v: any) => (
-                    <button
-                      key={v.id}
-                      onClick={() => setVariantId(v.id)}
-                      className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${variantId === v.id ? "bg-gradient-brand text-primary-foreground shadow-glow" : "glass hover:bg-accent"}`}
-                    >
-                      {v.label} · {formatBDT(v.offer_price ?? v.regular_price)}
-                    </button>
-                  ))}
+                  {variants.map((v: any) => {
+                    const vStock = v.stock_quantity;
+                    const vOut = vStock != null && Number(vStock) <= 0;
+                    return (
+                      <button
+                        key={v.id}
+                        onClick={() => setVariantId(v.id)}
+                        disabled={vOut}
+                        className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${variantId === v.id ? "bg-gradient-brand text-primary-foreground shadow-glow" : "glass hover:bg-accent"} disabled:opacity-40 disabled:cursor-not-allowed`}
+                      >
+                        {v.label} · {formatBDT(v.offer_price ?? v.regular_price)}
+                        {vStock != null && (
+                          <span className="ml-1.5 text-[10px] opacity-80">({vOut ? "শেষ" : `${vStock} টি`})</span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
+                {selectedVariant?.stock_quantity != null && Number(selectedVariant.stock_quantity) > 0 && (
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    স্টকে আছে: <span className="font-semibold text-foreground">{selectedVariant.stock_quantity} টি</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!isSubscription && variants.length === 0 && productStock != null && Number(productStock) > 0 && (
+              <div className="mt-3 text-xs text-muted-foreground">
+                স্টকে আছে: <span className="font-semibold text-foreground">{productStock} টি</span>
               </div>
             )}
 
