@@ -328,8 +328,12 @@ function HomePage() {
         );
       })()}
 
+      <BundleOffers />
+      <TestimonialsHighlight />
+
       {/* HOW TO BUY */}
       <section className="mx-auto max-w-5xl px-4 sm:px-6 pb-16">
+
         <div className="text-center mb-8">
           <div className="text-xs text-primary font-bold uppercase tracking-wider">🛒 গাইড</div>
           <h2 className="mt-2 font-display font-bold text-3xl sm:text-4xl">
