@@ -67,6 +67,8 @@ function RegisterPage() {
     }
 
     setStep("otp");
+    setOtp("");
+    setResendIn(60);
     setInfo("📧 আপনার ইমেইলে ৬-সংখ্যার কোড পাঠানো হয়েছে। ইনবক্স/স্প্যাম চেক করুন।");
   }
 
