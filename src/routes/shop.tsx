@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { categoriesQuery, productsQuery } from "@/lib/storefront";
 import { ProductCard, EmptyState } from "@/components/storefront/ProductCard";
@@ -8,6 +8,9 @@ import { ProductCard, EmptyState } from "@/components/storefront/ProductCard";
 type SortKey = "new" | "best" | "price_asc" | "price_desc";
 
 export const Route = createFileRoute("/shop")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    focus: typeof s.focus === "string" ? s.focus : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "শপ — DDS-Digital" },
@@ -28,6 +31,17 @@ function ShopPage() {
   const [mobileFilters, setMobileFilters] = useState(false);
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const { focus } = Route.useSearch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (focus === "search") {
+      setMobileFilters(true);
+      setTimeout(() => searchInputRef.current?.focus(), 150);
+      navigate({ to: "/shop", search: {}, replace: true });
+    }
+  }, [focus, navigate]);
   const [badge, setBadge] = useState<"new" | "best" | "featured" | null>(null);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [minRating, setMinRating] = useState<number>(0);
@@ -132,6 +146,7 @@ function ShopPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
+                ref={searchInputRef}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="প্রোডাক্ট খুঁজুন..."
