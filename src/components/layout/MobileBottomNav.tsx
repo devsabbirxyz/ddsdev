@@ -126,27 +126,33 @@ export function MobileBottomNav() {
           />
         </svg>
 
-        {/* Floating active circle */}
+        {/* Floating active circle — persistent element, animates via transform */}
         <div
-          className="absolute top-0 z-10"
+          className="absolute top-0 left-0 z-10"
           style={{
-            left: cx - 26,
-            transform: "translateY(-22px)",
-            transition: "left 300ms cubic-bezier(0.4,0,0.2,1)",
+            width: 52,
+            height: 52,
+            transform: `translate3d(${cx - 26}px, -22px, 0)`,
+            transition: "transform 300ms cubic-bezier(0.4,0,0.2,1)",
+            willChange: "transform",
           }}
         >
           <div
-            key={activeIdx}
-            className="grid place-items-center h-[52px] w-[52px] rounded-full text-white animate-[bn-pop_400ms_cubic-bezier(0.4,0,0.2,1)]"
+            className="grid place-items-center h-[52px] w-[52px] rounded-full text-white"
             style={{
               background: "linear-gradient(135deg, #FF6B35, #7B2FBE)",
               boxShadow: "0 8px 24px rgba(255,107,53,0.45), 0 0 0 4px rgba(13,13,26,0.85)",
             }}
           >
-            {(() => {
-              const Active = items[activeIdx].Icon;
-              return <Active className="h-6 w-6" />;
-            })()}
+            <div
+              key={activeIdx}
+              className="animate-[bn-pop_400ms_cubic-bezier(0.4,0,0.2,1)] grid place-items-center"
+            >
+              {(() => {
+                const Active = items[activeIdx].Icon;
+                return <Active className="h-6 w-6" />;
+              })()}
+            </div>
           </div>
         </div>
 
