@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { CheckCircle2, Tag, Loader2, Copy, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -83,6 +83,12 @@ function CheckoutPage() {
   const [redeemPoints, setRedeemPoints] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
+
+  // Sync email once the user object loads
+  useEffect(() => {
+    if (user?.email && !email) setEmail(user.email);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.email]);
 
   const validateInfo = (): boolean => {
     const defs = [
