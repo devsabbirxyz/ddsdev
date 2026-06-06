@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { categoriesQuery, productsQuery } from "@/lib/storefront";
 import { ProductCard, EmptyState } from "@/components/storefront/ProductCard";
@@ -8,6 +8,9 @@ import { ProductCard, EmptyState } from "@/components/storefront/ProductCard";
 type SortKey = "new" | "best" | "price_asc" | "price_desc";
 
 export const Route = createFileRoute("/shop")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    focus: typeof s.focus === "string" ? s.focus : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "শপ — DDS-Digital" },
