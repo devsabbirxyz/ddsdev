@@ -143,32 +143,71 @@ function RegisterPage() {
           </button>
         </form>
       ) : (
-        <form onSubmit={handleVerify} className="space-y-4">
-          {info && <p className="text-sm text-emerald-200">{info}</p>}
-          <Field
-            label="৬-সংখ্যার ভেরিফিকেশন কোড"
-            value={otp}
-            onChange={(v) => setOtp(v.replace(/\D/g, "").slice(0, 6))}
-            required
-            autoComplete="one-time-code"
-          />
-          {error && <p className="text-sm text-red-300">{error}</p>}
+        <form onSubmit={handleVerify} className="space-y-5">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-purple-500/20 border border-white/10">
+              <MailCheck className="h-7 w-7 text-orange-300" />
+            </div>
+            <p className="text-sm text-white/90">কোড পাঠানো হয়েছে</p>
+            <p className="text-xs text-white/60 break-all">{email}</p>
+          </div>
+
+          {info && <p className="text-center text-xs text-emerald-200">{info}</p>}
+
+          <div className="flex justify-center">
+            <InputOTP
+              maxLength={6}
+              value={otp}
+              onChange={(v) => setOtp(v.replace(/\D/g, "").slice(0, 6))}
+              autoFocus
+              containerClassName="gap-2"
+            >
+              <InputOTPGroup className="gap-2">
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <InputOTPSlot
+                    key={i}
+                    index={i}
+                    className="h-14 w-12 rounded-xl border-2 border-white/10 bg-[#0D0D1A]/80 text-2xl font-bold text-white shadow-none first:rounded-xl last:rounded-xl data-[active=true]:border-[#FF6B35] data-[active=true]:ring-2 data-[active=true]:ring-[#FF6B35]/30"
+                  />
+                ))}
+              </InputOTPGroup>
+            </InputOTP>
+          </div>
+
+          {error && <p className="text-center text-sm text-red-300">{error}</p>}
+
           <button
             type="submit"
             disabled={loading || otp.length < 6}
-            className="w-full rounded-2xl bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 px-4 py-3.5 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(168,85,247,0.7)] hover:scale-[1.02] transition disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2 border border-white/20"
+            className="w-full rounded-2xl bg-gradient-to-r from-[#FF6B35] to-[#7B2FBE] px-4 py-3.5 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(255,107,53,0.7)] hover:scale-[1.02] transition disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2 border border-white/20"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             ভেরিফাই করুন
           </button>
-          <div className="flex items-center justify-between text-xs text-white/80">
-            <button type="button" onClick={() => setStep("form")} className="hover:text-white">
-              ← ইমেইল বদলান
-            </button>
-            <button type="button" onClick={resendOtp} disabled={loading} className="hover:text-white disabled:opacity-60">
-              কোড আবার পাঠান
-            </button>
+
+          <div className="text-center text-xs text-white/70">
+            কোড পাননি?{" "}
+            {resendIn > 0 ? (
+              <span className="text-white/50">পুনরায় পাঠান ({resendIn}s)</span>
+            ) : (
+              <button
+                type="button"
+                onClick={resendOtp}
+                disabled={loading}
+                className="font-semibold text-[#FF6B35] hover:text-orange-300 disabled:opacity-60"
+              >
+                পুনরায় পাঠান
+              </button>
+            )}
           </div>
+
+          <button
+            type="button"
+            onClick={() => setStep("form")}
+            className="block w-full text-center text-xs text-white/60 hover:text-white"
+          >
+            ← ইমেইল বদলান
+          </button>
         </form>
       )}
       <div className="mt-5 text-center text-xs">
