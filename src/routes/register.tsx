@@ -108,6 +108,7 @@ function RegisterPage() {
   }
 
   async function resendOtp() {
+    if (resendIn > 0) return;
     setError(null);
     setInfo(null);
     setLoading(true);
@@ -117,6 +118,7 @@ function RegisterPage() {
       setError(resendError.message);
       return;
     }
+    setResendIn(60);
     setInfo("📧 নতুন কোড পাঠানো হয়েছে।");
   }
 
