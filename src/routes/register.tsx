@@ -40,6 +40,9 @@ function RegisterPage() {
     const t = setInterval(() => setResendIn((s) => (s > 0 ? s - 1 : 0)), 1000);
     return () => clearInterval(t);
   }, [resendIn]);
+
+  async function handleSignup(e: FormEvent) {
+    e.preventDefault();
     setError(null);
     setInfo(null);
     setLoading(true);
