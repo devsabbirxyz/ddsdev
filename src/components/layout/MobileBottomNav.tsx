@@ -89,8 +89,10 @@ export function MobileBottomNav() {
   const containerRef = useRef<HTMLDivElement>(null);
   const circleRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
+  const [navReady, setNavReady] = useState(false);
   const lastClickTimeRef = useRef(0);
   const activeIdxRef = useRef(activeIdx);
+  const initTimerRef = useRef<number | null>(null);
 
   // Keep ref in sync with state so route-sync effect always sees latest value
   useEffect(() => {
@@ -101,11 +103,24 @@ export function MobileBottomNav() {
   useEffect(() => {
     if (!containerRef.current) return;
     const ro = new ResizeObserver((entries) => {
-      for (const e of entries) setWidth(e.contentRect.width);
+      for (const e of entries) {
+        const nextWidth = e.contentRect.width;
+        if (nextWidth > 0) {
+          setWidth(nextWidth);
+          setNavReady((ready) => ready || true);
+        }
+      }
     });
     ro.observe(containerRef.current);
-    setWidth(containerRef.current.offsetWidth);
-    return () => ro.disconnect();
+    const initialWidth = containerRef.current.offsetWidth;
+    if (initialWidth > 0) {
+      setWidth(initialWidth);
+      initTimerRef.current = window.setTimeout(() => setNavReady(true), 80);
+    }
+    return () => {
+      ro.disconnect();
+      if (initTimerRef.current !== null) window.clearTimeout(initTimerRef.current);
+    };
   }, []);
 
   // Animate circle from one tab index to another using direct DOM reflow
@@ -215,7 +230,7 @@ export function MobileBottomNav() {
             fill="rgba(13,13,26,0.85)"
             stroke="url(#bn-stroke)"
             strokeWidth="1"
-            style={{ transition: "d 300ms cubic-bezier(0.4,0,0.2,1)" }}
+            style={{ transition: navReady ? "d 300ms cubic-bezier(0.4,0,0.2,1)" : "none" }}
           />
         </svg>
 
@@ -227,7 +242,7 @@ export function MobileBottomNav() {
             width: 52,
             height: 52,
             transform: `translate3d(${cx - 26}px, -22px, 0)`,
-            transition: width > 0 ? "transform 300ms cubic-bezier(0.4,0,0.2,1)" : "none",
+            transition: navReady ? "transform 300ms cubic-bezier(0.4,0,0.2,1)" : "none",
             willChange: "transform",
             visibility: width > 0 ? "visible" : "hidden",
           }}
