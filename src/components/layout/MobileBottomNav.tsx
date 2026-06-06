@@ -84,8 +84,9 @@ export function MobileBottomNav() {
   }, [pathname, routeIndex, isSearchFocus, activeKey]);
 
   const handleNavClick = (index: number, item: NavItem) => {
+    if (!item.to) return;
     setActiveIdx(index);
-    navigate({ to: item.to as any, search: (item.search as any) ?? {} });
+    navigate({ to: item.to, search: item.search ?? {} });
   };
 
   useEffect(() => {
@@ -207,13 +208,18 @@ export function MobileBottomNav() {
                 {!active && (
                   <it.Icon
                     className={`h-5 w-5 ${it.key === "wa" ? "text-emerald-400" : ""}`}
-                    {...({ style: it.key !== "wa" ? { color: "rgba(255,255,255,0.45)" } : undefined } as any)}
+                    style={
+                      it.key !== "wa" ? ({ color: "rgba(255,255,255,0.45)" } as CSSProperties) : undefined
+                    }
                   />
                 )}
                 {it.key === "cart" && it.badge && it.badge > 0 ? (
                   <span
                     className="absolute top-2 right-1/2 translate-x-[14px] grid h-4 min-w-4 place-items-center rounded-full px-1 text-[9px] font-bold text-white"
-                    style={{ background: "#FF6B35", boxShadow: "0 0 10px rgba(255,107,53,0.6)" }}
+                    style={{
+                      background: "#FF6B35",
+                      boxShadow: "0 0 10px rgba(255,107,53,0.6)",
+                    }}
                   >
                     {it.badge}
                   </span>
@@ -223,13 +229,26 @@ export function MobileBottomNav() {
             const cls = "flex-1 h-full flex items-center justify-center border-0 bg-transparent p-0";
             if (it.external) {
               return (
-                <a key={it.key} href={it.href} target="_blank" rel="noopener noreferrer" className={cls} aria-label={it.label}>
+                <a
+                  key={it.key}
+                  href={it.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cls}
+                  aria-label={it.label}
+                >
                   {content}
                 </a>
               );
             }
             return (
-              <button key={it.key} type="button" onClick={() => handleNavClick(i, it)} className={cls} aria-label={it.label}>
+              <button
+                key={it.key}
+                type="button"
+                onClick={() => handleNavClick(i, it)}
+                className={cls}
+                aria-label={it.label}
+              >
                 {content}
               </button>
             );
