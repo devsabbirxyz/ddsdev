@@ -12,6 +12,7 @@ import { useCart } from "@/lib/cart";
 import { siteSettingsQuery } from "@/lib/site-settings";
 
 type NavItem = {
+  search?: Record<string, unknown>;
   key: string;
   label: string;
   to?: string;
