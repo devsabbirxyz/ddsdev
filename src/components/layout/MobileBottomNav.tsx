@@ -107,6 +107,9 @@ export function MobileBottomNav() {
         const nextWidth = e.contentRect.width;
         if (nextWidth > 0) {
           setWidth(nextWidth);
+          if (initTimerRef.current === null) {
+            initTimerRef.current = window.setTimeout(() => setNavReady(true), 160);
+          }
         }
       }
     });
@@ -114,7 +117,9 @@ export function MobileBottomNav() {
     const initialWidth = containerRef.current.offsetWidth;
     if (initialWidth > 0) {
       setWidth(initialWidth);
-      initTimerRef.current = window.setTimeout(() => setNavReady(true), 160);
+      if (initTimerRef.current === null) {
+        initTimerRef.current = window.setTimeout(() => setNavReady(true), 160);
+      }
     }
     return () => {
       ro.disconnect();
