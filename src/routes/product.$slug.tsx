@@ -73,10 +73,17 @@ function ProductPage() {
   const variants = (product.product_variants ?? []).filter((v: any) => v.is_active);
   const selectedVariant = variants.find((v: any) => v.id === variantId);
   const selectedPlan = plans.find((p) => p.id === planId);
-  const price = isSubscription && selectedPlan
+  const unitRegular = isSubscription && selectedPlan
     ? Number(selectedPlan.price)
-    : (selectedVariant?.offer_price ?? selectedVariant?.regular_price ?? product.offer_price ?? product.regular_price);
-  const hasDiscount = !isSubscription && product.offer_price != null && product.regular_price != null && product.offer_price < product.regular_price;
+    : (selectedVariant?.regular_price ?? product.regular_price ?? selectedVariant?.offer_price ?? product.offer_price);
+  const unitOffer = isSubscription && selectedPlan
+    ? Number(selectedPlan.price)
+    : (selectedVariant?.offer_price ?? product.offer_price ?? selectedVariant?.regular_price ?? product.regular_price);
+  const unitPrice = unitOffer ?? unitRegular;
+  const qtyMul = isSubscription ? 1 : qty;
+  const price = Number(unitPrice ?? 0) * qtyMul;
+  const regularTotal = Number(unitRegular ?? 0) * qtyMul;
+  const hasDiscount = !isSubscription && unitOffer != null && unitRegular != null && Number(unitOffer) < Number(unitRegular);
 
   // Out-of-stock detection
   const trackStock = !!(product as any).track_stock;
