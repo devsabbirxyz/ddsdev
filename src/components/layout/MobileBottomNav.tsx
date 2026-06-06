@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Home, Search, ShoppingCart, Store } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 32 32" className={className} fill="currentColor" aria-hidden="true">
@@ -10,87 +11,191 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
 import { useCart } from "@/lib/cart";
 import { siteSettingsQuery } from "@/lib/site-settings";
 
+type NavItem = {
+  key: string;
+  label: string;
+  to?: string;
+  href?: string;
+  external?: boolean;
+  match?: (path: string) => boolean;
+  Icon: React.ComponentType<{ className?: string }>;
+  badge?: number;
+};
+
 export function MobileBottomNav() {
   const { count } = useCart();
   const { data: s } = useQuery(siteSettingsQuery);
   const pathname = useRouterState({ select: (st) => st.location.pathname });
 
   const wa = (s?.whatsapp_number || "").replace(/[^0-9]/g, "");
-  const waHref = wa ? `https://wa.me/${wa}?text=${encodeURIComponent("আসসালামু আলাইকুম, আমি একটা প্রোডাক্ট সম্পর্কে জানতে চাই।")}` : "#";
+  const waHref = wa
+    ? `https://wa.me/${wa}?text=${encodeURIComponent("আসসালামু আলাইকুম, আমি একটা প্রোডাক্ট সম্পর্কে জানতে চাই।")}`
+    : "#";
 
-  const isActive = (to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
+  const items: NavItem[] = [
+    { key: "home", label: "হোম", to: "/", Icon: Home, match: (p) => p === "/" },
+    { key: "search", label: "সার্চ", to: "/shop", Icon: Search, match: (p) => p === "/shop" },
+    { key: "cart", label: "কার্ট", to: "/cart", Icon: ShoppingCart, match: (p) => p.startsWith("/cart"), badge: count },
+    { key: "shop", label: "শপ", to: "/shop", Icon: Store, match: (p) => p.startsWith("/shop") },
+    { key: "wa", label: "WhatsApp", href: waHref, external: true, Icon: WhatsAppIcon },
+  ];
 
-  const itemCls = "flex-1 flex flex-col items-center justify-center gap-1 py-1.5 text-[10px] font-medium transition";
+  // Determine active index (skip WhatsApp from active matching)
+  let activeIdx = items.findIndex((it) => it.match?.(pathname));
+  if (activeIdx < 0) activeIdx = 0;
 
-  const IconTile = ({
-    active,
-    children,
-    accent = "primary",
-  }: {
-    active: boolean;
-    children: React.ReactNode;
-    accent?: "primary" | "emerald";
-  }) => {
-    const ring =
-      accent === "emerald"
-        ? "border-emerald-400/50 shadow-[0_0_18px_-2px_rgba(16,185,129,0.55),inset_0_0_10px_rgba(16,185,129,0.18)]"
-        : active
-          ? "border-primary/70 shadow-[0_0_22px_-2px_color-mix(in_oklab,var(--primary)_70%,transparent),inset_0_0_12px_color-mix(in_oklab,var(--primary)_25%,transparent)]"
-          : "border-white/15 shadow-[0_0_14px_-4px_color-mix(in_oklab,var(--primary)_45%,transparent),inset_0_0_8px_rgba(255,255,255,0.06)]";
-    return (
-      <div
-        className={`relative grid h-10 w-10 place-items-center rounded-2xl border bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md ${ring} transition`}
-      >
-        {children}
-      </div>
-    );
-  };
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const e of entries) setWidth(e.contentRect.width);
+    });
+    ro.observe(containerRef.current);
+    setWidth(containerRef.current.offsetWidth);
+    return () => ro.disconnect();
+  }, []);
+
+  const N = items.length;
+  const slotW = width / N;
+  const cx = slotW * (activeIdx + 0.5);
+  const barH = 64;
+  const dipR = 34; // dip radius
+  const dipDepth = 22;
+
+  // Build SVG path for bar with curved dip centered at cx
+  const path = (() => {
+    const w = width || 100;
+    const h = barH;
+    const r = 24; // corner radius
+    const dipHalf = dipR + 6;
+    const left = cx - dipHalf;
+    const right = cx + dipHalf;
+    return [
+      `M ${r} 0`,
+      `L ${left} 0`,
+      // dip: cubic to center bottom of arc, then back up
+      `C ${left + 10} 0, ${cx - dipR} ${dipDepth}, ${cx} ${dipDepth}`,
+      `C ${cx + dipR} ${dipDepth}, ${right - 10} 0, ${right} 0`,
+      `L ${w - r} 0`,
+      `Q ${w} 0 ${w} ${r}`,
+      `L ${w} ${h - r}`,
+      `Q ${w} ${h} ${w - r} ${h}`,
+      `L ${r} ${h}`,
+      `Q 0 ${h} 0 ${h - r}`,
+      `L 0 ${r}`,
+      `Q 0 0 ${r} 0 Z`,
+    ].join(" ");
+  })();
 
   return (
-    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 glass border-t border-glass-border pb-[env(safe-area-inset-bottom)]">
-      <div className="flex items-stretch">
-        <Link to="/" className={`${itemCls} ${isActive("/") ? "text-primary" : "text-foreground/70"}`}>
-          <IconTile active={isActive("/")}>
-            <Home className="h-5 w-5" />
-          </IconTile>
-          <span>হোম</span>
-        </Link>
-        <Link to="/shop" className={`${itemCls} ${pathname === "/shop" ? "text-primary" : "text-foreground/70"}`}>
-          <IconTile active={false}>
-            <Search className="h-5 w-5" />
-          </IconTile>
-          <span>সার্চ</span>
-        </Link>
-        <Link to="/cart" className={`${itemCls} ${isActive("/cart") ? "text-primary" : "text-foreground/70"}`}>
-          <IconTile active={isActive("/cart")}>
-            <ShoppingCart className="h-5 w-5" />
-            {count > 0 && (
-              <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground shadow-glow">
-                {count}
-              </span>
-            )}
-          </IconTile>
-          <span>কার্ট</span>
-        </Link>
-        <Link to="/shop" className={`${itemCls} ${isActive("/shop") ? "text-primary" : "text-foreground/70"}`}>
-          <IconTile active={isActive("/shop")}>
-            <Store className="h-5 w-5" />
-          </IconTile>
-          <span>শপ</span>
-        </Link>
-        <a
-          href={waHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`${itemCls} text-emerald-400`}
-          aria-label="WhatsApp"
+    <nav
+      className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-3 pointer-events-none"
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)" }}
+    >
+      <div
+        ref={containerRef}
+        className="relative pointer-events-auto"
+        style={{
+          height: barH,
+          filter: "drop-shadow(0 -4px 30px rgba(123,47,190,0.25))",
+        }}
+      >
+        {/* SVG bar with curved dip */}
+        <svg
+          width="100%"
+          height={barH}
+          viewBox={`0 0 ${width || 100} ${barH}`}
+          preserveAspectRatio="none"
+          className="absolute inset-0 block"
+          style={{ overflow: "visible" }}
         >
-          <IconTile active={false} accent="emerald">
-            <WhatsAppIcon className="h-5 w-5 text-emerald-400" />
-          </IconTile>
-          <span>WhatsApp</span>
-        </a>
+          <defs>
+            <linearGradient id="bn-stroke" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="rgba(255,255,255,0.14)" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0.04)" />
+            </linearGradient>
+          </defs>
+          <path
+            d={path}
+            fill="rgba(13,13,26,0.85)"
+            stroke="url(#bn-stroke)"
+            strokeWidth="1"
+            style={{ transition: "d 300ms cubic-bezier(0.4,0,0.2,1)" }}
+          />
+        </svg>
+
+        {/* Floating active circle */}
+        <div
+          className="absolute top-0 z-10"
+          style={{
+            left: cx - 26,
+            transform: "translateY(-22px)",
+            transition: "left 300ms cubic-bezier(0.4,0,0.2,1)",
+          }}
+        >
+          <div
+            key={activeIdx}
+            className="grid place-items-center h-[52px] w-[52px] rounded-full text-white animate-[bn-pop_400ms_cubic-bezier(0.4,0,0.2,1)]"
+            style={{
+              background: "linear-gradient(135deg, #FF6B35, #7B2FBE)",
+              boxShadow: "0 8px 24px rgba(255,107,53,0.45), 0 0 0 4px rgba(13,13,26,0.85)",
+            }}
+          >
+            {(() => {
+              const Active = items[activeIdx].Icon;
+              return <Active className="h-6 w-6" />;
+            })()}
+          </div>
+        </div>
+
+        {/* Items row */}
+        <div className="absolute inset-0 flex items-center">
+          {items.map((it, i) => {
+            const active = i === activeIdx;
+            const content = (
+              <div className="relative flex flex-col items-center justify-center w-full h-full">
+                {!active && (
+                  <it.Icon
+                    className={`h-5 w-5 ${it.key === "wa" ? "text-emerald-400" : ""}`}
+                    {...({ style: it.key !== "wa" ? { color: "rgba(255,255,255,0.45)" } : undefined } as any)}
+                  />
+                )}
+                {it.key === "cart" && it.badge && it.badge > 0 ? (
+                  <span
+                    className="absolute top-2 right-1/2 translate-x-[14px] grid h-4 min-w-4 place-items-center rounded-full px-1 text-[9px] font-bold text-white"
+                    style={{ background: "#FF6B35", boxShadow: "0 0 10px rgba(255,107,53,0.6)" }}
+                  >
+                    {it.badge}
+                  </span>
+                ) : null}
+              </div>
+            );
+            const cls = "flex-1 h-full flex items-center justify-center";
+            if (it.external) {
+              return (
+                <a key={it.key} href={it.href} target="_blank" rel="noopener noreferrer" className={cls} aria-label={it.label}>
+                  {content}
+                </a>
+              );
+            }
+            return (
+              <Link key={it.key} to={it.to!} className={cls} aria-label={it.label}>
+                {content}
+              </Link>
+            );
+          })}
+        </div>
       </div>
+
+      <style>{`
+        @keyframes bn-pop {
+          0% { transform: scale(0.8); }
+          60% { transform: scale(1.1); }
+          100% { transform: scale(1); }
+        }
+      `}</style>
     </nav>
   );
 }
