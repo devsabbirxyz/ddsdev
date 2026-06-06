@@ -14,7 +14,7 @@ const PlaceOrderSchema = z.object({
   items: z.array(ItemSchema).min(1).max(50),
   customer: z.object({
     name: z.string().trim().min(1).max(200),
-    email: z.string().trim().email().max(255),
+    email: z.string().trim().max(255).optional().nullable(),
     phone: z.string().trim().min(3).max(40),
     input: z.string().trim().max(2000).optional().nullable(),
   }),
@@ -28,7 +28,11 @@ export const placeOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) => PlaceOrderSchema.parse(i))
   .handler(async ({ data, context }) => {
-    const { userId } = context as { userId: string };
+    const { userId, claims } = context as { userId: string; claims?: { email?: string } };
+    const customerEmail = (data.customer.email || claims?.email || "").trim();
+    if (!z.string().email().safeParse(customerEmail).success) {
+      throw new Error("সঠিক ইমেইল দিন");
+    }
 
     // 1) Load products + variants from DB (authoritative prices)
     const productIds = Array.from(new Set(data.items.map((i) => i.productId)));
@@ -249,7 +253,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       offer_price: l.unitPrice,
       total_price: Math.max(0, l.unitPrice * l.quantity - perItemDiscount - perItemWallet),
       customer_name: data.customer.name,
-      customer_email: data.customer.email,
+      customer_email: customerEmail,
       customer_phone: data.customer.phone,
       customer_input: data.customer.input || null,
       payment_method: pm.name,
@@ -345,7 +349,7 @@ export const placeOrder = createServerFn({ method: "POST" })
             // placeholder expiry — trigger overwrites on payment
             expires_at: new Date().toISOString(),
             customer_name: data.customer.name,
-            customer_email: data.customer.email,
+            customer_email: customerEmail,
             customer_phone: data.customer.phone,
             customer_input: data.customer.input || null,
             payment_method: pm.name,
