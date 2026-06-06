@@ -132,13 +132,14 @@ export function MobileBottomNav() {
 
         {/* Floating active circle — persistent element, animates via transform */}
         <div
-          className="absolute top-0 left-0 z-10"
+          className="absolute top-0 left-0 z-10 pointer-events-none"
           style={{
             width: 52,
             height: 52,
             transform: `translate3d(${cx - 26}px, -22px, 0)`,
-            transition: "transform 300ms cubic-bezier(0.4,0,0.2,1)",
+            transition: width > 0 ? "transform 300ms cubic-bezier(0.4,0,0.2,1)" : "none",
             willChange: "transform",
+            visibility: width > 0 ? "visible" : "hidden",
           }}
         >
           <div
