@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
-import { Loader2 } from "lucide-react";
+import { useState, useEffect, type FormEvent } from "react";
+import { Loader2, MailCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { notifyNewSignupServer } from "@/lib/telegram.functions";
 import { AuthShell, Field } from "@/routes/login";
 
