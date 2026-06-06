@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Eye, Layers, ArrowUpRight, Zap } from "lucide-react";
+import { Eye, Layers, ArrowUpRight, Zap, GitCompareArrows } from "lucide-react";
+import { toast } from "sonner";
 import { formatBDT } from "@/lib/storefront";
+import { useCompare } from "@/lib/compare";
 import { SmartImage } from "./SmartImage";
 
 export interface ProductCardData {
@@ -28,6 +30,8 @@ export interface ProductCardData {
 export function ProductCard({ p }: { p: ProductCardData }) {
   const price = p.offer_price ?? p.regular_price;
   const hasDiscount = p.offer_price != null && p.regular_price != null && p.offer_price < p.regular_price;
+  const { has: inCompare, toggle: toggleCompare, setOpen: openCompare } = useCompare();
+  const compared = inCompare(p.id);
 
   const activeVariants = (p.product_variants ?? []).filter((v) => v.is_active);
   const isVariant = !!p.is_variant && activeVariants.length > 0;
@@ -108,13 +112,46 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           <Eye className="h-3 w-3" /> {views}
         </span>
 
-        {/* seller avatar top-right */}
-        <div className="absolute top-3 right-3 h-9 w-9 rounded-full overflow-hidden border-2 border-background/80 shadow-lg bg-gradient-brand grid place-items-center text-[10px] font-bold text-primary-foreground">
-          {sellerLogo ? (
-            <img src={sellerLogo} alt={sellerName ?? "seller"} className="h-full w-full object-cover" />
-          ) : (
-            initials
-          )}
+        {/* seller avatar + compare toggle top-right */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const res = toggleCompare({
+                id: p.id,
+                slug: p.slug,
+                title: p.title,
+                image: mainImage,
+                price: p.offer_price ?? p.regular_price ?? null,
+                regularPrice: p.regular_price ?? null,
+                rating: p.average_rating ?? null,
+                totalReviews: p.total_reviews ?? null,
+                stockQuantity: p.stock_quantity ?? null,
+                trackStock: p.track_stock ?? null,
+                sellerName: p.sellers?.store_name ?? null,
+                shortDescription: p.short_description ?? null,
+              });
+              if (res.reason) toast.error(res.reason);
+              else if (res.added) {
+                toast.success("তুলনায় যোগ হয়েছে", {
+                  action: { label: "দেখুন", onClick: () => openCompare(true) },
+                });
+              } else toast("তুলনা থেকে সরানো হয়েছে");
+            }}
+            aria-label={compared ? "Remove from compare" : "Add to compare"}
+            className={`grid h-8 w-8 place-items-center rounded-full border-2 border-background/80 shadow-lg transition ${compared ? "bg-gradient-brand text-primary-foreground" : "bg-background/80 backdrop-blur text-foreground hover:bg-primary/20"}`}
+          >
+            <GitCompareArrows className="h-3.5 w-3.5" />
+          </button>
+          <div className="h-9 w-9 rounded-full overflow-hidden border-2 border-background/80 shadow-lg bg-gradient-brand grid place-items-center text-[10px] font-bold text-primary-foreground">
+            {sellerLogo ? (
+              <img src={sellerLogo} alt={sellerName ?? "seller"} className="h-full w-full object-cover" />
+            ) : (
+              initials
+            )}
+          </div>
         </div>
       </div>
 
