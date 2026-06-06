@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { notifyNewSignupServer } from "@/lib/telegram.functions";
-import { AuthShell, Field } from "@/routes/login";
+import { AuthShell, Field } from "@/components/auth/AuthShell";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
