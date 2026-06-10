@@ -105,7 +105,7 @@ function HomePage() {
         <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-primary/30 blur-[120px] pointer-events-none" />
         <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-secondary/30 blur-[120px] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 pt-8 pb-28 text-center">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 pt-8 pb-12 text-center">
           <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium">
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             {heroBadge}
