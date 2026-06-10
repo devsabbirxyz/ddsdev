@@ -11,7 +11,7 @@ export function FreeGiftBanner() {
   const unlocked = remaining === 0 && subtotal > 0;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-3">
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
       <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/15 via-secondary/15 to-primary/15 backdrop-blur-xl px-4 py-2.5 shadow-glow">
         <div className="relative flex items-center gap-2.5">
           <div className="grid h-7 w-7 place-items-center rounded-lg bg-gradient-brand text-primary-foreground shrink-0">
