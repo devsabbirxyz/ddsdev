@@ -21,20 +21,9 @@ export function OfferBannerSlider() {
   }
 
   if (slides.length === 0) {
-    return (
-      <div className="mt-8 w-full rounded-3xl overflow-hidden border border-glass-border aspect-[4/3] sm:aspect-[16/6] relative bg-gradient-to-br from-primary/30 via-primary/10 to-accent/30">
-        <div className="absolute inset-0 grid place-items-center text-center px-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-background/40 backdrop-blur-sm border border-glass-border text-xs font-semibold">
-              <Sparkles className="h-3.5 w-3.5" /> বিশেষ অফার
-            </div>
-            <h3 className="font-display font-bold text-2xl md:text-4xl">সেরা ডিল ও অফার</h3>
-            <p className="text-sm md:text-base text-muted-foreground">আপনার পছন্দের প্রোডাক্টে বিশাল ছাড়</p>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
+
 
   return (
     <div className="mt-8 w-full overflow-hidden rounded-3xl border border-glass-border" ref={emblaRef}>
