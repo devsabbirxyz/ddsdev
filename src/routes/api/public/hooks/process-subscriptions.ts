@@ -12,13 +12,13 @@ export const Route = createFileRoute("/api/public/hooks/process-subscriptions")(
   server: {
     handlers: {
       POST: async ({ request }) => {
-        // Require Supabase anon/publishable apikey to invoke (matches pg_cron pattern).
-        const apiKey = request.headers.get("apikey") || request.headers.get("x-api-key");
-        const expected =
-          process.env.SUPABASE_ANON_KEY ||
-          process.env.SUPABASE_PUBLISHABLE_KEY ||
-          process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-        if (!apiKey || !expected || apiKey !== expected) {
+        // Require a server-only CRON_SECRET (never expose to the client).
+        const apiKey = request.headers.get("x-cron-secret") || request.headers.get("x-api-key");
+        const expected = process.env.CRON_SECRET;
+        if (!expected) {
+          return new Response("Server misconfigured: CRON_SECRET not set", { status: 500 });
+        }
+        if (!apiKey || apiKey !== expected) {
           return new Response("Unauthorized", { status: 401 });
         }
         const now = new Date();
