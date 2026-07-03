@@ -1,32 +1,47 @@
-## লক্ষ্য
+# Refined Dark Theme (Option A)
 
-User signup করার সময় email এ confirmation **link** এর বদলে **6-digit OTP code** যাবে। User সেই code একটা verify page এ enter করে account activate করবে।
+DDS-Digital সাইটের color scheme আরো clean, trustworthy আর marketplace-friendly করা হবে। শুধু `src/styles.css`-এর color tokens বদলাবো — component code-এ কোনো হাত দিতে হবে না, কারণ সব জায়গায় semantic tokens (`bg-primary`, `text-secondary` ইত্যাদি) use করা আছে।
 
-## পরিবর্তন
+## যা বদলাবে
 
-### 1. Supabase Auth template
-- Supabase এর "Confirm signup" email template এ `{{ .ConfirmationURL }}` এর বদলে `{{ .Token }}` ব্যবহার করতে হবে — যাতে email এ 6-digit code পাঠায়।
-- এটা Lovable Cloud → Users → Auth Settings → Email Templates থেকে manual এ change করতে হবে (Lovable এর default template এই এক click setup নেই)। আমি exact steps দিয়ে দিব।
+**Dark theme (default):**
+- Background: `#050014` (heavy purple tint) → `#0A0A15` (neutral deep dark)
+- Card/surface: purple tint বাদ দিয়ে neutral slate
+- Primary: neon purple `#8A2BE2` → **Electric Blue `#3B82F6`** (Stripe/Linear/Vercel-এর মত trust color)
+- Primary glow: brighter blue `#60A5FA`
+- Secondary: pink `#E056FD` → **Cyan `#06B6D4`** (subtle accent, শুধু hover/CTA-তে pop করবে)
+- Border/ring: blue-tinted, purple না
+- Gradient brand: blue → cyan (আগে ছিল purple → pink)
 
-### 2. Signup flow (frontend)
-- বর্তমান signup page এ `supabase.auth.signUp()` call করার পর success হলে user কে নতুন `/verify-otp` page এ redirect করব, email টা query param/state এ পাঠিয়ে।
+**Light theme:**
+- একই দিকে সরানো হবে — blue primary, cyan secondary, neutral background
 
-### 3. নতুন page: `/verify-otp`
-- একটা 6-digit OTP input (shadcn `InputOTP` component)
-- "Verify" button → `supabase.auth.verifyOtp({ email, token, type: 'signup' })` call করবে
-- Success হলে user logged-in হয়ে home এ redirect হবে
-- "Resend code" button → `supabase.auth.resend({ type: 'signup', email })`
-- Error handling (wrong code, expired code)
+**Admin theme:**
+- অপরিবর্তিত (teal/emerald ঠিক আছে, admin-এর আলাদা identity)
 
-### 4. Route file
-- `src/routes/verify-otp.tsx` (public route, SSR safe)
+## যা বদলাবে না
 
-## যা পরিবর্তন হবে না
-- Password reset, magic link, login flow — অপরিবর্তিত
-- Database schema, RLS — অপরিবর্তিত
-- Google sign-in — অপরিবর্তিত
+- কোনো component file
+- Typography, spacing, radius, shadow structure
+- Glassmorphism utilities (`.glass`, `.glass-card`) — শুধু ভিতরের কালার নতুন tokens থেকে নেবে
+- Animation, marquee, float, pulse-glow ইত্যাদি
+- Logo/branding assets
 
-## Files
-- **New:** `src/routes/verify-otp.tsx`
-- **Edit:** existing signup component (register page) — signup success এর পর redirect logic
-- **Manual (user):** Cloud → Users → Auth → Email Templates → Confirm signup template এ `{{ .Token }}` বসাবেন (আমি exact template দিয়ে দিব)
+## Technical details
+
+File edited: `src/styles.css` only
+
+নতুন token values (approximate oklch):
+- `--background`: `oklch(0.08 0.02 260)` — neutral dark with slight cool tint
+- `--primary`: `oklch(0.62 0.20 255)` — electric blue #3B82F6
+- `--primary-glow`: `oklch(0.72 0.17 250)` — lighter blue
+- `--secondary`: `oklch(0.68 0.14 205)` — cyan #06B6D4
+- `--secondary-glow`: `oklch(0.78 0.13 200)`
+- `--border`: `oklch(0.62 0.20 255 / 18%)` — blue-tinted glass border
+- `--gradient-brand`: `linear-gradient(135deg, var(--primary), var(--secondary))` (structure same, colors auto-update)
+
+Scrollbar gradient, selection color, focus ring — সব auto-update হবে কারণ tokens থেকে derive করা।
+
+## Verification
+
+Preview-তে homepage, product page, dashboard, admin panel — সব check করে confirm করবো কোথাও readability issue নেই।
