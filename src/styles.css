@@ -50,15 +50,22 @@
   --color-surface-elevated: var(--surface-elevated);
   --color-glass: var(--glass);
   --color-glass-border: var(--glass-border);
+  --color-cta: var(--cta);
+  --color-cta-glow: var(--cta-glow);
+  --color-cta-foreground: var(--cta-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
 
   /* Gradients */
   --gradient-brand: linear-gradient(135deg, var(--primary), var(--secondary));
   --gradient-glow: radial-gradient(circle at 20% 30%, color-mix(in oklab, var(--primary) 35%, transparent), transparent 55%), radial-gradient(circle at 80% 70%, color-mix(in oklab, var(--secondary) 35%, transparent), transparent 55%);
   --gradient-card: linear-gradient(135deg, color-mix(in oklab, var(--primary) 18%, transparent), color-mix(in oklab, var(--secondary) 18%, transparent));
+  --gradient-cta: linear-gradient(135deg, var(--cta), var(--cta-glow));
 
   /* Shadows */
   --shadow-glow: 0 20px 60px -20px color-mix(in oklab, var(--primary) 45%, transparent);
   --shadow-glow-purple: 0 20px 60px -20px color-mix(in oklab, var(--secondary) 45%, transparent);
+  --shadow-glow-cta: 0 0 20px color-mix(in oklab, var(--cta) 45%, transparent);
   --shadow-elegant: 0 10px 40px -12px rgba(0, 0, 0, 0.6);
 }
 
