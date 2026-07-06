@@ -232,7 +232,11 @@ export function MobileBottomNav() {
   return (
     <nav
       className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-3 pointer-events-none"
-      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)" }}
+      style={{
+        paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)",
+        transform: hidden ? "translateY(calc(100% + 24px))" : "translateY(0)",
+        transition: "transform 300ms cubic-bezier(0.4,0,0.2,1)",
+      }}
     >
       <div
         ref={containerRef}
