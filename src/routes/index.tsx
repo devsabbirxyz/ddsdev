@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
   },
   head: ({ loaderData }) => {
     const preloadLinks = loaderData?.firstSlide?.image_url
-      ? [{ rel: "preload", as: "image", href: loaderData.firstSlide.image_url, fetchpriority: "high" }]
+      ? [{ rel: "preload", as: "image", href: loaderData.firstSlide.image_url, fetchPriority: "high" }]
       : [];
     return {
       meta: [
