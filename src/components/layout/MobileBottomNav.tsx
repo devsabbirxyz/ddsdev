@@ -211,7 +211,7 @@ export function MobileBottomNav() {
         className="relative pointer-events-auto"
         style={{
           height: barH,
-          filter: "drop-shadow(0 -4px 30px rgba(123,47,190,0.25))",
+          filter: "drop-shadow(0 -4px 30px rgba(79,70,229,0.35))",
         }}
       >
         {/* SVG bar with curved dip */}
@@ -231,7 +231,7 @@ export function MobileBottomNav() {
           </defs>
           <path
             d={path}
-            fill="rgba(13,13,26,0.85)"
+            fill="rgba(10,10,26,0.92)"
             stroke="url(#bn-stroke)"
             strokeWidth="1"
             style={{ transition: navReady ? "d 300ms cubic-bezier(0.4,0,0.2,1)" : "none" }}
@@ -254,8 +254,8 @@ export function MobileBottomNav() {
           <div
             className="grid place-items-center h-[52px] w-[52px] rounded-full text-white"
             style={{
-              background: "linear-gradient(135deg, #FF6B35, #7B2FBE)",
-              boxShadow: "0 8px 24px rgba(255,107,53,0.45), 0 0 0 4px rgba(13,13,26,0.85)",
+              background: "linear-gradient(135deg, #4f46e5, #1e1e5a)",
+              boxShadow: "0 8px 24px rgba(79,70,229,0.55), 0 0 0 4px rgba(10,10,26,0.92)",
             }}
           >
             <div
@@ -290,8 +290,8 @@ export function MobileBottomNav() {
                   <span
                     className="absolute top-2 right-1/2 translate-x-[14px] grid h-4 min-w-4 place-items-center rounded-full px-1 text-[9px] font-bold text-white"
                     style={{
-                      background: "#FF6B35",
-                      boxShadow: "0 0 10px rgba(255,107,53,0.6)",
+                      background: "#4f46e5",
+                      boxShadow: "0 0 10px rgba(79,70,229,0.7)",
                     }}
                   >
                     {it.badge}
