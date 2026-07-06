@@ -19,9 +19,58 @@ export const Route = createFileRoute("/product/$slug")({
     return { product };
   },
   head: ({ loaderData }) => {
-    const p = loaderData?.product;
+    const SITE = "https://ddsdev.lovable.app";
+    const p: any = loaderData?.product;
     const title = p ? `${p.title} — DDS-Digital` : "প্রোডাক্ট — DDS-Digital";
-    const desc = p?.short_description || "DDS-Digital থেকে কিনুন — ইনস্ট্যান্ট অটো ডেলিভারি।";
+    const desc = p?.short_description || p?.short_description_en || "DDS-Digital থেকে কিনুন — ইনস্ট্যান্ট অটো ডেলিভারি।";
+    const url = p ? `${SITE}/product/${p.slug}` : SITE;
+    const images: string[] = ((p?.product_images ?? []) as any[])
+      .slice()
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map((img) => img.image_url)
+      .filter(Boolean);
+    const mainImage = images[0];
+    const price = Number(p?.offer_price ?? p?.regular_price ?? 0);
+    const inStock = p?.track_stock ? Number(p?.stock_quantity ?? 0) > 0 : true;
+
+    const productLd: any = p && {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: p.title,
+      description: desc,
+      sku: p.sku || p.id,
+      ...(mainImage ? { image: images } : {}),
+      brand: { "@type": "Brand", name: "DDS-Digital" },
+      offers: {
+        "@type": "Offer",
+        url,
+        priceCurrency: "BDT",
+        price,
+        availability: inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        itemCondition: "https://schema.org/NewCondition",
+        seller: { "@type": "Organization", name: "DDS-Digital" },
+      },
+      ...(Number(p.total_reviews) > 0 && Number(p.average_rating) > 0
+        ? {
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: Number(p.average_rating).toFixed(1),
+              reviewCount: Number(p.total_reviews),
+            },
+          }
+        : {}),
+    };
+
+    const breadcrumbLd = p && {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "হোম", item: SITE },
+        { "@type": "ListItem", position: 2, name: "শপ", item: `${SITE}/shop` },
+        { "@type": "ListItem", position: 3, name: p.title, item: url },
+      ],
+    };
+
     return {
       meta: [
         { title },
@@ -29,18 +78,21 @@ export const Route = createFileRoute("/product/$slug")({
         { property: "og:title", content: title },
         { property: "og:description", content: desc },
         { property: "og:type", content: "product" },
+        { property: "og:url", content: url },
+        ...(mainImage ? [{ property: "og:image", content: mainImage } as const] : []),
+        ...(mainImage ? [{ name: "twitter:image", content: mainImage } as const] : []),
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: desc },
+        ...(price > 0 ? [{ property: "product:price:amount", content: String(price) } as const, { property: "product:price:currency", content: "BDT" } as const] : []),
+        { property: "product:availability", content: inStock ? "in stock" : "out of stock" },
       ],
-      links: p ? [{ rel: "canonical", href: `/product/${p.slug}` }] : [],
-      scripts: p ? [{
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Product",
-          name: p.title,
-          description: desc,
-          offers: { "@type": "Offer", priceCurrency: "BDT", price: p.offer_price ?? p.regular_price ?? 0 },
-        }),
-      }] : [],
+      links: p ? [{ rel: "canonical", href: url }] : [],
+      scripts: p
+        ? [
+            { type: "application/ld+json", children: JSON.stringify(productLd) },
+            { type: "application/ld+json", children: JSON.stringify(breadcrumbLd) },
+          ]
+        : [],
     };
   },
   component: ProductPage,
