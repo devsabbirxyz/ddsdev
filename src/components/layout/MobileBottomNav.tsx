@@ -155,14 +155,25 @@ export function MobileBottomNav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Clamp cx so the dip curve stays inside the bar's rounded corners
+  const CORNER_R = 24;
+  const DIP_HALF = 40; // dipR (34) + 6 padding, matches path()
+  const clampCx = (raw: number) => {
+    if (width <= 0) return raw;
+    const min = CORNER_R + DIP_HALF;
+    const max = width - CORNER_R - DIP_HALF;
+    if (min >= max) return width / 2;
+    return Math.max(min, Math.min(max, raw));
+  };
+
   // Animate circle from one tab index to another using direct DOM reflow
   const animateCircle = (fromIdx: number, toIdx: number) => {
     const el = circleRef.current;
     if (!el || width <= 0 || fromIdx === toIdx) return;
 
     const slotW = width / items.length;
-    const fromCx = slotW * (fromIdx + 0.5);
-    const toCx = slotW * (toIdx + 0.5);
+    const fromCx = clampCx(slotW * (fromIdx + 0.5));
+    const toCx = clampCx(slotW * (toIdx + 0.5));
 
     // 1. Disable transition and snap to old position
     el.style.transition = "none";
@@ -200,7 +211,7 @@ export function MobileBottomNav() {
 
   const N = items.length;
   const slotW = width / N;
-  const cx = slotW * (activeIdx + 0.5);
+  const cx = clampCx(slotW * (activeIdx + 0.5));
   const barH = 64;
   const dipR = 34;
   const dipDepth = 22;
