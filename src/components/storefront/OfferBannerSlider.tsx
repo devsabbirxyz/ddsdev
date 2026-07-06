@@ -14,7 +14,7 @@ export function OfferBannerSlider() {
 
   if (isLoading) {
     return (
-      <div className="mt-8 w-full rounded-2xl overflow-hidden border border-glass-border aspect-[16/5] sm:aspect-[21/6]">
+      <div className="mt-8 w-full rounded-2xl overflow-hidden border border-glass-border aspect-[16/7] sm:aspect-[21/7]">
         <Skeleton className="w-full h-full" />
       </div>
     );
