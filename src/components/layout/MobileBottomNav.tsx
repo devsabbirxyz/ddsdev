@@ -90,6 +90,7 @@ export function MobileBottomNav() {
   const circleRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const [navReady, setNavReady] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const lastClickTimeRef = useRef(0);
   const activeIdxRef = useRef(activeIdx);
   const initTimerRef = useRef<number | null>(null);
@@ -125,6 +126,33 @@ export function MobileBottomNav() {
       ro.disconnect();
       if (initTimerRef.current !== null) window.clearTimeout(initTimerRef.current);
     };
+  }, []);
+
+  // Pinterest-style hide on scroll down, show on scroll up
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+    const THRESHOLD = 8;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const dy = y - lastY;
+        if (y < 80) {
+          setHidden(false);
+        } else if (dy > THRESHOLD) {
+          setHidden(true);
+          lastY = y;
+        } else if (dy < -THRESHOLD) {
+          setHidden(false);
+          lastY = y;
+        }
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // Animate circle from one tab index to another using direct DOM reflow
@@ -204,7 +232,11 @@ export function MobileBottomNav() {
   return (
     <nav
       className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-3 pointer-events-none"
-      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)" }}
+      style={{
+        paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)",
+        transform: hidden ? "translateY(calc(100% + 24px))" : "translateY(0)",
+        transition: "transform 300ms cubic-bezier(0.4,0,0.2,1)",
+      }}
     >
       <div
         ref={containerRef}
