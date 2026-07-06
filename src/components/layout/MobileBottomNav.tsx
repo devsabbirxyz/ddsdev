@@ -211,7 +211,7 @@ export function MobileBottomNav() {
         className="relative pointer-events-auto"
         style={{
           height: barH,
-          filter: "drop-shadow(0 -4px 30px rgba(123,47,190,0.25))",
+          filter: "drop-shadow(0 -4px 30px rgba(79,70,229,0.35))",
         }}
       >
         {/* SVG bar with curved dip */}
