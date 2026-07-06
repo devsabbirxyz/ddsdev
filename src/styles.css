@@ -57,95 +57,94 @@
   --color-success-foreground: var(--success-foreground);
 
   /* Gradients — Cyan #87F5F5 → Pink #FFE5F1 → Magenta #F042FF */
-  --gradient-brand: linear-gradient(135deg, #87F5F5 0%, #FFE5F1 50%, #F042FF 100%);
-  --gradient-secondary: linear-gradient(135deg, #FFE5F1 0%, #F042FF 100%);
-  --gradient-glow: radial-gradient(circle at 20% 30%, color-mix(in oklab, #87F5F5 35%, transparent), transparent 55%), radial-gradient(circle at 80% 70%, color-mix(in oklab, #F042FF 35%, transparent), transparent 55%);
-  --gradient-card: linear-gradient(135deg, color-mix(in oklab, #87F5F5 18%, transparent), color-mix(in oklab, #F042FF 18%, transparent));
-  --gradient-cta: linear-gradient(135deg, #FFE5F1 0%, #F042FF 100%);
+  --gradient-brand: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
+  --gradient-secondary: linear-gradient(135deg, #1e1e5a 0%, #4f46e5 100%);
+  --gradient-glow: radial-gradient(circle at 20% 30%, color-mix(in oklab, #4f46e5 40%, transparent), transparent 55%), radial-gradient(circle at 80% 70%, color-mix(in oklab, #818cf8 30%, transparent), transparent 55%);
+  --gradient-card: linear-gradient(135deg, color-mix(in oklab, #1e1e5a 40%, transparent), color-mix(in oklab, #4f46e5 15%, transparent));
+  --gradient-cta: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
 
   /* Shadows */
-  --shadow-glow: 0 20px 60px -20px color-mix(in oklab, #F042FF 55%, transparent);
-  --shadow-glow-purple: 0 20px 60px -20px color-mix(in oklab, #F042FF 55%, transparent);
+  --shadow-glow: 0 20px 60px -20px color-mix(in oklab, #4f46e5 60%, transparent);
+  --shadow-glow-purple: 0 20px 60px -20px color-mix(in oklab, #4f46e5 60%, transparent);
   --shadow-glow-cta: 0 0 20px color-mix(in oklab, var(--cta) 45%, transparent);
-  --shadow-elegant: 0 10px 40px -12px rgba(0, 0, 0, 0.6);
+  --shadow-elegant: 0 10px 40px -12px rgba(0, 0, 0, 0.7);
 }
 
-/* Dark theme (default) — Deep navy #0D0D1A, cyan/pink/magenta gradient accents */
+/* Dark theme (default) — Midnight Indigo: #0a0a1a bg, #141432 card, #1e1e5a accent, #4f46e5 primary */
 :root {
   --radius: 0.875rem;
-  /* Background #0D0D1A */
-  --background: oklch(0.13 0.02 285);
+  /* Background #0a0a1a */
+  --background: oklch(0.10 0.03 285);
   --foreground: oklch(1 0 0);
-  /* Card slightly elevated */
-  --card: oklch(0.17 0.025 285);
+  /* Card #141432 */
+  --card: oklch(0.17 0.06 280);
   --card-foreground: oklch(1 0 0);
-  --popover: oklch(0.16 0.025 285);
+  --popover: oklch(0.16 0.06 280);
   --popover-foreground: oklch(1 0 0);
-  /* Primary — Magenta #F042FF */
-  --primary: oklch(0.68 0.32 320);
+  /* Primary — Electric indigo #4f46e5 */
+  --primary: oklch(0.55 0.25 275);
   --primary-foreground: oklch(1 0 0);
-  --primary-glow: oklch(0.88 0.10 340);
-  /* Secondary — Cyan #87F5F5 */
-  --secondary: oklch(0.90 0.09 195);
-  --secondary-foreground: oklch(0.13 0.02 285);
-  --secondary-glow: oklch(0.94 0.06 340);
-  /* CTA — secondary gradient endpoint (magenta) */
-  --cta: oklch(0.68 0.32 320);
-  --cta-glow: oklch(0.94 0.06 340);
+  --primary-glow: oklch(0.72 0.18 275);
+  /* Secondary — Deep indigo #1e1e5a */
+  --secondary: oklch(0.28 0.12 278);
+  --secondary-foreground: oklch(1 0 0);
+  --secondary-glow: oklch(0.55 0.25 275);
+  /* CTA */
+  --cta: oklch(0.55 0.25 275);
+  --cta-glow: oklch(0.72 0.18 275);
   --cta-foreground: oklch(1 0 0);
-  --muted: oklch(0.22 0.025 285);
-  --muted-foreground: oklch(0.75 0.02 285);
-  --accent: oklch(0.30 0.10 320);
+  --muted: oklch(0.22 0.05 280);
+  --muted-foreground: oklch(0.72 0.03 280);
+  --accent: oklch(0.30 0.12 278);
   --accent-foreground: oklch(1 0 0);
   --destructive: oklch(0.60 0.24 25);
   --destructive-foreground: oklch(1 0 0);
   --success: oklch(0.78 0.18 155);
-  --success-foreground: oklch(0.13 0.02 285);
-  /* Border — magenta-tinted glow */
-  --border: oklch(0.68 0.32 320 / 22%);
+  --success-foreground: oklch(0.10 0.03 285);
+  --border: oklch(0.55 0.25 275 / 22%);
   --input: oklch(1 0 0 / 8%);
-  --ring: oklch(0.68 0.32 320);
+  --ring: oklch(0.55 0.25 275);
 
-  --surface: oklch(0.15 0.02 285);
-  --surface-elevated: oklch(0.19 0.025 285);
+  --surface: oklch(0.13 0.04 283);
+  --surface-elevated: oklch(0.19 0.06 280);
   --glass: oklch(1 0 0 / 4%);
-  --glass-border: oklch(0.68 0.32 320 / 28%);
+  --glass-border: oklch(0.55 0.25 275 / 30%);
 }
 
 
-/* Light theme — soft blush backdrop, magenta primary, cyan secondary */
+/* Light theme — soft indigo tint */
 .light {
-  --background: oklch(0.98 0.01 340);
-  --foreground: oklch(0.16 0.03 285);
+  --background: oklch(0.98 0.005 280);
+  --foreground: oklch(0.14 0.04 285);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.03 285);
+  --card-foreground: oklch(0.14 0.04 285);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.03 285);
-  --primary: oklch(0.62 0.28 320);
+  --popover-foreground: oklch(0.14 0.04 285);
+  --primary: oklch(0.52 0.24 275);
   --primary-foreground: oklch(1 0 0);
-  --primary-glow: oklch(0.85 0.10 340);
-  --secondary: oklch(0.88 0.09 195);
-  --secondary-foreground: oklch(0.16 0.03 285);
-  --secondary-glow: oklch(0.92 0.07 340);
-  --cta: oklch(0.62 0.28 320);
-  --cta-glow: oklch(0.85 0.10 340);
+  --primary-glow: oklch(0.72 0.18 275);
+  --secondary: oklch(0.35 0.15 278);
+  --secondary-foreground: oklch(1 0 0);
+  --secondary-glow: oklch(0.72 0.18 275);
+  --cta: oklch(0.52 0.24 275);
+  --cta-glow: oklch(0.72 0.18 275);
   --cta-foreground: oklch(1 0 0);
-  --muted: oklch(0.95 0.01 340);
-  --muted-foreground: oklch(0.45 0.03 285);
-  --accent: oklch(0.92 0.06 320);
-  --accent-foreground: oklch(0.16 0.03 285);
+  --muted: oklch(0.95 0.01 280);
+  --muted-foreground: oklch(0.45 0.04 285);
+  --accent: oklch(0.92 0.05 278);
+  --accent-foreground: oklch(0.14 0.04 285);
   --destructive: oklch(0.60 0.24 25);
   --destructive-foreground: oklch(1 0 0);
   --success: oklch(0.65 0.18 155);
   --success-foreground: oklch(1 0 0);
-  --border: oklch(0.62 0.28 320 / 25%);
-  --input: oklch(0.16 0.03 285 / 12%);
-  --ring: oklch(0.62 0.28 320);
+  --border: oklch(0.52 0.24 275 / 25%);
+  --input: oklch(0.14 0.04 285 / 12%);
+  --ring: oklch(0.52 0.24 275);
 
-  --surface: oklch(0.97 0.01 340);
+  --surface: oklch(0.97 0.005 280);
   --surface-elevated: oklch(1 0 0);
   --glass: oklch(1 0 0 / 65%);
-  --glass-border: oklch(0.62 0.28 320 / 30%);
+  --glass-border: oklch(0.52 0.24 275 / 30%);
 }
 
 
