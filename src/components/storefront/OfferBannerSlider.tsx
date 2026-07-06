@@ -14,7 +14,7 @@ export function OfferBannerSlider() {
 
   if (isLoading) {
     return (
-      <div className="mt-8 w-full rounded-2xl overflow-hidden border border-glass-border aspect-[16/6]">
+      <div className="mt-8 w-full rounded-2xl overflow-hidden border border-glass-border aspect-[16/5] sm:aspect-[21/6]">
         <Skeleton className="w-full h-full" />
       </div>
     );
@@ -26,7 +26,7 @@ export function OfferBannerSlider() {
 
 
   return (
-    <div className="mt-8 w-full overflow-hidden rounded-2xl border border-glass-border bg-muted/20" ref={emblaRef}>
+    <div className="mt-8 w-full overflow-hidden rounded-2xl border border-glass-border bg-muted/40" ref={emblaRef}>
       <div className="flex">
         {slides.map((s, idx) => {
           const isFirst = idx === 0;
@@ -34,16 +34,18 @@ export function OfferBannerSlider() {
             <SmartImage
               src={s.image_url}
               alt={s.alt_text ?? "offer banner"}
-              className="w-full h-auto max-h-[70vh] object-contain block"
+              className="w-full h-full object-cover block"
+              width={1600}
+              height={500}
               loading={isFirst ? "eager" : "lazy"}
               fetchPriority={isFirst ? "high" : "auto"}
               decoding={isFirst ? "sync" : "async"}
             />
           );
           return (
-            <div key={s.id} className="min-w-0 flex-[0_0_100%]">
+            <div key={s.id} className="min-w-0 flex-[0_0_100%] aspect-[16/5] sm:aspect-[21/6]">
               {s.link_url ? (
-                <a href={s.link_url} className="block w-full">{img}</a>
+                <a href={s.link_url} className="block w-full h-full">{img}</a>
               ) : (
                 img
               )}
@@ -54,3 +56,4 @@ export function OfferBannerSlider() {
     </div>
   );
 }
+
