@@ -290,8 +290,8 @@ export function MobileBottomNav() {
                   <span
                     className="absolute top-2 right-1/2 translate-x-[14px] grid h-4 min-w-4 place-items-center rounded-full px-1 text-[9px] font-bold text-white"
                     style={{
-                      background: "#FF6B35",
-                      boxShadow: "0 0 10px rgba(255,107,53,0.6)",
+                      background: "#4f46e5",
+                      boxShadow: "0 0 10px rgba(79,70,229,0.7)",
                     }}
                   >
                     {it.badge}
