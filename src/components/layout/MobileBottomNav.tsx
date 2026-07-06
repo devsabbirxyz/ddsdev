@@ -211,7 +211,7 @@ export function MobileBottomNav() {
 
   const N = items.length;
   const slotW = width / N;
-  const cx = slotW * (activeIdx + 0.5);
+  const cx = clampCx(slotW * (activeIdx + 0.5));
   const barH = 64;
   const dipR = 34;
   const dipDepth = 22;
