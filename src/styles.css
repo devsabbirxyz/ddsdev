@@ -56,15 +56,16 @@
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
 
-  /* Gradients */
-  --gradient-brand: linear-gradient(135deg, var(--primary), var(--secondary));
-  --gradient-glow: radial-gradient(circle at 20% 30%, color-mix(in oklab, var(--primary) 35%, transparent), transparent 55%), radial-gradient(circle at 80% 70%, color-mix(in oklab, var(--secondary) 35%, transparent), transparent 55%);
-  --gradient-card: linear-gradient(135deg, color-mix(in oklab, var(--primary) 18%, transparent), color-mix(in oklab, var(--secondary) 18%, transparent));
-  --gradient-cta: linear-gradient(135deg, var(--cta), var(--cta-glow));
+  /* Gradients — Cyan #87F5F5 → Pink #FFE5F1 → Magenta #F042FF */
+  --gradient-brand: linear-gradient(135deg, #87F5F5 0%, #FFE5F1 50%, #F042FF 100%);
+  --gradient-secondary: linear-gradient(135deg, #FFE5F1 0%, #F042FF 100%);
+  --gradient-glow: radial-gradient(circle at 20% 30%, color-mix(in oklab, #87F5F5 35%, transparent), transparent 55%), radial-gradient(circle at 80% 70%, color-mix(in oklab, #F042FF 35%, transparent), transparent 55%);
+  --gradient-card: linear-gradient(135deg, color-mix(in oklab, #87F5F5 18%, transparent), color-mix(in oklab, #F042FF 18%, transparent));
+  --gradient-cta: linear-gradient(135deg, #FFE5F1 0%, #F042FF 100%);
 
   /* Shadows */
-  --shadow-glow: 0 20px 60px -20px color-mix(in oklab, var(--primary) 45%, transparent);
-  --shadow-glow-purple: 0 20px 60px -20px color-mix(in oklab, var(--secondary) 45%, transparent);
+  --shadow-glow: 0 20px 60px -20px color-mix(in oklab, #F042FF 55%, transparent);
+  --shadow-glow-purple: 0 20px 60px -20px color-mix(in oklab, #F042FF 55%, transparent);
   --shadow-glow-cta: 0 0 20px color-mix(in oklab, var(--cta) 45%, transparent);
   --shadow-elegant: 0 10px 40px -12px rgba(0, 0, 0, 0.6);
 }
