@@ -14,7 +14,7 @@ export function OfferBannerSlider() {
 
   if (isLoading) {
     return (
-      <div className="mt-8 w-full rounded-2xl overflow-hidden border border-glass-border aspect-[16/5] sm:aspect-[21/6]">
+      <div className="mt-8 w-full rounded-2xl overflow-hidden border border-glass-border aspect-[16/7] sm:aspect-[21/7]">
         <Skeleton className="w-full h-full" />
       </div>
     );
@@ -43,7 +43,7 @@ export function OfferBannerSlider() {
             />
           );
           return (
-            <div key={s.id} className="min-w-0 flex-[0_0_100%] aspect-[16/5] sm:aspect-[21/6]">
+            <div key={s.id} className="min-w-0 flex-[0_0_100%] aspect-[16/7] sm:aspect-[21/7]">
               {s.link_url ? (
                 <a href={s.link_url} className="block w-full h-full">{img}</a>
               ) : (
