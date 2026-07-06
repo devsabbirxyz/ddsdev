@@ -254,8 +254,8 @@ export function MobileBottomNav() {
           <div
             className="grid place-items-center h-[52px] w-[52px] rounded-full text-white"
             style={{
-              background: "linear-gradient(135deg, #FF6B35, #7B2FBE)",
-              boxShadow: "0 8px 24px rgba(255,107,53,0.45), 0 0 0 4px rgba(13,13,26,0.85)",
+              background: "linear-gradient(135deg, #4f46e5, #1e1e5a)",
+              boxShadow: "0 8px 24px rgba(79,70,229,0.55), 0 0 0 4px rgba(10,10,26,0.92)",
             }}
           >
             <div
