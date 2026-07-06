@@ -235,7 +235,7 @@ const featuredTestimonialsQuery = queryOptions({
   queryFn: async () => {
     const { data } = await supabase
       .from("reviews")
-      .select("id,rating,review_text,created_at, users(full_name), products(title)")
+      .select("id,rating,review_text,created_at, products(title)")
       .eq("is_active", true)
       .gte("rating", 5)
       .not("review_text", "is", null)
