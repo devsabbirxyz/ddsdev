@@ -90,6 +90,7 @@ export function MobileBottomNav() {
   const circleRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const [navReady, setNavReady] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const lastClickTimeRef = useRef(0);
   const activeIdxRef = useRef(activeIdx);
   const initTimerRef = useRef<number | null>(null);
