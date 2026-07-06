@@ -128,6 +128,33 @@ export function MobileBottomNav() {
     };
   }, []);
 
+  // Pinterest-style hide on scroll down, show on scroll up
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+    const THRESHOLD = 8;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const dy = y - lastY;
+        if (y < 80) {
+          setHidden(false);
+        } else if (dy > THRESHOLD) {
+          setHidden(true);
+          lastY = y;
+        } else if (dy < -THRESHOLD) {
+          setHidden(false);
+          lastY = y;
+        }
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   // Animate circle from one tab index to another using direct DOM reflow
   const animateCircle = (fromIdx: number, toIdx: number) => {
     const el = circleRef.current;
