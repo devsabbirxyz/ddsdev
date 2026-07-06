@@ -231,7 +231,7 @@ export function MobileBottomNav() {
           </defs>
           <path
             d={path}
-            fill="rgba(13,13,26,0.85)"
+            fill="rgba(10,10,26,0.92)"
             stroke="url(#bn-stroke)"
             strokeWidth="1"
             style={{ transition: navReady ? "d 300ms cubic-bezier(0.4,0,0.2,1)" : "none" }}
