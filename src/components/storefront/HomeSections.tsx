@@ -15,7 +15,7 @@ import { ProductCard } from "./ProductCard";
 
 /* ============ FLASH DEALS — countdown + high-discount products ============ */
 export function FlashDeals() {
-  const { data: products = [] } = useQuery(productsQuery({ limit: 12 }));
+  const { data: products = [] } = useQuery(productsQuery({ limit: 24 }));
   const deals = useMemo(() => {
     return products
       .filter((p: any) => p.regular_price && p.offer_price && p.offer_price < p.regular_price)
@@ -24,7 +24,7 @@ export function FlashDeals() {
         _discount: Math.round(((p.regular_price - p.offer_price) / p.regular_price) * 100),
       }))
       .sort((a: any, b: any) => b._discount - a._discount)
-      .slice(0, 4);
+      .slice(0, 6);
   }, [products]);
 
   // 24-hour rolling countdown (resets daily)
