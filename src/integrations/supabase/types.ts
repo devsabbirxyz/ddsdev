@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      abandoned_carts: {
+        Row: {
+          cart_snapshot: Json
+          coupon_code: string | null
+          created_at: string
+          id: string
+          item_count: number
+          notified_at: string | null
+          recovered_at: string | null
+          subtotal: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cart_snapshot: Json
+          coupon_code?: string | null
+          created_at?: string
+          id?: string
+          item_count?: number
+          notified_at?: string | null
+          recovered_at?: string | null
+          subtotal?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cart_snapshot?: Json
+          coupon_code?: string | null
+          created_at?: string
+          id?: string
+          item_count?: number
+          notified_at?: string | null
+          recovered_at?: string | null
+          subtotal?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       affiliate_applications: {
         Row: {
           created_at: string
@@ -235,6 +274,81 @@ export type Database = {
           title_en?: string | null
           updated_at?: string | null
           view_count?: number
+        }
+        Relationships: []
+      }
+      bundle_items: {
+        Row: {
+          bundle_id: string
+          id: string
+          product_id: string
+          sort_order: number
+        }
+        Insert: {
+          bundle_id: string
+          id?: string
+          product_id: string
+          sort_order?: number
+        }
+        Update: {
+          bundle_id?: string
+          id?: string
+          product_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bundle_items_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bundle_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bundles: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_percent: number
+          id: string
+          image_url: string | null
+          is_active: boolean
+          sort_order: number
+          title: string
+          title_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          sort_order?: number
+          title: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          sort_order?: number
+          title?: string
+          title_en?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1643,6 +1757,47 @@ export type Database = {
           },
         ]
       }
+      user_referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          first_order_id: string | null
+          id: string
+          points_awarded: number
+          referred_id: string
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          first_order_id?: string | null
+          id?: string
+          points_awarded?: number
+          referred_id: string
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          first_order_id?: string | null
+          id?: string
+          points_awarded?: number
+          referred_id?: string
+          referrer_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_referrals_first_order_id_fkey"
+            columns: ["first_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1676,6 +1831,7 @@ export type Database = {
           id: string
           is_banned: boolean
           phone: string | null
+          referral_code: string | null
           updated_at: string | null
           wallet_points: number
         }
@@ -1687,6 +1843,7 @@ export type Database = {
           id: string
           is_banned?: boolean
           phone?: string | null
+          referral_code?: string | null
           updated_at?: string | null
           wallet_points?: number
         }
@@ -1698,6 +1855,7 @@ export type Database = {
           id?: string
           is_banned?: boolean
           phone?: string | null
+          referral_code?: string | null
           updated_at?: string | null
           wallet_points?: number
         }
@@ -1746,6 +1904,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_referral_code: { Args: never; Returns: string }
       has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
