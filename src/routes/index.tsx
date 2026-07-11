@@ -9,6 +9,7 @@ import { siteSettingsQuery, parseTrustBar, parsePromoSection, HOMEPAGE_KEYS, toY
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { OfferBannerSlider } from "@/components/storefront/OfferBannerSlider";
 import { OfferPopup } from "@/components/storefront/OfferPopup";
+import { ExitIntentPopup } from "@/components/storefront/ExitIntentPopup";
 import { CountdownBanner } from "@/components/storefront/CountdownBanner";
 import { RecentlyViewed } from "@/components/storefront/RecentlyViewed";
 import { FlashDeals, BestSellers, JustArrived, LiveStats, TestimonialsHighlight, HomeFAQ, BundleOffers } from "@/components/storefront/HomeSections";
@@ -93,6 +94,7 @@ function HomePage() {
   return (
     <>
       <OfferPopup />
+      <ExitIntentPopup />
       <CountdownBanner />
       {/* Announcement bar */}
       <div className="bg-gradient-brand text-primary-foreground text-center text-xs sm:text-sm py-2 px-4 font-medium">

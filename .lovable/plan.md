@@ -1,47 +1,52 @@
-# Refined Dark Theme (Option A)
+# Growth ও Conversion Features — Implementation Plan
 
-DDS-Digital সাইটের color scheme আরো clean, trustworthy আর marketplace-friendly করা হবে। শুধু `src/styles.css`-এর color tokens বদলাবো — component code-এ কোনো হাত দিতে হবে না, কারণ সব জায়গায় semantic tokens (`bg-primary`, `text-secondary` ইত্যাদি) use করা আছে।
+৫টা ফিচার একসাথে অনেক বড় স্কোপ (schema migrations + cron jobs + UI + admin panels)। আমি এগুলো ২ phase-এ ভাগ করছি — যাতে quick wins আগে live হয়, complex ones পরে।
 
-## যা বদলাবে
+---
 
-**Dark theme (default):**
-- Background: `#050014` (heavy purple tint) → `#0A0A15` (neutral deep dark)
-- Card/surface: purple tint বাদ দিয়ে neutral slate
-- Primary: neon purple `#8A2BE2` → **Electric Blue `#3B82F6`** (Stripe/Linear/Vercel-এর মত trust color)
-- Primary glow: brighter blue `#60A5FA`
-- Secondary: pink `#E056FD` → **Cyan `#06B6D4`** (subtle accent, শুধু hover/CTA-তে pop করবে)
-- Border/ring: blue-tinted, purple না
-- Gradient brand: blue → cyan (আগে ছিল purple → pink)
+## Phase 1 — Quick Wins (এখনই করব, no schema change)
 
-**Light theme:**
-- একই দিকে সরানো হবে — blue primary, cyan secondary, neutral background
+### 1. Flash Sale / Deal of the Day section
+- হোমপেজে নতুন section: সবচেয়ে বেশি discount% আছে এমন top 4-6 products
+- Countdown timer (আজ রাত ১১:৫৯ পর্যন্ত — daily reset)
+- Urgency badge: "🔥 আজকের ডিল", stock left indicator
+- **কোনো schema change লাগবে না** — existing `products.compare_price` থেকে auto-detect
 
-**Admin theme:**
-- অপরিবর্তিত (teal/emerald ঠিক আছে, admin-এর আলাদা identity)
+### 3. Exit-Intent Popup
+- Desktop: mouse cursor top edge cross করলে trigger
+- Mobile: fast scroll-up + inactivity timer
+- Coupon code offer (existing coupon system থেকে configurable)
+- Session-এ ১ বার only, localStorage dismiss
+- **কোনো schema change লাগবে না** — admin panel এর existing popup_settings reuse
 
-## যা বদলাবে না
+---
 
-- কোনো component file
-- Typography, spacing, radius, shadow structure
-- Glassmorphism utilities (`.glass`, `.glass-card`) — শুধু ভিতরের কালার নতুন tokens থেকে নেবে
-- Animation, marquee, float, pulse-glow ইত্যাদি
-- Logo/branding assets
+## Phase 2 — Complex Features (Phase 1 approve করার পর)
 
-## Technical details
+### 2. Abandoned Cart Recovery
+- **New table:** `abandoned_carts` (user_id, cart_snapshot, created_at, notified_at, recovered_at)
+- Client: cart-এ item add হওয়ার ৩০ মিনিট পর checkout না করলে row insert
+- pg_cron job: প্রতি ঘণ্টায় check → Telegram admin notify + user-কে email (email infra লাগবে)
+- Auto-generate discount coupon (৫% off, ২৪ ঘণ্টা valid)
 
-File edited: `src/styles.css` only
+### 4. Bundle / Combo Offer
+- **New tables:** `bundles`, `bundle_items` (bundle-এ কোন products, কত% discount)
+- Admin panel: bundle CRUD
+- Product page-এ "Frequently bought together" widget
+- Cart-এ bundle detect → auto-apply discount
 
-নতুন token values (approximate oklch):
-- `--background`: `oklch(0.08 0.02 260)` — neutral dark with slight cool tint
-- `--primary`: `oklch(0.62 0.20 255)` — electric blue #3B82F6
-- `--primary-glow`: `oklch(0.72 0.17 250)` — lighter blue
-- `--secondary`: `oklch(0.68 0.14 205)` — cyan #06B6D4
-- `--secondary-glow`: `oklch(0.78 0.13 200)`
-- `--border`: `oklch(0.62 0.20 255 / 18%)` — blue-tinted glass border
-- `--gradient-brand`: `linear-gradient(135deg, var(--primary), var(--secondary))` (structure same, colors auto-update)
+### 5. Customer Referral Program
+- **New table:** `user_referrals` (referrer_id, referred_id, status, points_awarded)
+- Every user গেটে unique referral link (`/?ref=USER_CODE`)
+- New user signup + first order complete → both পায় wallet points (existing wallet system reuse)
+- Dashboard-এ "Refer & Earn" page: link + earned points + referred users list
 
-Scrollbar gradient, selection color, focus ring — সব auto-update হবে কারণ tokens থেকে derive করা।
+---
 
-## Verification
+## আমার Recommendation
 
-Preview-তে homepage, product page, dashboard, admin panel — সব check করে confirm করবো কোথাও readability issue নেই।
+**Phase 1 এখনই approve করুন** — ২টা feature, ১ ঘণ্টার কাজ, immediate conversion boost।
+
+Phase 2-এর জন্য email infrastructure setup লাগবে (abandoned cart এর জন্য), bundle-এর জন্য নতুন admin UI, referral-এর জন্য signup flow modify — এগুলো একটা একটা করে আলাদা turn-এ করলে test করাও easy হবে।
+
+**Phase 1 দিয়ে শুরু করি?** নাকি সরাসরি সব ৫টা একসাথে চান (সেক্ষেত্রে ২-৩ turn লাগবে + email setup dialog আসবে)?

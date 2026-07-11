@@ -15,7 +15,7 @@ import { ProductCard } from "./ProductCard";
 
 /* ============ FLASH DEALS — countdown + high-discount products ============ */
 export function FlashDeals() {
-  const { data: products = [] } = useQuery(productsQuery({ limit: 12 }));
+  const { data: products = [] } = useQuery(productsQuery({ limit: 24 }));
   const deals = useMemo(() => {
     return products
       .filter((p: any) => p.regular_price && p.offer_price && p.offer_price < p.regular_price)
@@ -24,7 +24,7 @@ export function FlashDeals() {
         _discount: Math.round(((p.regular_price - p.offer_price) / p.regular_price) * 100),
       }))
       .sort((a: any, b: any) => b._discount - a._discount)
-      .slice(0, 4);
+      .slice(0, 6);
   }, [products]);
 
   // 24-hour rolling countdown (resets daily)
@@ -64,15 +64,24 @@ export function FlashDeals() {
             ))}
           </div>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {deals.map((p: any) => (
-            <div key={p.id} className="relative">
-              <div className="absolute -top-2 -right-2 z-10 rounded-full bg-destructive text-destructive-foreground px-3 py-1 text-xs font-bold shadow-glow rotate-3">
-                -{p._discount}%
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {deals.map((p: any) => {
+            const stock = Number(p.stock_quantity ?? p.stock ?? 0);
+            const lowStock = stock > 0 && stock <= 10;
+            return (
+              <div key={p.id} className="relative">
+                <div className="absolute -top-2 -right-2 z-10 rounded-full bg-destructive text-destructive-foreground px-3 py-1 text-xs font-bold shadow-glow rotate-3">
+                  -{p._discount}%
+                </div>
+                {lowStock && (
+                  <div className="absolute -top-2 left-2 z-10 rounded-full bg-gradient-brand text-primary-foreground px-2.5 py-1 text-[10px] font-bold shadow-glow animate-pulse">
+                    🔥 মাত্র {stock} টি বাকি
+                  </div>
+                )}
+                <ProductCard p={p} />
               </div>
-              <ProductCard p={p} />
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
