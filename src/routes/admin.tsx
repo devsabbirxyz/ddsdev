@@ -59,6 +59,7 @@ const navGroups: NavGroup[] = [
     items: [
       { to: "/admin/settings", label: "সেটিংস", icon: Settings },
       { to: "/admin/telegram", label: "টেলিগ্রাম নোটিফিকেশন", icon: MessageCircle },
+      { to: "/admin/push", label: "পুশ নোটিফিকেশন", icon: Bell },
       { to: "/admin/admins", label: "অ্যাডমিন ম্যানেজমেন্ট", icon: ShieldCheck, superOnly: true },
     ],
   },
