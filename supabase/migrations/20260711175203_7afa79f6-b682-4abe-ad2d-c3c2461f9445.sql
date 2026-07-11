@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.complete_referral_on_order() FROM PUBLIC, anon, authenticated;

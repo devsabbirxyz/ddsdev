@@ -18,6 +18,8 @@ import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { PWAInstallButton } from "@/components/layout/PWAInstallButton";
 import { StickyCartBar } from "@/components/storefront/StickyCartBar";
 import { CompareDrawer } from "@/components/storefront/CompareDrawer";
+import { ReferralCapture } from "@/components/storefront/ReferralCapture";
+import { AbandonedCartTracker } from "@/lib/abandoned-cart";
 import { supabase } from "@/integrations/supabase/client";
 import appCss from "../styles.css?url";
 
@@ -170,6 +172,8 @@ function RootComponent() {
           <PWAInstallButton />
           <StickyCartBar />
           <CompareDrawer />
+          <ReferralCapture />
+          <AbandonedCartTracker />
         </div>
       </AppProviders>
     </QueryClientProvider>

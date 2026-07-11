@@ -60,6 +60,7 @@ import { Route as AdminFooterRouteImport } from './routes/admin/footer'
 import { Route as AdminCustomersRouteImport } from './routes/admin/customers'
 import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
+import { Route as AdminBundlesRouteImport } from './routes/admin/bundles'
 import { Route as AdminBannerTimerRouteImport } from './routes/admin/banner-timer'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
 import { Route as AdminAffiliatesRouteImport } from './routes/admin/affiliates'
@@ -81,6 +82,7 @@ import { Route as AuthenticatedDashboardWishlistRouteImport } from './routes/_au
 import { Route as AuthenticatedDashboardWalletRouteImport } from './routes/_authenticated/dashboard.wallet'
 import { Route as AuthenticatedDashboardSupportRouteImport } from './routes/_authenticated/dashboard.support'
 import { Route as AuthenticatedDashboardSubscriptionsRouteImport } from './routes/_authenticated/dashboard.subscriptions'
+import { Route as AuthenticatedDashboardReferralsRouteImport } from './routes/_authenticated/dashboard.referrals'
 import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
 import { Route as AuthenticatedDashboardOrdersRouteImport } from './routes/_authenticated/dashboard.orders'
 import { Route as AuthenticatedDashboardNotificationsRouteImport } from './routes/_authenticated/dashboard.notifications'
@@ -343,6 +345,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBundlesRoute = AdminBundlesRouteImport.update({
+  id: '/bundles',
+  path: '/bundles',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBannerTimerRoute = AdminBannerTimerRouteImport.update({
   id: '/banner-timer',
   path: '/banner-timer',
@@ -453,6 +460,12 @@ const AuthenticatedDashboardSubscriptionsRoute =
     path: '/subscriptions',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardReferralsRoute =
+  AuthenticatedDashboardReferralsRouteImport.update({
+    id: '/referrals',
+    path: '/referrals',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardProfileRoute =
   AuthenticatedDashboardProfileRouteImport.update({
     id: '/profile',
@@ -524,6 +537,7 @@ export interface FileRoutesByFullPath {
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/banner-timer': typeof AdminBannerTimerRoute
+  '/admin/bundles': typeof AdminBundlesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -558,6 +572,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
   '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/dashboard/subscriptions': typeof AuthenticatedDashboardSubscriptionsRoute
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
@@ -600,6 +615,7 @@ export interface FileRoutesByTo {
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/banner-timer': typeof AdminBannerTimerRoute
+  '/admin/bundles': typeof AdminBundlesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -631,6 +647,7 @@ export interface FileRoutesByTo {
   '/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
   '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/dashboard/subscriptions': typeof AuthenticatedDashboardSubscriptionsRoute
   '/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
@@ -679,6 +696,7 @@ export interface FileRoutesById {
   '/admin/affiliates': typeof AdminAffiliatesRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/banner-timer': typeof AdminBannerTimerRoute
+  '/admin/bundles': typeof AdminBundlesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -713,6 +731,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/notifications': typeof AuthenticatedDashboardNotificationsRoute
   '/_authenticated/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
   '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/_authenticated/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/_authenticated/dashboard/subscriptions': typeof AuthenticatedDashboardSubscriptionsRoute
   '/_authenticated/dashboard/support': typeof AuthenticatedDashboardSupportRoute
   '/_authenticated/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
@@ -761,6 +780,7 @@ export interface FileRouteTypes {
     | '/admin/affiliates'
     | '/admin/analytics'
     | '/admin/banner-timer'
+    | '/admin/bundles'
     | '/admin/categories'
     | '/admin/coupons'
     | '/admin/customers'
@@ -795,6 +815,7 @@ export interface FileRouteTypes {
     | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/profile'
+    | '/dashboard/referrals'
     | '/dashboard/subscriptions'
     | '/dashboard/support'
     | '/dashboard/wallet'
@@ -837,6 +858,7 @@ export interface FileRouteTypes {
     | '/admin/affiliates'
     | '/admin/analytics'
     | '/admin/banner-timer'
+    | '/admin/bundles'
     | '/admin/categories'
     | '/admin/coupons'
     | '/admin/customers'
@@ -868,6 +890,7 @@ export interface FileRouteTypes {
     | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/profile'
+    | '/dashboard/referrals'
     | '/dashboard/subscriptions'
     | '/dashboard/support'
     | '/dashboard/wallet'
@@ -915,6 +938,7 @@ export interface FileRouteTypes {
     | '/admin/affiliates'
     | '/admin/analytics'
     | '/admin/banner-timer'
+    | '/admin/bundles'
     | '/admin/categories'
     | '/admin/coupons'
     | '/admin/customers'
@@ -949,6 +973,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/notifications'
     | '/_authenticated/dashboard/orders'
     | '/_authenticated/dashboard/profile'
+    | '/_authenticated/dashboard/referrals'
     | '/_authenticated/dashboard/subscriptions'
     | '/_authenticated/dashboard/support'
     | '/_authenticated/dashboard/wallet'
@@ -1354,6 +1379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/bundles': {
+      id: '/admin/bundles'
+      path: '/bundles'
+      fullPath: '/admin/bundles'
+      preLoaderRoute: typeof AdminBundlesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/banner-timer': {
       id: '/admin/banner-timer'
       path: '/banner-timer'
@@ -1501,6 +1533,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardSubscriptionsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/referrals': {
+      id: '/_authenticated/dashboard/referrals'
+      path: '/referrals'
+      fullPath: '/dashboard/referrals'
+      preLoaderRoute: typeof AuthenticatedDashboardReferralsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/profile': {
       id: '/_authenticated/dashboard/profile'
       path: '/profile'
@@ -1559,6 +1598,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardNotificationsRoute: typeof AuthenticatedDashboardNotificationsRoute
   AuthenticatedDashboardOrdersRoute: typeof AuthenticatedDashboardOrdersRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
+  AuthenticatedDashboardReferralsRoute: typeof AuthenticatedDashboardReferralsRoute
   AuthenticatedDashboardSubscriptionsRoute: typeof AuthenticatedDashboardSubscriptionsRoute
   AuthenticatedDashboardSupportRoute: typeof AuthenticatedDashboardSupportRoute
   AuthenticatedDashboardWalletRoute: typeof AuthenticatedDashboardWalletRoute
@@ -1575,6 +1615,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
       AuthenticatedDashboardNotificationsRoute,
     AuthenticatedDashboardOrdersRoute: AuthenticatedDashboardOrdersRoute,
     AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
+    AuthenticatedDashboardReferralsRoute: AuthenticatedDashboardReferralsRoute,
     AuthenticatedDashboardSubscriptionsRoute:
       AuthenticatedDashboardSubscriptionsRoute,
     AuthenticatedDashboardSupportRoute: AuthenticatedDashboardSupportRoute,
@@ -1654,6 +1695,7 @@ interface AdminRouteChildren {
   AdminAffiliatesRoute: typeof AdminAffiliatesRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminBannerTimerRoute: typeof AdminBannerTimerRoute
+  AdminBundlesRoute: typeof AdminBundlesRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminCouponsRoute: typeof AdminCouponsRoute
   AdminCustomersRoute: typeof AdminCustomersRoute
@@ -1680,6 +1722,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAffiliatesRoute: AdminAffiliatesRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminBannerTimerRoute: AdminBannerTimerRoute,
+  AdminBundlesRoute: AdminBundlesRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminCouponsRoute: AdminCouponsRoute,
   AdminCustomersRoute: AdminCustomersRoute,
