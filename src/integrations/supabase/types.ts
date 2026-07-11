@@ -22,6 +22,7 @@ export type Database = {
           id: string
           item_count: number
           notified_at: string | null
+          push_reminded_at: string | null
           recovered_at: string | null
           subtotal: number
           updated_at: string
@@ -34,6 +35,7 @@ export type Database = {
           id?: string
           item_count?: number
           notified_at?: string | null
+          push_reminded_at?: string | null
           recovered_at?: string | null
           subtotal?: number
           updated_at?: string
@@ -46,6 +48,7 @@ export type Database = {
           id?: string
           item_count?: number
           notified_at?: string | null
+          push_reminded_at?: string | null
           recovered_at?: string | null
           subtotal?: number
           updated_at?: string
@@ -1351,6 +1354,84 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      push_notification_log: {
+        Row: {
+          body: string
+          created_at: string
+          event_type: string
+          failed_count: number | null
+          id: string
+          link: string | null
+          reference_id: string | null
+          sent_count: number | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          event_type: string
+          failed_count?: number | null
+          id?: string
+          link?: string | null
+          reference_id?: string | null
+          sent_count?: number | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          event_type?: string
+          failed_count?: number | null
+          id?: string
+          link?: string | null
+          reference_id?: string | null
+          sent_count?: number | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          is_active: boolean
+          last_notified_at: string | null
+          p256dh: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          is_active?: boolean
+          last_notified_at?: string | null
+          p256dh: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          is_active?: boolean
+          last_notified_at?: string | null
+          p256dh?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       review_slides: {
         Row: {
