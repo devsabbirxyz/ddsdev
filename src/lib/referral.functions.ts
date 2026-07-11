@@ -93,14 +93,14 @@ export const getMyReferralInfo = createServerFn({ method: "GET" })
     });
 
     const totalEarned = list
-      .filter((r) => r.status === "completed")
-      .reduce((s, r) => s + Number(r.points_awarded || 0), 0);
+      .filter((r: any) => r.status === "completed")
+      .reduce((s: number, r: any) => s + Number(r.points_awarded || 0), 0);
 
     return {
       referral_code: (me as any)?.referral_code ?? null,
       wallet_points: Number((me as any)?.wallet_points ?? 0),
       total_referrals: list.length,
-      completed_referrals: list.filter((r) => r.status === "completed").length,
+      completed_referrals: list.filter((r: any) => r.status === "completed").length,
       total_earned: totalEarned,
       reward_points: REFERRAL_REWARD_POINTS,
       referrals: list,
