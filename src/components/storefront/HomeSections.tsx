@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { productsQuery, faqsQuery, formatBDT } from "@/lib/storefront";
+import { bundlesQuery } from "@/lib/bundles";
 import { ProductCard } from "./ProductCard";
 
 /* ============ FLASH DEALS — countdown + high-discount products ============ */
@@ -349,24 +350,10 @@ export function HomeFAQ() {
   );
 }
 
-/* ============ BUNDLE OFFERS ============ */
+/* ============ BUNDLE OFFERS (admin-managed) ============ */
 export function BundleOffers() {
-  const { data: products = [] } = useQuery(productsQuery({ sort: "best", limit: 6 }));
-  if (products.length < 3) return null;
-  const bundles = [
-    {
-      title: "Streaming বান্ডল",
-      sub: "Netflix + Prime + Spotify একসাথে",
-      items: products.slice(0, 3),
-      saving: 25,
-    },
-    {
-      title: "Productivity প্যাক",
-      sub: "ChatGPT + Canva + Office একসাথে",
-      items: products.slice(2, 5),
-      saving: 30,
-    },
-  ];
+  const { data: bundles = [] } = useQuery(bundlesQuery());
+  if (bundles.length === 0) return null;
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 py-12">
       <div className="text-center mb-8 mx-auto max-w-2xl">
@@ -378,18 +365,20 @@ export function BundleOffers() {
         </h2>
       </div>
       <div className="grid md:grid-cols-2 gap-5">
-        {bundles.map((b, idx) => {
-          const total = b.items.reduce((sum: number, p: any) => sum + Number(p.offer_price || p.regular_price || 0), 0);
-          const discounted = Math.round(total * (1 - b.saving / 100));
+        {bundles.map((b) => {
+          const products = (b.items || []).map((i) => i.product).filter(Boolean) as NonNullable<typeof b.items[number]["product"]>[];
+          if (products.length < 2) return null;
+          const total = products.reduce((s, p) => s + Number(p.offer_price || p.regular_price || 0), 0);
+          const discounted = Math.round(total * (1 - Number(b.discount_percent) / 100));
           return (
-            <div key={idx} className="glass-card rounded-3xl p-6 hover:shadow-glow transition relative overflow-hidden">
+            <div key={b.id} className="glass-card rounded-3xl p-6 hover:shadow-glow transition relative overflow-hidden">
               <div className="absolute top-4 right-4 rounded-full bg-gradient-brand text-primary-foreground px-3 py-1 text-xs font-bold shadow-glow">
-                Save {b.saving}%
+                Save {Number(b.discount_percent)}%
               </div>
               <h3 className="font-display font-bold text-xl">{b.title}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{b.sub}</p>
+              {b.description && <p className="text-xs text-muted-foreground mt-1">{b.description}</p>}
               <div className="mt-4 flex items-center gap-2">
-                {b.items.map((p: any) => (
+                {products.slice(0, 4).map((p) => (
                   <div key={p.id} className="flex-1 min-w-0">
                     <div className="aspect-square rounded-xl bg-muted overflow-hidden">
                       {p.product_images?.[0]?.image_url ? (
@@ -407,7 +396,11 @@ export function BundleOffers() {
                   <div className="text-xs text-muted-foreground line-through">{formatBDT(total)}</div>
                   <div className="font-display font-bold text-2xl text-gradient-brand">{formatBDT(discounted)}</div>
                 </div>
-                <Link to="/shop" className="rounded-xl bg-gradient-brand px-4 py-2.5 text-xs font-bold text-primary-foreground shadow-glow hover:scale-105 transition">
+                <Link
+                  to="/product/$slug"
+                  params={{ slug: products[0].slug }}
+                  className="rounded-xl bg-gradient-brand px-4 py-2.5 text-xs font-bold text-primary-foreground shadow-glow hover:scale-105 transition"
+                >
                   বান্ডল নিন
                 </Link>
               </div>
