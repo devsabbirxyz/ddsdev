@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { notifyNewSignupServer } from "@/lib/telegram.functions";
+import { attachReferrer } from "@/lib/referral.functions";
+import { getPendingReferralCode, clearPendingReferralCode } from "@/components/storefront/ReferralCapture";
 import { AuthShell, Field } from "@/components/auth/AuthShell";
 
 export const Route = createFileRoute("/register")({
@@ -98,6 +100,17 @@ function RegisterPage() {
           origin: typeof window !== "undefined" ? window.location.origin : undefined,
         },
       });
+    } catch {
+      // ignore
+    }
+
+    // Link referral if user came from a ?ref= link (best-effort)
+    try {
+      const code = getPendingReferralCode();
+      if (code) {
+        await attachReferrer({ data: { code } });
+        clearPendingReferralCode();
+      }
     } catch {
       // ignore
     }
