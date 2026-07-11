@@ -64,15 +64,24 @@ export function FlashDeals() {
             ))}
           </div>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {deals.map((p: any) => (
-            <div key={p.id} className="relative">
-              <div className="absolute -top-2 -right-2 z-10 rounded-full bg-destructive text-destructive-foreground px-3 py-1 text-xs font-bold shadow-glow rotate-3">
-                -{p._discount}%
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {deals.map((p: any) => {
+            const stock = Number(p.stock_quantity ?? p.stock ?? 0);
+            const lowStock = stock > 0 && stock <= 10;
+            return (
+              <div key={p.id} className="relative">
+                <div className="absolute -top-2 -right-2 z-10 rounded-full bg-destructive text-destructive-foreground px-3 py-1 text-xs font-bold shadow-glow rotate-3">
+                  -{p._discount}%
+                </div>
+                {lowStock && (
+                  <div className="absolute -top-2 left-2 z-10 rounded-full bg-gradient-brand text-primary-foreground px-2.5 py-1 text-[10px] font-bold shadow-glow animate-pulse">
+                    🔥 মাত্র {stock} টি বাকি
+                  </div>
+                )}
+                <ProductCard p={p} />
               </div>
-              <ProductCard p={p} />
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
