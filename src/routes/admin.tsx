@@ -39,6 +39,7 @@ const navGroups: NavGroup[] = [
       { to: "/admin/categories", label: "ক্যাটাগরি", icon: Tag },
       { to: "/admin/coupons", label: "কুপন", icon: Ticket },
       { to: "/admin/subscriptions", label: "সাবস্ক্রিপশন প্ল্যান", icon: CalendarClock },
+      { to: "/admin/bundles", label: "বান্ডল অফার", icon: Package },
     ],
   },
   {
