@@ -42,6 +42,13 @@ async function notifyUser(
     message,
     link,
   });
+  // Also fire a browser push (best-effort; ignore failures)
+  try {
+    const { sendPushToUser } = await import("@/lib/push.server");
+    await sendPushToUser(userId, { title, body: message, url: link, tag: type }, { eventType: type });
+  } catch (e) {
+    console.error("[push] delivery notify failed", e);
+  }
 }
 
 // ---------- Deliver ----------

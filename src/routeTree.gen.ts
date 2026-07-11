@@ -49,6 +49,7 @@ import { Route as AdminSubscriptionsRouteImport } from './routes/admin/subscript
 import { Route as AdminSlidesRouteImport } from './routes/admin/slides'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminSellersRouteImport } from './routes/admin/sellers'
+import { Route as AdminPushRouteImport } from './routes/admin/push'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminPopupRouteImport } from './routes/admin/popup'
 import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
@@ -89,6 +90,7 @@ import { Route as AuthenticatedDashboardNotificationsRouteImport } from './route
 import { Route as AuthenticatedDashboardDownloadsRouteImport } from './routes/_authenticated/dashboard.downloads'
 import { Route as AuthenticatedDashboardCouponsRouteImport } from './routes/_authenticated/dashboard.coupons'
 import { Route as ApiPublicHooksProcessSubscriptionsRouteImport } from './routes/api/public/hooks/process-subscriptions'
+import { Route as ApiPublicHooksProcessAbandonedCartsRouteImport } from './routes/api/public/hooks/process-abandoned-carts'
 import { Route as AuthenticatedDashboardTicketsIdRouteImport } from './routes/_authenticated/dashboard.tickets.$id'
 
 const TermsRoute = TermsRouteImport.update({
@@ -288,6 +290,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
 const AdminSellersRoute = AdminSellersRouteImport.update({
   id: '/sellers',
   path: '/sellers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPushRoute = AdminPushRouteImport.update({
+  id: '/push',
+  path: '/push',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
@@ -502,6 +509,12 @@ const ApiPublicHooksProcessSubscriptionsRoute =
     path: '/api/public/hooks/process-subscriptions',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksProcessAbandonedCartsRoute =
+  ApiPublicHooksProcessAbandonedCartsRouteImport.update({
+    id: '/api/public/hooks/process-abandoned-carts',
+    path: '/api/public/hooks/process-abandoned-carts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedDashboardTicketsIdRoute =
   AuthenticatedDashboardTicketsIdRouteImport.update({
     id: '/tickets/$id',
@@ -549,6 +562,7 @@ export interface FileRoutesByFullPath {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRouteWithChildren
+  '/admin/push': typeof AdminPushRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -589,6 +603,7 @@ export interface FileRoutesByFullPath {
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/tickets/': typeof AdminTicketsIndexRoute
   '/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
+  '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 export interface FileRoutesByTo {
@@ -625,6 +640,7 @@ export interface FileRoutesByTo {
   '/admin/offers': typeof AdminOffersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
+  '/admin/push': typeof AdminPushRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -664,6 +680,7 @@ export interface FileRoutesByTo {
   '/admin/products': typeof AdminProductsIndexRoute
   '/admin/tickets': typeof AdminTicketsIndexRoute
   '/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
+  '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 export interface FileRoutesById {
@@ -708,6 +725,7 @@ export interface FileRoutesById {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRouteWithChildren
+  '/admin/push': typeof AdminPushRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -748,6 +766,7 @@ export interface FileRoutesById {
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/tickets/': typeof AdminTicketsIndexRoute
   '/_authenticated/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
+  '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 export interface FileRouteTypes {
@@ -792,6 +811,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/products'
+    | '/admin/push'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/slides'
@@ -832,6 +852,7 @@ export interface FileRouteTypes {
     | '/admin/products/'
     | '/admin/tickets/'
     | '/dashboard/tickets/$id'
+    | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -868,6 +889,7 @@ export interface FileRouteTypes {
     | '/admin/offers'
     | '/admin/payments'
     | '/admin/popup'
+    | '/admin/push'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/slides'
@@ -907,6 +929,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/tickets'
     | '/dashboard/tickets/$id'
+    | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
   id:
     | '__root__'
@@ -950,6 +973,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/products'
+    | '/admin/push'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/slides'
@@ -990,6 +1014,7 @@ export interface FileRouteTypes {
     | '/admin/products/'
     | '/admin/tickets/'
     | '/_authenticated/dashboard/tickets/$id'
+    | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
   fileRoutesById: FileRoutesById
 }
@@ -1017,6 +1042,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  ApiPublicHooksProcessAbandonedCartsRoute: typeof ApiPublicHooksProcessAbandonedCartsRoute
   ApiPublicHooksProcessSubscriptionsRoute: typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 
@@ -1302,6 +1328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSellersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/push': {
+      id: '/admin/push'
+      path: '/push'
+      fullPath: '/admin/push'
+      preLoaderRoute: typeof AdminPushRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/products': {
       id: '/admin/products'
       path: '/products'
@@ -1582,6 +1615,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksProcessSubscriptionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/process-abandoned-carts': {
+      id: '/api/public/hooks/process-abandoned-carts'
+      path: '/api/public/hooks/process-abandoned-carts'
+      fullPath: '/api/public/hooks/process-abandoned-carts'
+      preLoaderRoute: typeof ApiPublicHooksProcessAbandonedCartsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/dashboard/tickets/$id': {
       id: '/_authenticated/dashboard/tickets/$id'
       path: '/tickets/$id'
@@ -1707,6 +1747,7 @@ interface AdminRouteChildren {
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminPopupRoute: typeof AdminPopupRoute
   AdminProductsRoute: typeof AdminProductsRouteWithChildren
+  AdminPushRoute: typeof AdminPushRoute
   AdminSellersRoute: typeof AdminSellersRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSlidesRoute: typeof AdminSlidesRoute
@@ -1734,6 +1775,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminPopupRoute: AdminPopupRoute,
   AdminProductsRoute: AdminProductsRouteWithChildren,
+  AdminPushRoute: AdminPushRoute,
   AdminSellersRoute: AdminSellersRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSlidesRoute: AdminSlidesRoute,
@@ -1829,6 +1871,8 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ProductSlugRoute: ProductSlugRoute,
+  ApiPublicHooksProcessAbandonedCartsRoute:
+    ApiPublicHooksProcessAbandonedCartsRoute,
   ApiPublicHooksProcessSubscriptionsRoute:
     ApiPublicHooksProcessSubscriptionsRoute,
 }
