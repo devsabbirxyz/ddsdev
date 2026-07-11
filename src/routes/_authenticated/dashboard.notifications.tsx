@@ -42,6 +42,13 @@ function NotifPage() {
         <h1 className="font-display font-bold text-2xl">নোটিফিকেশন</h1>
         {items.some((i) => !i.is_read) && <button onClick={markAll} className="text-xs text-primary hover:underline inline-flex items-center gap-1"><Check className="h-3 w-3" /> সব read করুন</button>}
       </div>
+      <div className="glass-card rounded-2xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-3 justify-between">
+        <div className="min-w-0">
+          <div className="font-bold text-sm">🔔 Browser Push Notifications</div>
+          <div className="text-xs text-muted-foreground mt-0.5">অর্ডার আপডেট, ফ্ল্যাশ সেল, রিওয়ার্ড — সব সরাসরি ব্রাউজারে পান</div>
+        </div>
+        <PushPermissionButton />
+      </div>
       {isLoading ? (
         <div className="text-sm text-muted-foreground">লোড হচ্ছে...</div>
       ) : items.length === 0 ? (
