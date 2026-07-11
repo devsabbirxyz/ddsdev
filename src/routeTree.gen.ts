@@ -90,6 +90,7 @@ import { Route as AuthenticatedDashboardNotificationsRouteImport } from './route
 import { Route as AuthenticatedDashboardDownloadsRouteImport } from './routes/_authenticated/dashboard.downloads'
 import { Route as AuthenticatedDashboardCouponsRouteImport } from './routes/_authenticated/dashboard.coupons'
 import { Route as ApiPublicHooksProcessSubscriptionsRouteImport } from './routes/api/public/hooks/process-subscriptions'
+import { Route as ApiPublicHooksProcessAbandonedCartsRouteImport } from './routes/api/public/hooks/process-abandoned-carts'
 import { Route as AuthenticatedDashboardTicketsIdRouteImport } from './routes/_authenticated/dashboard.tickets.$id'
 
 const TermsRoute = TermsRouteImport.update({
@@ -508,6 +509,12 @@ const ApiPublicHooksProcessSubscriptionsRoute =
     path: '/api/public/hooks/process-subscriptions',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksProcessAbandonedCartsRoute =
+  ApiPublicHooksProcessAbandonedCartsRouteImport.update({
+    id: '/api/public/hooks/process-abandoned-carts',
+    path: '/api/public/hooks/process-abandoned-carts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedDashboardTicketsIdRoute =
   AuthenticatedDashboardTicketsIdRouteImport.update({
     id: '/tickets/$id',
@@ -596,6 +603,7 @@ export interface FileRoutesByFullPath {
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/tickets/': typeof AdminTicketsIndexRoute
   '/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
+  '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 export interface FileRoutesByTo {
@@ -672,6 +680,7 @@ export interface FileRoutesByTo {
   '/admin/products': typeof AdminProductsIndexRoute
   '/admin/tickets': typeof AdminTicketsIndexRoute
   '/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
+  '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 export interface FileRoutesById {
@@ -757,6 +766,7 @@ export interface FileRoutesById {
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/tickets/': typeof AdminTicketsIndexRoute
   '/_authenticated/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
+  '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 export interface FileRouteTypes {
@@ -842,6 +852,7 @@ export interface FileRouteTypes {
     | '/admin/products/'
     | '/admin/tickets/'
     | '/dashboard/tickets/$id'
+    | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -918,6 +929,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/tickets'
     | '/dashboard/tickets/$id'
+    | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
   id:
     | '__root__'
@@ -1002,6 +1014,7 @@ export interface FileRouteTypes {
     | '/admin/products/'
     | '/admin/tickets/'
     | '/_authenticated/dashboard/tickets/$id'
+    | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
   fileRoutesById: FileRoutesById
 }
@@ -1029,6 +1042,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  ApiPublicHooksProcessAbandonedCartsRoute: typeof ApiPublicHooksProcessAbandonedCartsRoute
   ApiPublicHooksProcessSubscriptionsRoute: typeof ApiPublicHooksProcessSubscriptionsRoute
 }
 
@@ -1601,6 +1615,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksProcessSubscriptionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/process-abandoned-carts': {
+      id: '/api/public/hooks/process-abandoned-carts'
+      path: '/api/public/hooks/process-abandoned-carts'
+      fullPath: '/api/public/hooks/process-abandoned-carts'
+      preLoaderRoute: typeof ApiPublicHooksProcessAbandonedCartsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/dashboard/tickets/$id': {
       id: '/_authenticated/dashboard/tickets/$id'
       path: '/tickets/$id'
@@ -1850,6 +1871,8 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ProductSlugRoute: ProductSlugRoute,
+  ApiPublicHooksProcessAbandonedCartsRoute:
+    ApiPublicHooksProcessAbandonedCartsRoute,
   ApiPublicHooksProcessSubscriptionsRoute:
     ApiPublicHooksProcessSubscriptionsRoute,
 }
