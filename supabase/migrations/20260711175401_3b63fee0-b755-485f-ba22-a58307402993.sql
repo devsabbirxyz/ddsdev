@@ -1,0 +1,38 @@
+
+CREATE OR REPLACE FUNCTION public.complete_referral_on_order() RETURNS TRIGGER AS $$
+DECLARE
+  ref_row RECORD;
+  reward_points INT := 50;
+BEGIN
+  IF NEW.status <> 'completed' THEN RETURN NEW; END IF;
+  IF OLD IS NOT NULL AND OLD.status = 'completed' THEN RETURN NEW; END IF;
+
+  SELECT * INTO ref_row FROM public.user_referrals
+  WHERE referred_id = NEW.user_id AND status = 'pending'
+  LIMIT 1;
+  IF NOT FOUND THEN RETURN NEW; END IF;
+
+  UPDATE public.user_referrals
+  SET status = 'completed', first_order_id = NEW.id,
+      points_awarded = reward_points, completed_at = now()
+  WHERE id = ref_row.id;
+
+  UPDATE public.users
+  SET wallet_points = COALESCE(wallet_points,0) + reward_points
+  WHERE id IN (ref_row.referrer_id, ref_row.referred_id);
+
+  INSERT INTO public.wallet_transactions (user_id, points, type, order_id, description) VALUES
+    (ref_row.referrer_id, reward_points, 'bonus', NEW.id, 'রেফারেল বোনাস'),
+    (ref_row.referred_id, reward_points, 'bonus', NEW.id, 'সাইনআপ রেফারেল বোনাস');
+
+  INSERT INTO public.notifications (user_id, type, title, message, link) VALUES
+    (ref_row.referrer_id, 'reward', 'রেফারেল বোনাস!',
+     'আপনার রেফার করা ইউজার প্রথম অর্ডার সম্পন্ন করেছে। +' || reward_points || ' পয়েন্ট!', '/dashboard/referrals'),
+    (ref_row.referred_id, 'reward', 'স্বাগতম বোনাস!',
+     'রেফারেল সাইনআপ বোনাস: +' || reward_points || ' পয়েন্ট আপনার ওয়ালেটে যোগ হয়েছে।', '/dashboard/wallet');
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+REVOKE EXECUTE ON FUNCTION public.complete_referral_on_order() FROM PUBLIC, anon, authenticated;
