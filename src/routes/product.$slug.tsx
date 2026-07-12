@@ -7,6 +7,10 @@ import { productBySlugQuery, productReviewsQuery, productsQuery, productQuestion
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { ProductViewTracker } from "@/components/storefront/ProductViewTracker";
 import { RecentlyViewed } from "@/components/storefront/RecentlyViewed";
+import { VariantCompareTable } from "@/components/storefront/VariantCompareTable";
+import { BackInStockNotify } from "@/components/storefront/BackInStockNotify";
+import { RecentSalesCount } from "@/components/storefront/RecentSalesCount";
+import { ProductStickyBar } from "@/components/storefront/ProductStickyBar";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { askQuestion, answerQuestion } from "@/lib/qna.functions";
