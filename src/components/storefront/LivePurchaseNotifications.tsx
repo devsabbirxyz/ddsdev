@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ShoppingBag, X } from "lucide-react";
+import { CheckCircle2, Sparkles, X } from "lucide-react";
 import { getRecentPurchases } from "@/lib/live-purchases.functions";
 
 type Purchase = {
@@ -63,36 +63,62 @@ export function LivePurchaseNotifications() {
 
   return (
     <div
-      className={`fixed z-40 left-3 sm:left-5 bottom-24 sm:bottom-6 max-w-[calc(100vw-1.5rem)] sm:max-w-sm transition-all duration-500 ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+      className={`fixed z-40 left-3 sm:left-6 bottom-24 sm:bottom-8 max-w-[calc(100vw-1.5rem)] sm:max-w-md w-full sm:w-[26rem] transition-all duration-500 ${
+        visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-6 scale-95 pointer-events-none"
       }`}
       role="status"
       aria-live="polite"
     >
-      <div className="glass-card rounded-2xl p-3 pr-8 shadow-glow border border-border/60 flex items-start gap-3 relative">
-        <div className="shrink-0 h-10 w-10 rounded-xl bg-gradient-brand grid place-items-center">
-          <ShoppingBag className="h-5 w-5 text-primary-foreground" />
+      <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-background/95 via-background/90 to-primary/10 backdrop-blur-xl shadow-[0_20px_60px_-15px_hsl(var(--primary)/0.45)]">
+        {/* Glow accent */}
+        <div className="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full bg-primary/25 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 -left-10 h-40 w-40 rounded-full bg-secondary/20 blur-3xl" />
+
+        {/* Top ribbon */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-border/40 bg-background/40">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-primary">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            লাইভ অর্ডার
+          </div>
+          <button
+            onClick={() => setDismissed(true)}
+            className="h-6 w-6 grid place-items-center rounded-full hover:bg-accent text-muted-foreground transition"
+            aria-label="বন্ধ করুন"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
         </div>
-        <div className="min-w-0 text-xs sm:text-sm">
-          <div className="font-semibold text-foreground truncate">
-            {p.name}
-            {p.city ? <span className="text-muted-foreground font-normal"> · {p.city}</span> : null}
+
+        <div className="p-4 flex items-start gap-4 relative">
+          <div className="shrink-0 relative">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-brand grid place-items-center shadow-lg shadow-primary/30">
+              <Sparkles className="h-7 w-7 text-primary-foreground" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-emerald-500 grid place-items-center ring-2 ring-background">
+              <CheckCircle2 className="h-3.5 w-3.5 text-white" />
+            </div>
           </div>
-          <div className="text-muted-foreground truncate">
-            মাত্র কিনেছেন <span className="text-foreground font-medium">{p.productTitle}</span>
-          </div>
-          <div className="text-[10px] text-muted-foreground/80 mt-0.5 flex items-center gap-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            {timeAgoBn(p.createdAt)} · ভেরিফায়েড অর্ডার
+
+          <div className="min-w-0 flex-1">
+            <div className="text-sm sm:text-base font-bold text-foreground truncate">
+              {p.name}
+              {p.city ? <span className="text-muted-foreground font-normal text-xs sm:text-sm"> · {p.city}</span> : null}
+            </div>
+            <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 leading-snug">
+              মাত্র কিনেছেন{" "}
+              <span className="text-foreground font-semibold">{p.productTitle}</span>
+            </div>
+            <div className="mt-2 flex items-center gap-2 text-[11px]">
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 font-semibold border border-emerald-500/30">
+                ✓ ভেরিফায়েড
+              </span>
+              <span className="text-muted-foreground">{timeAgoBn(p.createdAt)}</span>
+            </div>
           </div>
         </div>
-        <button
-          onClick={() => setDismissed(true)}
-          className="absolute top-2 right-2 h-6 w-6 grid place-items-center rounded-full hover:bg-accent text-muted-foreground"
-          aria-label="বন্ধ করুন"
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
       </div>
     </div>
   );
