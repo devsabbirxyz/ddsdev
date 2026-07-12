@@ -80,6 +80,7 @@ function CheckoutPage() {
   const [redeemPoints, setRedeemPoints] = useState<number>(0);
   const [showPayment, setShowPayment] = useState(false);
   const [modalStep, setModalStep] = useState<"methods" | "choice" | "manual">("methods");
+  const [payChoice, setPayChoice] = useState<"auto" | "manual" | null>(null);
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -166,6 +167,7 @@ function CheckoutPage() {
     if (!validateInfo()) return;
     setModalStep("methods");
     setMethodId("");
+    setPayChoice(null);
     setTrxId("");
     setTrxError(false);
     setShowPayment(true);
@@ -175,6 +177,7 @@ function CheckoutPage() {
     if (submitting) return;
     setShowPayment(false);
     setMethodId("");
+    setPayChoice(null);
     setTrxId("");
     setTrxError(false);
     setModalStep("methods");
@@ -434,7 +437,7 @@ function CheckoutPage() {
                         <button
                           key={m.id}
                           type="button"
-                          onClick={() => setMethodId(m.id)}
+                          onClick={() => { setMethodId(m.id); setPayChoice(null); }}
                           className="group grid place-items-center bg-white transition-all"
                           style={{
                             border: `${isSelected ? 2 : 1}px solid ${isSelected ? color : "#E5E7EB"}`,
@@ -454,6 +457,53 @@ function CheckoutPage() {
                       );
                     })}
                   </div>
+
+                  {/* Auto / Manual choice — appears after method selected */}
+                  {methodId && method && (
+                    <div className="mt-5 animate-fade-in">
+                      <div className="text-[13px] font-bold text-slate-700 mb-2">
+                        {brand?.label ?? method.name} — পেমেন্ট টাইপ বেছে নিন
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setPayChoice("auto")}
+                          className="flex items-center gap-2 p-3 text-left transition"
+                          style={{
+                            border: `${payChoice === "auto" ? 2 : 1}px solid ${payChoice === "auto" ? (brand?.color ?? "#1A56DB") : "#E5E7EB"}`,
+                            borderRadius: "12px",
+                            background: payChoice === "auto" ? `${brand?.color ?? "#1A56DB"}10` : "#fff",
+                          }}
+                        >
+                          <div className="h-9 w-9 shrink-0 rounded-full grid place-items-center" style={{ background: `${brand?.color ?? "#1A56DB"}22` }}>
+                            <Zap className="h-4 w-4" style={{ color: brand?.color ?? "#1A56DB" }} />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-extrabold text-[13px] text-slate-900">Automatic</div>
+                            <div className="text-[10px] text-slate-500">তাৎক্ষণিক</div>
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPayChoice("manual")}
+                          className="flex items-center gap-2 p-3 text-left transition"
+                          style={{
+                            border: `${payChoice === "manual" ? 2 : 1}px solid ${payChoice === "manual" ? (brand?.color ?? "#1A56DB") : "#E5E7EB"}`,
+                            borderRadius: "12px",
+                            background: payChoice === "manual" ? `${brand?.color ?? "#1A56DB"}10` : "#fff",
+                          }}
+                        >
+                          <div className="h-9 w-9 shrink-0 rounded-full grid place-items-center" style={{ background: `${brand?.color ?? "#1A56DB"}22` }}>
+                            <Hand className="h-4 w-4" style={{ color: brand?.color ?? "#1A56DB" }} />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-extrabold text-[13px] text-slate-900">Manual</div>
+                            <div className="text-[10px] text-slate-500">TrxID দিন</div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -586,7 +636,9 @@ function CheckoutPage() {
                 <button
                   onClick={() => {
                     if (!methodId) { toast.error("একটি পেমেন্ট মেথড বেছে নিন"); return; }
-                    setModalStep("choice");
+                    if (!payChoice) { toast.error("Automatic / Manual বেছে নিন"); return; }
+                    if (payChoice === "auto") { setShowComingSoon(true); return; }
+                    setModalStep("manual"); setTrxError(false);
                   }}
                   className="w-full text-center font-display font-bold transition hover:brightness-95"
                   style={{ color: "#1A56DB", fontSize: "20px" }}
