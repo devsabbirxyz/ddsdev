@@ -356,7 +356,23 @@ function ProductPage() {
                 <Heart className="h-4 w-4" />
               </button>
             </div>
+
+            {(isOutOfStock || selectedIsOut) && !isSubscription && (
+              <div className="mt-4">
+                <BackInStockNotify productId={product.id} variantId={selectedVariant?.id ?? null} />
+              </div>
+            )}
           </div>
+
+          {!isSubscription && variants.length >= 2 && (
+            <VariantCompareTable
+              variants={variants as any}
+              selectedId={variantId}
+              onSelect={setVariantId}
+              trackStock={trackStock}
+            />
+          )}
+
 
           <div className="mt-6 grid grid-cols-3 gap-3">
             {[
