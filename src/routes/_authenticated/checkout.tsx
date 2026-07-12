@@ -370,58 +370,86 @@ function CheckoutPage() {
       {/* ================= PAYMENT MODAL ================= */}
       {showPayment && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in"
-          style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 animate-fade-in"
+          style={{ background: "rgba(0,0,0,0.6)" }}
           onClick={closeModal}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-[480px] max-h-[92vh] overflow-y-auto animate-scale-in rounded-[20px] border border-white/10 shadow-2xl"
-            style={{ background: "rgba(13,13,26,0.98)" }}
+            className="relative w-full sm:max-w-[440px] max-h-[92vh] flex flex-col bg-white shadow-2xl animate-scale-in"
+            style={{ borderRadius: "20px 20px 0 0", color: "#111111" }}
           >
-            <button onClick={closeModal} className="absolute top-3 right-3 z-10 h-9 w-9 grid place-items-center rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition" aria-label="Close">
+            <style>{`@media (min-width: 640px){.pay-sheet{border-radius:20px !important}}`}</style>
+            <div className="pay-sheet contents" />
+
+            <button
+              onClick={closeModal}
+              className="absolute top-3 right-3 z-10 h-9 w-9 grid place-items-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition"
+              aria-label="Close"
+            >
               <X className="h-4 w-4" />
             </button>
 
-            <div className="p-5 sm:p-6">
-              {/* ============ STEP 1: METHOD LIST ============ */}
+            {/* ---------- Scrollable content ---------- */}
+            <div className="flex-1 overflow-y-auto px-5 sm:px-6 pt-6 pb-4">
+              {/* ============ STEP 1: METHOD GRID ============ */}
               {modalStep === "methods" && (
                 <div className="animate-fade-in">
-                  <div className="text-center mb-5 pt-2">
-                    <h2 className="font-display font-bold text-lg sm:text-xl text-white">পেমেন্ট পদ্ধতি বেছে নিন</h2>
-                    <div className="mt-2 font-display font-extrabold text-3xl sm:text-4xl" style={{ color: "#FF6B35" }}>{formatBDT(total)}</div>
+                  {/* Header — logo + site name */}
+                  <div className="flex flex-col items-center text-center">
+                    <div
+                      className="h-14 w-14 rounded-2xl grid place-items-center font-display font-black text-white text-xl shadow-md"
+                      style={{ background: "linear-gradient(135deg, #1A56DB, #2563EB)" }}
+                    >
+                      DSS
+                    </div>
+                    <div className="mt-2 text-[15px] font-semibold" style={{ color: "#6B7280" }}>DSS Digital</div>
+
+                    <div className="mt-3 flex items-center gap-2">
+                      <a href="/dashboard/support" className="h-9 w-9 grid place-items-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600" title="Support">🎧</a>
+                      <a href="/faq" className="h-9 w-9 grid place-items-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600" title="FAQ">❓</a>
+                      <a href="/about" className="h-9 w-9 grid place-items-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600" title="Info">ℹ️</a>
+                    </div>
                   </div>
 
-                  <div className="space-y-3">
+                  {/* Mobile Banking label bar */}
+                  <div
+                    className="mt-5 w-full text-center text-white font-bold text-sm tracking-wide py-2.5"
+                    style={{ background: "#1A56DB", borderRadius: "8px" }}
+                  >
+                    MOBILE BANKING
+                  </div>
+
+                  {/* 2×2 Grid */}
+                  <div className="mt-4 grid grid-cols-2 gap-3">
                     {methods.length === 0 && (
-                      <p className="text-center text-sm text-white/60 py-6">কোনো পেমেন্ট মেথড সক্রিয় নেই</p>
+                      <p className="col-span-2 text-center text-sm text-slate-500 py-6">কোনো পেমেন্ট মেথড সক্রিয় নেই</p>
                     )}
                     {methods.map((m) => {
                       const b = brandFor(m.name);
                       const logo = logoFor(m.name);
-                      const color = b?.color ?? "#7B2FBE";
+                      const color = b?.color ?? "#1A56DB";
+                      const isSelected = methodId === m.id;
                       return (
                         <button
                           key={m.id}
                           type="button"
-                          onClick={() => { setMethodId(m.id); setTrxId(""); setTrxError(false); setModalStep("choice"); }}
-                          className="group w-full flex items-center gap-3 rounded-[14px] p-4 text-left bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-white/20 transition-all hover:shadow-lg"
-                          style={{ borderLeft: `4px solid ${color}` }}
+                          onClick={() => setMethodId(m.id)}
+                          className="group grid place-items-center bg-white transition-all"
+                          style={{
+                            border: `${isSelected ? 2 : 1}px solid ${isSelected ? color : "#E5E7EB"}`,
+                            borderRadius: "12px",
+                            padding: "20px",
+                            minHeight: "96px",
+                          }}
+                          onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.borderColor = color; }}
+                          onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.borderColor = "#E5E7EB"; }}
                         >
-                          <div className="h-11 w-11 shrink-0 rounded-full grid place-items-center bg-white/95 overflow-hidden">
-                            {logo ? (
-                              <img src={logo} alt={b?.label ?? m.name} className="h-8 w-8 object-contain" />
-                            ) : (
-                              <span className="font-display font-extrabold text-xs" style={{ color }}>{(b?.label ?? m.name).slice(0, 2)}</span>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="font-display font-extrabold text-[15px] text-white">{b?.label ?? m.name}</div>
-                            <div className="text-[11px] text-white/60 mt-0.5">
-                              {m.name_en || (m.account_type ? `${m.account_type} · ${m.send_type ?? ""}` : "Mobile Financial Service")}
-                            </div>
-                          </div>
-                          <ChevronRight className="h-5 w-5 text-white/40 group-hover:text-white/70 group-hover:translate-x-0.5 transition" />
+                          {logo ? (
+                            <img src={logo} alt={b?.label ?? m.name} className="h-10 max-w-full object-contain" />
+                          ) : (
+                            <span className="font-display font-extrabold text-base" style={{ color }}>{b?.label ?? m.name}</span>
+                          )}
                         </button>
                       );
                     })}
@@ -432,13 +460,13 @@ function CheckoutPage() {
               {/* ============ STEP 2: AUTO / MANUAL CHOICE ============ */}
               {modalStep === "choice" && method && (
                 <div className="animate-fade-in">
-                  <div className="flex items-center gap-2 mb-5 pt-1">
-                    <button onClick={() => { setMethodId(""); setModalStep("methods"); }} className="h-9 w-9 grid place-items-center rounded-full bg-white/5 hover:bg-white/10 text-white/80" aria-label="Back">
+                  <div className="flex items-center gap-2 mb-5">
+                    <button onClick={() => { setModalStep("methods"); }} className="h-9 w-9 grid place-items-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700" aria-label="Back">
                       <ArrowLeft className="h-4 w-4" />
                     </button>
                     <div className="flex items-center gap-2">
-                      {logoFor(method.name) && <img src={logoFor(method.name)!} alt="" className="h-7 w-7 object-contain bg-white/95 rounded-md p-0.5" />}
-                      <h2 className="font-display font-bold text-white text-base sm:text-lg">
+                      {logoFor(method.name) && <img src={logoFor(method.name)!} alt="" className="h-7 w-7 object-contain" />}
+                      <h2 className="font-display font-bold text-slate-900 text-base sm:text-lg">
                         {brand?.label ?? method.name} দিয়ে পেমেন্ট করুন
                       </h2>
                     </div>
@@ -448,33 +476,33 @@ function CheckoutPage() {
                     <button
                       type="button"
                       onClick={() => setShowComingSoon(true)}
-                      className="w-full flex items-center gap-3 rounded-[14px] p-4 text-left bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-white/20 transition"
-                      style={{ borderLeft: `4px solid ${brand?.color ?? "#7B2FBE"}` }}
+                      className="w-full flex items-center gap-3 rounded-[14px] p-4 text-left bg-white hover:bg-slate-50 transition"
+                      style={{ border: `1px solid #E5E7EB`, borderLeft: `4px solid ${brand?.color ?? "#1A56DB"}` }}
                     >
-                      <div className="h-11 w-11 shrink-0 rounded-full grid place-items-center" style={{ background: `${brand?.color ?? "#7B2FBE"}22` }}>
-                        <Zap className="h-5 w-5" style={{ color: brand?.color ?? "#7B2FBE" }} />
+                      <div className="h-11 w-11 shrink-0 rounded-full grid place-items-center" style={{ background: `${brand?.color ?? "#1A56DB"}22` }}>
+                        <Zap className="h-5 w-5" style={{ color: brand?.color ?? "#1A56DB" }} />
                       </div>
                       <div className="flex-1">
-                        <div className="font-display font-extrabold text-[15px] text-white">Automatic</div>
-                        <div className="text-[11px] text-white/60 mt-0.5">তাৎক্ষণিক ভেরিফিকেশন</div>
+                        <div className="font-display font-extrabold text-[15px] text-slate-900">Automatic</div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">তাৎক্ষণিক ভেরিফিকেশন</div>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-white/40" />
+                      <ChevronRight className="h-5 w-5 text-slate-400" />
                     </button>
 
                     <button
                       type="button"
                       onClick={() => { setModalStep("manual"); setTrxError(false); }}
-                      className="w-full flex items-center gap-3 rounded-[14px] p-4 text-left bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-white/20 transition"
-                      style={{ borderLeft: `4px solid ${brand?.color ?? "#7B2FBE"}` }}
+                      className="w-full flex items-center gap-3 rounded-[14px] p-4 text-left bg-white hover:bg-slate-50 transition"
+                      style={{ border: `1px solid #E5E7EB`, borderLeft: `4px solid ${brand?.color ?? "#1A56DB"}` }}
                     >
-                      <div className="h-11 w-11 shrink-0 rounded-full grid place-items-center" style={{ background: `${brand?.color ?? "#7B2FBE"}22` }}>
-                        <Hand className="h-5 w-5" style={{ color: brand?.color ?? "#7B2FBE" }} />
+                      <div className="h-11 w-11 shrink-0 rounded-full grid place-items-center" style={{ background: `${brand?.color ?? "#1A56DB"}22` }}>
+                        <Hand className="h-5 w-5" style={{ color: brand?.color ?? "#1A56DB" }} />
                       </div>
                       <div className="flex-1">
-                        <div className="font-display font-extrabold text-[15px] text-white">Manual</div>
-                        <div className="text-[11px] text-white/60 mt-0.5">নিজে Transaction ID দিন</div>
+                        <div className="font-display font-extrabold text-[15px] text-slate-900">Manual</div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">নিজে Transaction ID দিন</div>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-white/40" />
+                      <ChevronRight className="h-5 w-5 text-slate-400" />
                     </button>
                   </div>
                 </div>
@@ -483,31 +511,30 @@ function CheckoutPage() {
               {/* ============ STEP 3: MANUAL PAYMENT FORM ============ */}
               {modalStep === "manual" && method && (
                 <div className="animate-fade-in">
-                  <div className="flex items-center gap-2 mb-4 pt-1">
-                    <button onClick={() => setModalStep("choice")} className="h-9 w-9 grid place-items-center rounded-full bg-white/5 hover:bg-white/10 text-white/80" aria-label="Back">
+                  <div className="flex items-center gap-2 mb-4">
+                    <button onClick={() => setModalStep("choice")} className="h-9 w-9 grid place-items-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700" aria-label="Back">
                       <ArrowLeft className="h-4 w-4" />
                     </button>
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      {logoFor(method.name) && <img src={logoFor(method.name)!} alt="" className="h-8 w-8 object-contain bg-white/95 rounded-md p-0.5" />}
+                      {logoFor(method.name) && <img src={logoFor(method.name)!} alt="" className="h-8 w-8 object-contain" />}
                       <div className="min-w-0">
-                        <div className="font-display font-extrabold text-white text-base leading-tight">{brand?.label ?? method.name}</div>
-                        <div className="text-[10px] text-white/60">Manual Payment</div>
+                        <div className="font-display font-extrabold text-slate-900 text-base leading-tight">{brand?.label ?? method.name} Manual</div>
                       </div>
                     </div>
-                    <div className="font-display font-extrabold text-lg" style={{ color: "#FF6B35" }}>{formatBDT(total)}</div>
                   </div>
 
                   <input
                     value={trxId}
                     onChange={(e) => { setTrxId(e.target.value); if (trxError) setTrxError(false); }}
                     placeholder="Enter Transaction ID"
-                    className={`w-full rounded-[10px] bg-white text-slate-900 placeholder:text-slate-400 px-4 py-3 text-sm font-semibold outline-none transition ${trxError ? "ring-2 ring-red-500 border-2 border-red-500" : "focus:ring-2 focus:ring-white/60"}`}
+                    className={`w-full bg-white text-slate-900 placeholder:text-slate-400 px-4 py-3 text-sm font-semibold outline-none transition ${trxError ? "ring-2 ring-red-500" : "focus:ring-2 focus:ring-slate-300"}`}
+                    style={{ border: `1px solid ${trxError ? "#EF4444" : "#DDDDDD"}`, borderRadius: "10px" }}
                   />
-                  {trxError && <div className="mt-1.5 text-[11px] font-semibold text-red-400">Transaction ID দিন</div>}
+                  {trxError && <div className="mt-1.5 text-[11px] font-semibold text-red-600">Transaction ID দিন</div>}
 
                   <div
                     className="mt-4 rounded-2xl p-5 text-white"
-                    style={{ background: brand?.color ?? "#7B2FBE" }}
+                    style={{ background: brand?.color ?? "#1A56DB" }}
                   >
                     <ul className="space-y-3 text-sm leading-relaxed">
                       {instructionLines.length > 0 ? (
@@ -525,30 +552,49 @@ function CheckoutPage() {
                       )}
                       <li className="flex flex-wrap gap-2 items-center">
                         <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" />
-                        <span>Enter the Receiver Account Number:</span>
+                        <span>Receiver Number:</span>
                         <span className="font-display font-extrabold" style={{ color: "#FFD700" }}>{method.account_number || "—"}</span>
                         <button onClick={copyNumber} className="inline-flex items-center gap-1 rounded-md bg-black/25 hover:bg-black/40 px-2 py-1 text-[11px] font-bold text-white">
                           <Copy className="h-3 w-3" /> {copied ? "Copied!" : "Copy"}
                         </button>
                       </li>
-                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Enter the amount: <b style={{ color: "#FFD700" }}>{Math.round(total)}</b></span></li>
-                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Now enter your PIN to confirm.</span></li>
-                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Done! You will receive a confirmation message.</span></li>
-                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Put the <b style={{ color: "#FFD700" }}>Transaction ID</b> in the upper box and press <b style={{ color: "#FFD700" }}>VERIFY</b></span></li>
+                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Amount: <b style={{ color: "#FFD700" }}>৳{Math.round(total)}</b></span></li>
+                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Enter PIN to confirm.</span></li>
+                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>You will receive a confirmation SMS.</span></li>
+                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Put <b style={{ color: "#FFD700" }}>Transaction ID</b> in the box above and press <b style={{ color: "#FFD700" }}>VERIFY</b></span></li>
                     </ul>
                   </div>
 
                   <button
                     onClick={submit}
                     disabled={submitting}
-                    className="mt-4 w-full rounded-[14px] py-[18px] text-base font-extrabold text-white tracking-wide inline-flex items-center justify-center gap-2 disabled:opacity-60 transition hover:brightness-110"
-                    style={{ background: brand?.color ?? "#7B2FBE" }}
+                    className="mt-4 w-full py-[18px] text-base font-extrabold text-white tracking-wide inline-flex items-center justify-center gap-2 disabled:opacity-60 transition hover:brightness-110"
+                    style={{ background: brand?.color ?? "#1A56DB", borderRadius: "14px" }}
                   >
                     {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : null} VERIFY
                   </button>
                 </div>
               )}
             </div>
+
+            {/* ---------- Fixed bottom bar (Step 1 only) ---------- */}
+            {modalStep === "methods" && (
+              <div
+                className="shrink-0 px-5 py-4"
+                style={{ borderTop: "1px solid #E5E7EB", background: "#FFFFFF" }}
+              >
+                <button
+                  onClick={() => {
+                    if (!methodId) { toast.error("একটি পেমেন্ট মেথড বেছে নিন"); return; }
+                    setModalStep("choice");
+                  }}
+                  className="w-full text-center font-display font-bold transition hover:brightness-95"
+                  style={{ color: "#1A56DB", fontSize: "20px" }}
+                >
+                  Pay ৳{Math.round(total)} BDT
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
