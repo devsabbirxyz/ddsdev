@@ -7,6 +7,10 @@ import { productBySlugQuery, productReviewsQuery, productsQuery, productQuestion
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { ProductViewTracker } from "@/components/storefront/ProductViewTracker";
 import { RecentlyViewed } from "@/components/storefront/RecentlyViewed";
+import { VariantCompareTable } from "@/components/storefront/VariantCompareTable";
+import { BackInStockNotify } from "@/components/storefront/BackInStockNotify";
+import { RecentSalesCount } from "@/components/storefront/RecentSalesCount";
+import { ProductStickyBar } from "@/components/storefront/ProductStickyBar";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { askQuestion, answerQuestion } from "@/lib/qna.functions";
@@ -216,6 +220,9 @@ function ProductPage() {
             </span>
           </div>
 
+          <RecentSalesCount productId={product.id} />
+
+
           {product.short_description && (
             <p className="mt-4 text-muted-foreground leading-relaxed">{product.short_description}</p>
           )}
@@ -349,7 +356,23 @@ function ProductPage() {
                 <Heart className="h-4 w-4" />
               </button>
             </div>
+
+            {(isOutOfStock || selectedIsOut) && !isSubscription && (
+              <div className="mt-4">
+                <BackInStockNotify productId={product.id} variantId={selectedVariant?.id ?? null} />
+              </div>
+            )}
           </div>
+
+          {!isSubscription && variants.length >= 2 && (
+            <VariantCompareTable
+              variants={variants as any}
+              selectedId={variantId}
+              onSelect={setVariantId}
+              trackStock={trackStock}
+            />
+          )}
+
 
           <div className="mt-6 grid grid-cols-3 gap-3">
             {[
@@ -416,7 +439,34 @@ function ProductPage() {
       )}
 
       <RecentlyViewed excludeId={product.id} />
+
+      <ProductStickyBar
+        title={product.title}
+        image={images[0]?.image_url ?? null}
+        price={Number(unitPrice ?? 0)}
+        regularPrice={hasDiscount ? Number(unitRegular ?? 0) : null}
+        disabled={(isSubscription && !selectedPlan) || isOutOfStock || selectedIsOut}
+        disabledLabel={isOutOfStock || selectedIsOut ? "স্টকে নেই" : "প্ল্যান বেছে নিন"}
+        ctaLabel={isSubscription ? "সাবস্ক্রাইব" : "কার্টে যোগ"}
+        onAdd={() => {
+          if (isSubscription && !selectedPlan) { toast.error("প্ল্যান বেছে নিন"); return; }
+          addItem({
+            productId: product.id,
+            slug: product.slug,
+            title: product.title,
+            price: Number(unitPrice ?? 0),
+            image: images[0]?.image_url ?? null,
+            variantId: isSubscription ? null : selectedVariant?.id ?? null,
+            variantLabel: isSubscription ? null : selectedVariant?.label ?? null,
+            planId: isSubscription ? selectedPlan?.id ?? null : null,
+            planLabel: isSubscription ? selectedPlan?.name ?? null : null,
+            quantity: isSubscription ? 1 : qty,
+          });
+          toast.success("কার্টে যোগ হয়েছে");
+        }}
+      />
     </div>
+
   );
 }
 

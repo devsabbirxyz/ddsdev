@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { siteSettingsQuery } from "@/lib/site-settings";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { InstantSearch } from "@/components/storefront/InstantSearch";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -57,6 +58,8 @@ export function Navbar() {
 
         {/* Right cluster */}
         <div className="hidden lg:flex items-center gap-2">
+          <InstantSearch className="w-64 xl:w-80" />
+
 
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
