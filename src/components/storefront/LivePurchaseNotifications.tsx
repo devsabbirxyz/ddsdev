@@ -24,8 +24,8 @@ export function LivePurchaseNotifications() {
   const { data } = useQuery({
     queryKey: ["live-purchases"],
     queryFn: () => getRecentPurchases(),
-    refetchInterval: 5 * 60_000,
-    staleTime: 60_000,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
   });
 
   const purchases = useMemo<Purchase[]>(() => data?.purchases ?? [], [data]);
