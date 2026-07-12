@@ -167,6 +167,7 @@ function CheckoutPage() {
     if (!validateInfo()) return;
     setModalStep("methods");
     setMethodId("");
+    setPayChoice(null);
     setTrxId("");
     setTrxError(false);
     setShowPayment(true);
@@ -176,6 +177,7 @@ function CheckoutPage() {
     if (submitting) return;
     setShowPayment(false);
     setMethodId("");
+    setPayChoice(null);
     setTrxId("");
     setTrxError(false);
     setModalStep("methods");
