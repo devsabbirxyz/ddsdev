@@ -1,65 +1,51 @@
-# One-Page Checkout Plan
+## Admin Dashboard Redesign — Reference-Style Purple Dark Theme
 
-Goal: এক পেজেই সব — Order Summary, Quantity, Coupon, Customer Info, Price Total, Pay Now, Payment Method + TrxID form। কোনো নতুন ফিচার/পেমেন্ট মেথড যোগ হবে না, শুধু existing multi-page flow এক পেজে সাজানো হবে।
+রেফারেন্স ইমেজের premium purple-accent dark admin UI-এর মতো করে পুরো `/admin` shell ও overview page রিডিজাইন করব। সব sub-page (orders, products, customers ইত্যাদি) একই ভিজ্যুয়াল ভাষায় আসবে।
 
-## Scope
+### ১. Admin Shell (`src/routes/admin.tsx`)
 
-- Product page (`src/routes/product.$slug.tsx`) হবে primary one-page checkout entry: "এখনই কিনুন" ক্লিকে একই পেজে নিচে full checkout section expand হবে (route change হবে না)।
-- `/cart` এবং `/checkout` routes থাকবে (backward compatibility — direct link/history), কিন্তু default flow product page থেকেই complete হবে।
-- Payment methods, coupon validation, wallet redeem, `placeOrder` server fn, telegram notify — সব existing logic reuse হবে।
+- **Sidebar**: শীর্ষে স্টোর ব্র্যান্ড ব্লক (logo + "DDS-Digital / Admin Panel"), তারপর section labels (MAIN / COMMERCE / CMS / SETTINGS) ছোট uppercase muted style-এ। Active item: soft purple gradient pill + left glow bar। Inactive: muted, hover-এ subtle `bg-white/5`।
+- **Top header**: বাম দিকে hamburger + page title (route-derived); ডান দিকে দুইটা primary action button — **`+ New Product`** (gradient purple) এবং **`New Coupon`** (outline)। Search বার এবং notification/message আইকন থাকবে current-এর মতোই।
+- **Ambient**: বর্তমান radial purple glow রাখব, তবে density কমিয়ে reference-এর মতো পরিচ্ছন্ন করব।
 
-## Layout
+### ২. Overview Page (`src/routes/admin/index.tsx`)
 
-Desktop (≥lg): 2-column grid inside product page's new `<OnePageCheckout>` section
-```text
-┌──────────────── 60% ────────────────┬──────── 40% ────────┐
-│ 1. Order Summary (thumb+title+var)  │ 4. Customer Info    │
-│ 2. Quantity (digital=fixed 1)       │ 5. Price Summary    │
-│ 3. Coupon input                     │ 6. Pay Now button   │
-└─────────────────────────────────────┴─────────────────────┘
-             ↓ Pay Now click ↓ (same page, slide-down)
-┌────────────── Payment Section (full width) ──────────────┐
-│  bKash │ Nagad │ Rocket │ Upay  (2×2 grid)               │
-│  → selected method এর নিচে TrxID form fade-in            │
-│  → "অর্ডার কনফার্ম করুন" submit                          │
-└──────────────────────────────────────────────────────────┘
+শুধু **৪টা stat card** সেকশন — reference-এর হুবহু স্টাইলে:
+
 ```
-Mobile: সব section stacked top→bottom, same order।
+┌──────────────┬──────────────┬──────────────┬──────────────┐
+│ TODAY'S SALES│ THIS MONTH   │ TOTAL DUE    │ CUSTOMERS    │
+│ purple bar   │ blue bar     │ amber bar    │ green bar    │
+│ 💳 icon      │ 📊 icon      │ ⏰ icon       │ 👥 icon       │
+│ ৳ big value  │ ৳ big value  │ ৳ big value  │ count        │
+│ subtle meta  │ subtle meta  │ subtle meta  │ subtle meta  │
+└──────────────┴──────────────┴──────────────┴──────────────┘
+```
 
-## Files to change
+- Cards: `glass-card` + top colored border-glow (purple/blue/amber/emerald), rounded-2xl, বড় bold ৳ value, নিচে muted meta line (e.g. "36 orders today")।
+- বাকি existing sections (charts, recent orders ইত্যাদি যদি থাকে) index page থেকে সরানো হবে — শুধু ৪ কার্ড থাকবে reference-এর মতো focused overview হিসেবে।
 
-1. **`src/components/storefront/OnePageCheckout.tsx`** (new)
-   - Self-contained component: props `{ product, selectedVariant, selectedPlan, quantity, setQuantity }`.
-   - Internal state: `name, email, phone, customerInput, couponCode, coupon, redeemPoints, methodId, trxId, step (info|payment), submitting`.
-   - Reuses: `useCart` for adding+`clear`, `useAuth`, `walletQuery`, `paymentMethodsQuery` (moved from checkout.tsx into shared spot or duplicated here), `placeOrder`, `notify`, coupon lookup logic (copied from checkout.tsx verbatim — same Supabase query + validation)।
-   - "Pay Now" click → validates info → `setStep('payment')` → smooth `max-height` transition reveals payment cards।
-   - Method select → renders existing bKash/Nagad/Rocket/Upay card grid (extracted from current `PaymentSelect` in checkout.tsx) + copy-number button + TrxID input।
-   - Submit → calls `placeOrder` directly with single-item payload (product+variant+plan+quantity), fires telegram, shows success modal, then routes to `/dashboard/orders`।
-   - Guest handling: if `!user`, show "লগইন করুন" button linking to `/login?redirect=/product/<slug>` (existing behaviour — no new guest checkout logic)।
+### ৩. Sub-pages Consistency
 
-2. **`src/routes/product.$slug.tsx`**
-   - Replace current "কার্টে যোগ করুন / এখনই কিনুন" block: keep "কার্টে যোগ করুন" as secondary, and make "এখনই কিনুন" scroll to / mount `<OnePageCheckout>` section directly below product details।
-   - Pass current `product`, `selectedVariant`, `selectedPlan`, `quantity` down।
-   - `ProductStickyBar` "এখনই কিনুন" also scrolls to same section।
+`admin/orders`, `admin/products`, `admin/customers`, `admin/coupons` ইত্যাদি সব page-এর page-header + table/card wrapper একই style-এ ইউনিফাই করব:
 
-3. **`src/routes/cart.tsx`** — keep as-is (still reachable via `/cart` link); its "চেকআউট" button still goes to `/checkout` for multi-item carts।
+- Page header: বড় display heading + muted subtitle + right-aligned primary action button (gradient purple)।
+- Table/list cards: `glass-card rounded-2xl`, subtle border, hover glow।
+- Status badges: purple/emerald/amber/red pill with soft tinted bg।
+- Form inputs: dark glass with purple focus ring।
 
-4. **`src/routes/_authenticated/checkout.tsx`** — keep as-is (multi-item fallback / direct navigation)। No deletion।
+কোনো business logic, query, বা data flow পরিবর্তন হবে না — শুধু presentation layer।
 
-5. **`src/lib/payment-methods.query.ts`** (new small module)
-   - Extract `paymentMethodsQuery` + `METHOD_BRAND`/`METHOD_THEME` maps so both `checkout.tsx` and `OnePageCheckout.tsx` import from one place (avoid duplication)।
+### ৪. Design Tokens
 
-## Animations (Tailwind + inline style)
-- Payment section reveal: wrapper with `overflow-hidden transition-[max-height] duration-300 ease-out`, toggled between `max-h-0` and `max-h-[2000px]`.
-- Method form: `animate-fade-in` (existing keyframe)।
-- Submit button: `Loader2` spinner while `submitting`।
-- Success: existing `toast.success` + navigate after 800ms (matches current behaviour)।
+`src/styles.css`-এ admin-scoped tokens যোগ/আপডেট করব (existing Midnight Indigo palette রেখে):
 
-## Explicitly NOT changing
-- No new payment methods, no new DB tables, no schema migration।
-- No changes to `placeOrder` server fn, coupon rules, wallet logic, telegram notify।
-- No color/font changes — reuses existing `glass-card`, `bg-gradient-brand`, `text-gradient-brand`, `shadow-glow`।
-- Multi-item cart flow (add multiple products then `/cart` → `/checkout`) remains functional untouched।
+- `--admin-accent-purple`, `--admin-accent-blue`, `--admin-accent-amber`, `--admin-accent-emerald` — stat card border glow-এর জন্য।
+- `--gradient-admin-primary` — purple button gradient।
+- `.admin-theme` scope-এই সীমিত রাখব যাতে storefront-এ প্রভাব না পড়ে।
 
-## Open question
-Digital-only site — quantity by default fixed at 1 across all products, OR only fixed when `product.type === 'digital'` (physical/other শো করলে −/+ button)? Current product page already has a quantity stepper for every product; আমি default রাখব "সব product-এ stepper (stock limit-এ + disabled)" যদি অন্য কিছু না বলেন।
+### Technical Notes
+
+- Files touched: `src/routes/admin.tsx` (shell), `src/routes/admin/index.tsx` (overview), `src/styles.css` (admin tokens), এবং sub-page গুলোর page-header + wrapper class (products/orders/customers/coupons/sellers/withdrawals/categories ইত্যাদি — শুধু className ও header markup)।
+- কোনো data query, server function, RLS, বা schema পরিবর্তন নেই।
+- Mobile: sidebar drawer + stat cards stack single column।
