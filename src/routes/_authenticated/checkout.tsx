@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { CheckCircle2, Tag, Loader2, Copy, Wallet, CreditCard, Minus, Plus, Trash2 } from "lucide-react";
+import { CheckCircle2, Tag, Loader2, Copy, Wallet, CreditCard, Minus, Plus, Trash2, X, Zap, AlertTriangle, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
@@ -29,13 +29,14 @@ function logoFor(name?: string | null) {
   return null;
 }
 
-const METHOD_BRAND: Record<string, { label: string; color: string }> = {
-  bkash: { label: "bKash", color: "#E2136E" },
-  nagad: { label: "Nagad", color: "#F37021" },
-  rocket: { label: "Rocket", color: "#8C3494" },
-  upay: { label: "Upay", color: "#FFCB05" },
+type BrandInfo = { label: string; gradient: string; color: string };
+const METHOD_BRAND: Record<string, BrandInfo> = {
+  bkash: { label: "bKash", gradient: "linear-gradient(135deg, #D4106C, #E2136E)", color: "#E2136E" },
+  nagad: { label: "Nagad", gradient: "linear-gradient(135deg, #F15A22, #FF7A45)", color: "#F15A22" },
+  rocket: { label: "Rocket", gradient: "linear-gradient(135deg, #8B1FA8, #A020C8)", color: "#8B1FA8" },
+  upay: { label: "Upay", gradient: "linear-gradient(135deg, #0066CC, #0088FF)", color: "#0066CC" },
 };
-function brandFor(name?: string | null) {
+function brandFor(name?: string | null): BrandInfo | null {
   if (!name) return null;
   const k = name.toLowerCase().replace(/\s+/g, "");
   for (const key of Object.keys(METHOD_BRAND)) if (k.includes(key)) return METHOD_BRAND[key];
@@ -78,10 +79,11 @@ function CheckoutPage() {
   const [couponMsg, setCouponMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [redeemPoints, setRedeemPoints] = useState<number>(0);
   const [showPayment, setShowPayment] = useState(false);
+  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState(false);
-  const paymentSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user?.email && !email) setEmail(user.email);
@@ -89,6 +91,7 @@ function CheckoutPage() {
   }, [user?.email]);
 
   const method = methods.find((m) => m.id === methodId);
+  const brand = brandFor(method?.name);
   const discount = coupon?.discount ?? 0;
   const maxRedeem = useMemo(
     () => Math.max(0, Math.min(walletBalance, subtotal - discount)),
@@ -160,7 +163,13 @@ function CheckoutPage() {
     if (items.length === 0) { toast.error("কার্ট খালি"); return; }
     if (!validateInfo()) return;
     setShowPayment(true);
-    setTimeout(() => paymentSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 320);
+  };
+
+  const closeModal = () => {
+    if (submitting) return;
+    setShowPayment(false);
+    setMethodId("");
+    setTrxId("");
   };
 
   const copyNumber = async () => {
@@ -177,7 +186,6 @@ function CheckoutPage() {
   const submit = async () => {
     if (!user) { toast.error("লগইন করুন"); return; }
     if (items.length === 0) { toast.error("কার্ট খালি"); return; }
-    if (!validateInfo()) return;
     if (!methodId || !method) { toast.error("পেমেন্ট মেথড সিলেক্ট করুন"); return; }
     if (!trxId.trim()) { toast.error("Transaction ID দিন"); return; }
 
@@ -218,9 +226,10 @@ function CheckoutPage() {
           trxId: trxId.trim(),
         });
       }
+      const orderId = (result as any).orderId ?? (result as any).id ?? "";
       clear();
-      toast.success("✅ অর্ডার সফলভাবে জমা হয়েছে!");
-      setTimeout(() => nav({ to: "/dashboard/orders" }), 800);
+      setShowPayment(false);
+      setSuccessOrderId(String(orderId || "DSS-" + Date.now().toString().slice(-6)));
     } catch (e: any) {
       console.error("Order create failed:", e);
       toast.error(e?.message ?? "অর্ডার তৈরি ব্যর্থ");
@@ -229,7 +238,7 @@ function CheckoutPage() {
     }
   };
 
-  if (items.length === 0) {
+  if (items.length === 0 && !successOrderId) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
         <h1 className="font-display font-bold text-2xl">কার্ট খালি</h1>
@@ -238,14 +247,15 @@ function CheckoutPage() {
     );
   }
 
+  const instructionLines = (method?.instructions || "").split("\n").map((l) => l.trim()).filter(Boolean);
+
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10">
       <h1 className="font-display font-bold text-2xl sm:text-3xl mb-6">চেকআউট</h1>
 
       <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6">
-        {/* ============ LEFT: Order + Coupon ============ */}
+        {/* LEFT */}
         <div className="space-y-5">
-          {/* Order Summary */}
           <section className="glass-card rounded-2xl p-5">
             <h2 className="font-display font-bold text-lg mb-4">অর্ডার সারমর্ম</h2>
             <div className="space-y-3">
@@ -268,22 +278,9 @@ function CheckoutPage() {
                         <span className="text-xs text-muted-foreground">সাবস্ক্রিপশন × 1</span>
                       ) : (
                         <div className="inline-flex items-center rounded-lg glass p-0.5">
-                          <button
-                            onClick={() => updateQty(it.productId, it.quantity - 1, it.variantId)}
-                            className="grid h-7 w-7 place-items-center rounded-md hover:bg-accent disabled:opacity-40"
-                            disabled={it.quantity <= 1}
-                            aria-label="কমান"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </button>
+                          <button onClick={() => updateQty(it.productId, it.quantity - 1, it.variantId)} className="grid h-7 w-7 place-items-center rounded-md hover:bg-accent disabled:opacity-40" disabled={it.quantity <= 1} aria-label="কমান"><Minus className="h-3 w-3" /></button>
                           <span className="px-2.5 text-xs font-semibold min-w-6 text-center">{it.quantity}</span>
-                          <button
-                            onClick={() => updateQty(it.productId, it.quantity + 1, it.variantId)}
-                            className="grid h-7 w-7 place-items-center rounded-md hover:bg-accent"
-                            aria-label="বাড়ান"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </button>
+                          <button onClick={() => updateQty(it.productId, it.quantity + 1, it.variantId)} className="grid h-7 w-7 place-items-center rounded-md hover:bg-accent" aria-label="বাড়ান"><Plus className="h-3 w-3" /></button>
                         </div>
                       )}
                       <div className="font-display font-bold text-sm text-gradient-brand">
@@ -291,45 +288,25 @@ function CheckoutPage() {
                       </div>
                     </div>
                   </div>
-                  <button
-                    onClick={() => removeItem(it.productId, it.variantId)}
-                    className="rounded-lg p-1.5 hover:bg-accent text-muted-foreground hover:text-destructive transition"
-                    aria-label="Remove"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                  <button onClick={() => removeItem(it.productId, it.variantId)} className="rounded-lg p-1.5 hover:bg-accent text-muted-foreground hover:text-destructive transition" aria-label="Remove"><Trash2 className="h-3.5 w-3.5" /></button>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* Coupon */}
           <section className="glass-card rounded-2xl p-5">
             <h2 className="font-display font-bold text-lg mb-3 inline-flex items-center gap-2">
               <Tag className="h-4 w-4 text-primary" /> কুপন কোড
             </h2>
             <div className="flex gap-2">
-              <input
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                placeholder="কুপন কোড লিখুন"
-                className="flex-1 rounded-xl glass px-4 py-2.5 text-sm uppercase outline-none focus:ring-2 focus:ring-primary/40"
-              />
-              <button
-                onClick={applyCoupon}
-                className="rounded-xl bg-gradient-brand px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition"
-              >
-                প্রয়োগ
-              </button>
+              <input value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="কুপন কোড লিখুন" className="flex-1 rounded-xl glass px-4 py-2.5 text-sm uppercase outline-none focus:ring-2 focus:ring-primary/40" />
+              <button onClick={applyCoupon} className="rounded-xl bg-gradient-brand px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition">প্রয়োগ</button>
             </div>
             {couponMsg && (
-              <div className={`mt-2 text-xs font-semibold ${couponMsg.ok ? "text-primary" : "text-destructive"}`}>
-                {couponMsg.text}
-              </div>
+              <div className={`mt-2 text-xs font-semibold ${couponMsg.ok ? "text-primary" : "text-destructive"}`}>{couponMsg.text}</div>
             )}
           </section>
 
-          {/* Wallet (optional) */}
           {walletBalance > 0 && (
             <section className="glass-card rounded-2xl p-5">
               <h2 className="font-display font-bold text-lg mb-3 inline-flex items-center gap-2">
@@ -337,32 +314,17 @@ function CheckoutPage() {
                 <span className="text-xs text-muted-foreground font-normal">(ব্যালেন্স: {walletBalance})</span>
               </h2>
               <div className="flex gap-2">
-                <input
-                  type="number"
-                  min={0}
-                  max={maxRedeem}
-                  value={redeemPoints || ""}
-                  onChange={(e) => setRedeemPoints(Math.max(0, Math.min(maxRedeem, Number(e.target.value) || 0)))}
-                  placeholder="0"
-                  className="flex-1 rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40"
-                />
-                <button
-                  onClick={() => setRedeemPoints(maxRedeem)}
-                  className="rounded-xl glass px-4 py-2.5 text-xs font-semibold hover:bg-accent"
-                >
-                  সর্বোচ্চ
-                </button>
+                <input type="number" min={0} max={maxRedeem} value={redeemPoints || ""} onChange={(e) => setRedeemPoints(Math.max(0, Math.min(maxRedeem, Number(e.target.value) || 0)))} placeholder="0" className="flex-1 rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+                <button onClick={() => setRedeemPoints(maxRedeem)} className="rounded-xl glass px-4 py-2.5 text-xs font-semibold hover:bg-accent">সর্বোচ্চ</button>
               </div>
               {safeRedeem > 0 && (
-                <div className="mt-2 text-xs text-primary inline-flex items-center gap-1">
-                  <CheckCircle2 className="h-3 w-3" /> − {formatBDT(safeRedeem)} (1 পয়েন্ট = 1৳)
-                </div>
+                <div className="mt-2 text-xs text-primary inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> − {formatBDT(safeRedeem)} (1 পয়েন্ট = 1৳)</div>
               )}
             </section>
           )}
         </div>
 
-        {/* ============ RIGHT: Customer Info + Price + Pay Now ============ */}
+        {/* RIGHT */}
         <aside className="space-y-5 lg:sticky lg:top-24 h-fit">
           <section className="glass-card rounded-2xl p-5">
             <h2 className="font-display font-bold text-lg mb-4">কাস্টমার তথ্য</h2>
@@ -372,14 +334,7 @@ function CheckoutPage() {
               <Field id="field-email" label="ইমেইল *" value={email} onChange={(v) => { setEmail(v); if (errors.email) setErrors({ ...errors, email: false }); }} placeholder="you@example.com" type="email" error={!!errors.email} />
               <div>
                 <label className="text-xs font-semibold mb-1.5 block">প্রোডাক্টের জন্য তথ্য (ইমেইল/ইউজারনেম) — ঐচ্ছিক</label>
-                <textarea
-                  id="field-customerInput"
-                  value={customerInput}
-                  onChange={(e) => setCustomerInput(e.target.value)}
-                  rows={2}
-                  placeholder="যেকোনো অতিরিক্ত তথ্য"
-                  className="w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40"
-                />
+                <textarea id="field-customerInput" value={customerInput} onChange={(e) => setCustomerInput(e.target.value)} rows={2} placeholder="যেকোনো অতিরিক্ত তথ্য" className="w-full rounded-xl glass px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
               </div>
             </div>
           </section>
@@ -396,120 +351,171 @@ function CheckoutPage() {
               </div>
             </div>
 
-            <button
-              onClick={handlePayNow}
-              disabled={showPayment}
-              className="mt-4 w-full rounded-2xl bg-gradient-brand px-6 py-3.5 text-base font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition inline-flex items-center justify-center gap-2 disabled:opacity-60 disabled:hover:scale-100"
-            >
-              <CreditCard className="h-5 w-5" /> {showPayment ? "নিচে পেমেন্ট সিলেক্ট করুন" : "এখনই পেমেন্ট করুন"}
+            <button onClick={handlePayNow} className="mt-4 w-full rounded-2xl bg-gradient-brand px-6 py-3.5 text-base font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition inline-flex items-center justify-center gap-2">
+              <CreditCard className="h-5 w-5" /> এখনই পেমেন্ট করুন
             </button>
             <p className="mt-2 text-[11px] text-center text-muted-foreground">অ্যাডমিন verify করার পর ডেলিভারি হবে।</p>
           </section>
         </aside>
       </div>
 
-      {/* ============ Payment Section (expand on Pay Now) ============ */}
-      <div
-        ref={paymentSectionRef}
-        style={{ maxHeight: showPayment ? 3000 : 0 }}
-        className="overflow-hidden transition-[max-height] duration-500 ease-out"
-      >
-        <section className="glass-card rounded-2xl p-5 sm:p-6 mt-6">
-          <div className="text-center mb-5">
-            <h2 className="font-display font-bold text-xl sm:text-2xl">পেমেন্ট মেথড সিলেক্ট করুন</h2>
-            <p className="text-xs text-muted-foreground mt-1">যেকোনো একটি মোবাইল ব্যাংকিং বেছে নিন</p>
-          </div>
+      {/* ================= PAYMENT MODAL ================= */}
+      {showPayment && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in"
+          style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+          onClick={closeModal}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-[480px] max-h-[92vh] overflow-y-auto animate-scale-in rounded-[20px] border border-white/10 shadow-2xl"
+            style={{ background: "rgba(13,13,26,0.98)" }}
+          >
+            <button onClick={closeModal} className="absolute top-3 right-3 z-10 h-9 w-9 grid place-items-center rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition" aria-label="Close">
+              <X className="h-4 w-4" />
+            </button>
 
-          {methods.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">কোনো পেমেন্ট মেথড সেটআপ করা হয়নি।</p>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-              {methods.map((m) => {
-                const logo = logoFor(m.name);
-                const brand = brandFor(m.name);
-                const active = methodId === m.id;
-                return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => { setMethodId(m.id); setTrxId(""); }}
-                    className={`relative rounded-2xl p-4 transition-all duration-200 backdrop-blur-xl bg-white/95 hover:bg-white shadow-lg hover:-translate-y-0.5 ${
-                      active
-                        ? "ring-2 ring-primary shadow-glow scale-[1.02]"
-                        : "border border-white/30"
-                    }`}
-                  >
-                    <div className="aspect-[5/3] grid place-items-center">
-                      {logo ? (
-                        <img src={logo} alt={brand?.label ?? m.name} loading="lazy" className="max-h-14 sm:max-h-16 w-auto object-contain" />
-                      ) : (
-                        <span className="font-display font-extrabold text-xl" style={{ color: brand?.color ?? "#111" }}>
-                          {brand?.label ?? m.name}
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-[11px] font-semibold text-black/60 mt-1">
-                      {m.account_type || "Personal"}
-                    </div>
-                    {active && (
-                      <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-primary grid place-items-center shadow-glow">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+            <div className="p-6">
+              {!method ? (
+                <>
+                  <div className="text-center mb-5">
+                    <h2 className="font-display font-bold text-xl text-white">পেমেন্ট পদ্ধতি বেছে নিন</h2>
+                    <div className="mt-2 font-display font-extrabold text-4xl" style={{ color: "#FF6B35" }}>{formatBDT(total)}</div>
+                  </div>
 
-          {/* Payment Form */}
-          {method && (
-            <div className="mt-6 rounded-2xl glass p-5 animate-fade-in max-w-xl mx-auto">
-              <div className="space-y-4">
-                <div>
-                  <div className="text-xs font-semibold text-muted-foreground mb-1.5">পাঠান এই নম্বরে:</div>
-                  <div className="flex items-center gap-2 rounded-xl bg-background/60 border border-border px-4 py-3">
-                    <span className="text-lg">📱</span>
-                    <span className="font-display font-extrabold text-lg tracking-wide flex-1">
-                      {method.account_number || "—"}
-                    </span>
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* bKash Automatic pseudo card */}
                     <button
-                      onClick={copyNumber}
-                      className="inline-flex items-center gap-1 rounded-lg bg-gradient-brand px-3 py-1.5 text-xs font-bold text-primary-foreground shadow-glow hover:scale-105 transition"
+                      type="button"
+                      onClick={() => setShowComingSoon(true)}
+                      className="relative rounded-2xl p-4 text-left text-white overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-xl border border-white/10"
+                      style={{ background: "linear-gradient(135deg, #E2136E, #FF4B9A)" }}
                     >
-                      <Copy className="h-3 w-3" /> {copied ? "✅ কপি হয়েছে!" : "কপি করুন"}
+                      <div className="flex items-center gap-2">
+                        {logoBkash ? <img src={logoBkash} alt="bKash" className="h-8 w-auto object-contain bg-white/95 rounded-md p-1" /> : null}
+                        <span className="font-display font-extrabold text-sm">bKash Automatic</span>
+                      </div>
+                      <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/25 px-2 py-0.5 text-[10px] font-bold">
+                        <Zap className="h-3 w-3" /> তাৎক্ষণিক
+                      </div>
+                    </button>
+
+                    {methods.map((m) => {
+                      const b = brandFor(m.name);
+                      const logo = logoFor(m.name);
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => { setMethodId(m.id); setTrxId(""); }}
+                          className="relative rounded-2xl p-4 text-left text-white overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-xl border border-white/10"
+                          style={{ background: b?.gradient ?? "linear-gradient(135deg,#333,#555)" }}
+                        >
+                          <div className="flex items-center gap-2">
+                            {logo ? <img src={logo} alt={b?.label ?? m.name} className="h-8 w-auto object-contain bg-white/95 rounded-md p-1" /> : null}
+                            <span className="font-display font-extrabold text-sm">{b?.label ?? m.name}</span>
+                          </div>
+                          <div className="mt-2 text-[10px] font-semibold text-white/85">Manual</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className="animate-fade-in">
+                  <button onClick={() => { setMethodId(""); setTrxId(""); }} className="text-xs text-white/60 hover:text-white mb-3">← অন্য মেথড</button>
+                  <div
+                    className="rounded-2xl p-5 text-white"
+                    style={{ background: brand?.gradient ?? "linear-gradient(135deg,#333,#555)" }}
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      {logoFor(method.name) ? (
+                        <img src={logoFor(method.name)!} alt={brand?.label ?? method.name} className="h-10 w-auto object-contain bg-white/95 rounded-md p-1" />
+                      ) : null}
+                      <div>
+                        <div className="font-display font-extrabold text-lg">{brand?.label ?? method.name}</div>
+                        <div className="text-[11px] text-white/80">{method.account_type || "Personal"} · {method.send_type || "Send Money"}</div>
+                      </div>
+                    </div>
+
+                    <ul className="space-y-2 text-sm">
+                      {instructionLines.length > 0 ? instructionLines.map((line, i) => (
+                        <li key={i} className="flex gap-2"><span className="text-white/70">•</span><span>{line}</span></li>
+                      )) : (
+                        <li className="flex gap-2"><span className="text-white/70">•</span><span>নিচের নম্বরে {brand?.label ?? "টাকা"} পাঠান</span></li>
+                      )}
+                      <li className="flex flex-wrap items-center gap-2">
+                        <span className="text-white/70">•</span>
+                        <span>নম্বর:</span>
+                        <span className="font-display font-extrabold" style={{ color: "#FFD54A" }}>{method.account_number || "—"}</span>
+                        <button onClick={copyNumber} className="inline-flex items-center gap-1 rounded-md bg-white/20 hover:bg-white/30 px-2 py-0.5 text-[11px] font-bold">
+                          <Copy className="h-3 w-3" /> {copied ? "Copied!" : "Copy"}
+                        </button>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-white/70">•</span>
+                        <span>Amount: <span className="font-display font-extrabold" style={{ color: "#FFD54A" }}>{formatBDT(total)}</span></span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-white/70">•</span>
+                        <span><span className="font-bold" style={{ color: "#FFD54A" }}>Transaction ID</span> বক্সে দিয়ে <span className="font-bold" style={{ color: "#FFD54A" }}>VERIFY</span> চাপুন</span>
+                      </li>
+                    </ul>
+
+                    <input
+                      value={trxId}
+                      onChange={(e) => setTrxId(e.target.value)}
+                      placeholder="Enter Transaction ID"
+                      className="mt-4 w-full rounded-[10px] bg-white text-slate-900 placeholder:text-slate-400 px-4 py-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-white/60"
+                    />
+
+                    <button
+                      onClick={submit}
+                      disabled={submitting}
+                      className="mt-4 w-full rounded-xl bg-white/95 hover:bg-white text-slate-900 font-extrabold py-3 text-base tracking-wide inline-flex items-center justify-center gap-2 disabled:opacity-60 transition"
+                      style={{ color: brand?.color ?? "#111" }}
+                    >
+                      {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : null} VERIFY
                     </button>
                   </div>
-                  <div className="mt-2 text-xs text-muted-foreground">
-                    Type: <span className="font-semibold text-foreground">{method.account_type || "Personal"}</span>
-                    <span className="mx-2">·</span>
-                    পরিমাণ: <span className="font-display font-bold text-primary">{formatBDT(total)}</span>
-                  </div>
                 </div>
-
-                <div>
-                  <label className="text-xs font-semibold mb-1.5 block">Transaction ID *</label>
-                  <input
-                    value={trxId}
-                    onChange={(e) => setTrxId(e.target.value)}
-                    placeholder="TRXID লিখুন"
-                    className="w-full rounded-xl glass px-4 py-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-primary/40"
-                  />
-                </div>
-
-                <button
-                  onClick={submit}
-                  disabled={submitting}
-                  className="w-full rounded-2xl bg-gradient-brand px-6 py-3.5 text-base font-bold text-primary-foreground shadow-glow hover:scale-[1.02] transition inline-flex items-center justify-center gap-2 disabled:opacity-60 disabled:hover:scale-100"
-                >
-                  {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
-                  অর্ডার কনফার্ম করুন
-                </button>
-              </div>
+              )}
             </div>
-          )}
-        </section>
-      </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= COMING SOON POPUP ================= */}
+      {showComingSoon && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 animate-fade-in" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }} onClick={() => setShowComingSoon(false)}>
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[380px] rounded-[20px] p-6 text-center animate-scale-in border border-white/10" style={{ background: "rgba(13,13,26,0.98)" }}>
+            <div className="mx-auto h-14 w-14 grid place-items-center rounded-full mb-3" style={{ background: "rgba(255,107,53,0.15)" }}>
+              <AlertTriangle className="h-7 w-7" style={{ color: "#FF6B35" }} />
+            </div>
+            <h3 className="font-display font-bold text-lg text-white">Coming Soon</h3>
+            <p className="mt-2 text-sm text-white/70">This payment method is not available yet. Please try another payment method.</p>
+            <button onClick={() => setShowComingSoon(false)} className="mt-5 w-full rounded-xl px-5 py-2.5 text-sm font-bold text-white" style={{ background: "linear-gradient(135deg, #FF6B35, #7B2FBE)" }}>ঠিক আছে</button>
+          </div>
+        </div>
+      )}
+
+      {/* ================= SUCCESS POPUP ================= */}
+      {successOrderId && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 animate-fade-in" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }}>
+          <div className="w-full max-w-[420px] rounded-[20px] p-6 text-center animate-scale-in border border-white/10" style={{ background: "rgba(13,13,26,0.98)" }}>
+            <div className="mx-auto h-16 w-16 grid place-items-center rounded-full mb-3" style={{ background: "rgba(34,197,94,0.15)" }}>
+              <CheckCircle2 className="h-9 w-9 text-emerald-400" />
+            </div>
+            <h3 className="font-display font-bold text-xl text-white">অর্ডার জমা হয়েছে!</h3>
+            <p className="mt-2 text-xs text-white/60">অর্ডার ID</p>
+            <div className="font-mono font-bold text-white text-sm">#{successOrderId}</div>
+            <p className="mt-3 text-sm text-white/75">পেমেন্ট যাচাই হলে ১-২ ঘণ্টার মধ্যে ডেলিভারি পাবেন।</p>
+            <button onClick={() => { setSuccessOrderId(null); nav({ to: "/dashboard/orders" }); }} className="mt-5 w-full rounded-xl px-5 py-3 text-sm font-bold text-white inline-flex items-center justify-center gap-2" style={{ background: "linear-gradient(135deg, #FF6B35, #7B2FBE)" }}>
+              <Package className="h-4 w-4" /> আমার অর্ডার দেখুন
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
