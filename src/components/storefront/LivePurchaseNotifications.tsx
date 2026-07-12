@@ -32,6 +32,23 @@ export function LivePurchaseNotifications() {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [navHidden, setNavHidden] = useState(false);
+
+  // Mirror MobileBottomNav scroll behavior: nav shows when scrolling up / at top,
+  // hides when scrolling down. Show notification on mobile only when nav is hidden.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const dy = y - lastY;
+      if (y < 40) setNavHidden(false);
+      else if (dy > 6) setNavHidden(true);
+      else if (dy < -6) setNavHidden(false);
+      lastY = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (dismissed || purchases.length === 0) return;
