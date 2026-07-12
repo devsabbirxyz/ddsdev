@@ -298,7 +298,7 @@ function ProductEditor() {
       )}
 
       {tab === "media" && <MediaTab productId={id} images={images} onChange={() => qc.invalidateQueries({ queryKey: ["admin", "product", id] })} />}
-      {tab === "variants" && <VariantsTab productId={id} variants={variants} onChange={() => qc.invalidateQueries({ queryKey: ["admin", "product", id] })} />}
+      {tab === "variants" && form.is_variant && <VariantsTab productId={id} variants={variants} onChange={() => qc.invalidateQueries({ queryKey: ["admin", "product", id] })} />}
       {tab === "delivery" && (
         <DeliveryTab
           form={form} set={set}
