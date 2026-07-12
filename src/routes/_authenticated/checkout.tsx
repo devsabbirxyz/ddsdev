@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { CheckCircle2, Tag, Loader2, Copy, Wallet, CreditCard, Minus, Plus, Trash2, X, Zap, AlertTriangle, Package } from "lucide-react";
+import { CheckCircle2, Tag, Loader2, Copy, Wallet, CreditCard, Minus, Plus, Trash2, X, Zap, AlertTriangle, Package, ChevronRight, ArrowLeft, Hand } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
@@ -79,10 +79,12 @@ function CheckoutPage() {
   const [couponMsg, setCouponMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [redeemPoints, setRedeemPoints] = useState<number>(0);
   const [showPayment, setShowPayment] = useState(false);
+  const [modalStep, setModalStep] = useState<"methods" | "choice" | "manual">("methods");
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [trxError, setTrxError] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -162,6 +164,10 @@ function CheckoutPage() {
   const handlePayNow = () => {
     if (items.length === 0) { toast.error("কার্ট খালি"); return; }
     if (!validateInfo()) return;
+    setModalStep("methods");
+    setMethodId("");
+    setTrxId("");
+    setTrxError(false);
     setShowPayment(true);
   };
 
@@ -170,6 +176,8 @@ function CheckoutPage() {
     setShowPayment(false);
     setMethodId("");
     setTrxId("");
+    setTrxError(false);
+    setModalStep("methods");
   };
 
   const copyNumber = async () => {
@@ -187,7 +195,7 @@ function CheckoutPage() {
     if (!user) { toast.error("লগইন করুন"); return; }
     if (items.length === 0) { toast.error("কার্ট খালি"); return; }
     if (!methodId || !method) { toast.error("পেমেন্ট মেথড সিলেক্ট করুন"); return; }
-    if (!trxId.trim()) { toast.error("Transaction ID দিন"); return; }
+    if (!trxId.trim()) { setTrxError(true); toast.error("Transaction ID দিন"); return; }
 
     setSubmitting(true);
     try {
@@ -375,109 +383,169 @@ function CheckoutPage() {
               <X className="h-4 w-4" />
             </button>
 
-            <div className="p-6">
-              {!method ? (
-                <>
-                  <div className="text-center mb-5">
-                    <h2 className="font-display font-bold text-xl text-white">পেমেন্ট পদ্ধতি বেছে নিন</h2>
-                    <div className="mt-2 font-display font-extrabold text-4xl" style={{ color: "#FF6B35" }}>{formatBDT(total)}</div>
+            <div className="p-5 sm:p-6">
+              {/* ============ STEP 1: METHOD LIST ============ */}
+              {modalStep === "methods" && (
+                <div className="animate-fade-in">
+                  <div className="text-center mb-5 pt-2">
+                    <h2 className="font-display font-bold text-lg sm:text-xl text-white">পেমেন্ট পদ্ধতি বেছে নিন</h2>
+                    <div className="mt-2 font-display font-extrabold text-3xl sm:text-4xl" style={{ color: "#FF6B35" }}>{formatBDT(total)}</div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    {/* bKash Automatic pseudo card */}
-                    <button
-                      type="button"
-                      onClick={() => setShowComingSoon(true)}
-                      className="relative rounded-2xl p-4 text-left text-white overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-xl border border-white/10"
-                      style={{ background: "linear-gradient(135deg, #E2136E, #FF4B9A)" }}
-                    >
-                      <div className="flex items-center gap-2">
-                        {logoBkash ? <img src={logoBkash} alt="bKash" className="h-8 w-auto object-contain bg-white/95 rounded-md p-1" /> : null}
-                        <span className="font-display font-extrabold text-sm">bKash Automatic</span>
-                      </div>
-                      <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/25 px-2 py-0.5 text-[10px] font-bold">
-                        <Zap className="h-3 w-3" /> তাৎক্ষণিক
-                      </div>
-                    </button>
-
+                  <div className="space-y-3">
+                    {methods.length === 0 && (
+                      <p className="text-center text-sm text-white/60 py-6">কোনো পেমেন্ট মেথড সক্রিয় নেই</p>
+                    )}
                     {methods.map((m) => {
                       const b = brandFor(m.name);
                       const logo = logoFor(m.name);
+                      const color = b?.color ?? "#7B2FBE";
                       return (
                         <button
                           key={m.id}
                           type="button"
-                          onClick={() => { setMethodId(m.id); setTrxId(""); }}
-                          className="relative rounded-2xl p-4 text-left text-white overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-xl border border-white/10"
-                          style={{ background: b?.gradient ?? "linear-gradient(135deg,#333,#555)" }}
+                          onClick={() => { setMethodId(m.id); setTrxId(""); setTrxError(false); setModalStep("choice"); }}
+                          className="group w-full flex items-center gap-3 rounded-[14px] p-4 text-left bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-white/20 transition-all hover:shadow-lg"
+                          style={{ borderLeft: `4px solid ${color}` }}
                         >
-                          <div className="flex items-center gap-2">
-                            {logo ? <img src={logo} alt={b?.label ?? m.name} className="h-8 w-auto object-contain bg-white/95 rounded-md p-1" /> : null}
-                            <span className="font-display font-extrabold text-sm">{b?.label ?? m.name}</span>
+                          <div className="h-11 w-11 shrink-0 rounded-full grid place-items-center bg-white/95 overflow-hidden">
+                            {logo ? (
+                              <img src={logo} alt={b?.label ?? m.name} className="h-8 w-8 object-contain" />
+                            ) : (
+                              <span className="font-display font-extrabold text-xs" style={{ color }}>{(b?.label ?? m.name).slice(0, 2)}</span>
+                            )}
                           </div>
-                          <div className="mt-2 text-[10px] font-semibold text-white/85">Manual</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-display font-extrabold text-[15px] text-white">{b?.label ?? m.name}</div>
+                            <div className="text-[11px] text-white/60 mt-0.5">
+                              {m.name_en || (m.account_type ? `${m.account_type} · ${m.send_type ?? ""}` : "Mobile Financial Service")}
+                            </div>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-white/40 group-hover:text-white/70 group-hover:translate-x-0.5 transition" />
                         </button>
                       );
                     })}
                   </div>
-                </>
-              ) : (
+                </div>
+              )}
+
+              {/* ============ STEP 2: AUTO / MANUAL CHOICE ============ */}
+              {modalStep === "choice" && method && (
                 <div className="animate-fade-in">
-                  <button onClick={() => { setMethodId(""); setTrxId(""); }} className="text-xs text-white/60 hover:text-white mb-3">← অন্য মেথড</button>
-                  <div
-                    className="rounded-2xl p-5 text-white"
-                    style={{ background: brand?.gradient ?? "linear-gradient(135deg,#333,#555)" }}
-                  >
-                    <div className="flex items-center gap-3 mb-4">
-                      {logoFor(method.name) ? (
-                        <img src={logoFor(method.name)!} alt={brand?.label ?? method.name} className="h-10 w-auto object-contain bg-white/95 rounded-md p-1" />
-                      ) : null}
-                      <div>
-                        <div className="font-display font-extrabold text-lg">{brand?.label ?? method.name}</div>
-                        <div className="text-[11px] text-white/80">{method.account_type || "Personal"} · {method.send_type || "Send Money"}</div>
+                  <div className="flex items-center gap-2 mb-5 pt-1">
+                    <button onClick={() => { setMethodId(""); setModalStep("methods"); }} className="h-9 w-9 grid place-items-center rounded-full bg-white/5 hover:bg-white/10 text-white/80" aria-label="Back">
+                      <ArrowLeft className="h-4 w-4" />
+                    </button>
+                    <div className="flex items-center gap-2">
+                      {logoFor(method.name) && <img src={logoFor(method.name)!} alt="" className="h-7 w-7 object-contain bg-white/95 rounded-md p-0.5" />}
+                      <h2 className="font-display font-bold text-white text-base sm:text-lg">
+                        {brand?.label ?? method.name} দিয়ে পেমেন্ট করুন
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowComingSoon(true)}
+                      className="w-full flex items-center gap-3 rounded-[14px] p-4 text-left bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-white/20 transition"
+                      style={{ borderLeft: `4px solid ${brand?.color ?? "#7B2FBE"}` }}
+                    >
+                      <div className="h-11 w-11 shrink-0 rounded-full grid place-items-center" style={{ background: `${brand?.color ?? "#7B2FBE"}22` }}>
+                        <Zap className="h-5 w-5" style={{ color: brand?.color ?? "#7B2FBE" }} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-display font-extrabold text-[15px] text-white">Automatic</div>
+                        <div className="text-[11px] text-white/60 mt-0.5">তাৎক্ষণিক ভেরিফিকেশন</div>
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-white/40" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { setModalStep("manual"); setTrxError(false); }}
+                      className="w-full flex items-center gap-3 rounded-[14px] p-4 text-left bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-white/20 transition"
+                      style={{ borderLeft: `4px solid ${brand?.color ?? "#7B2FBE"}` }}
+                    >
+                      <div className="h-11 w-11 shrink-0 rounded-full grid place-items-center" style={{ background: `${brand?.color ?? "#7B2FBE"}22` }}>
+                        <Hand className="h-5 w-5" style={{ color: brand?.color ?? "#7B2FBE" }} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-display font-extrabold text-[15px] text-white">Manual</div>
+                        <div className="text-[11px] text-white/60 mt-0.5">নিজে Transaction ID দিন</div>
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-white/40" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* ============ STEP 3: MANUAL PAYMENT FORM ============ */}
+              {modalStep === "manual" && method && (
+                <div className="animate-fade-in">
+                  <div className="flex items-center gap-2 mb-4 pt-1">
+                    <button onClick={() => setModalStep("choice")} className="h-9 w-9 grid place-items-center rounded-full bg-white/5 hover:bg-white/10 text-white/80" aria-label="Back">
+                      <ArrowLeft className="h-4 w-4" />
+                    </button>
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      {logoFor(method.name) && <img src={logoFor(method.name)!} alt="" className="h-8 w-8 object-contain bg-white/95 rounded-md p-0.5" />}
+                      <div className="min-w-0">
+                        <div className="font-display font-extrabold text-white text-base leading-tight">{brand?.label ?? method.name}</div>
+                        <div className="text-[10px] text-white/60">Manual Payment</div>
                       </div>
                     </div>
+                    <div className="font-display font-extrabold text-lg" style={{ color: "#FF6B35" }}>{formatBDT(total)}</div>
+                  </div>
 
-                    <ul className="space-y-2 text-sm">
-                      {instructionLines.length > 0 ? instructionLines.map((line, i) => (
-                        <li key={i} className="flex gap-2"><span className="text-white/70">•</span><span>{line}</span></li>
-                      )) : (
-                        <li className="flex gap-2"><span className="text-white/70">•</span><span>নিচের নম্বরে {brand?.label ?? "টাকা"} পাঠান</span></li>
+                  <input
+                    value={trxId}
+                    onChange={(e) => { setTrxId(e.target.value); if (trxError) setTrxError(false); }}
+                    placeholder="Enter Transaction ID"
+                    className={`w-full rounded-[10px] bg-white text-slate-900 placeholder:text-slate-400 px-4 py-3 text-sm font-semibold outline-none transition ${trxError ? "ring-2 ring-red-500 border-2 border-red-500" : "focus:ring-2 focus:ring-white/60"}`}
+                  />
+                  {trxError && <div className="mt-1.5 text-[11px] font-semibold text-red-400">Transaction ID দিন</div>}
+
+                  <div
+                    className="mt-4 rounded-2xl p-5 text-white"
+                    style={{ background: brand?.color ?? "#7B2FBE" }}
+                  >
+                    <ul className="space-y-3 text-sm leading-relaxed">
+                      {instructionLines.length > 0 ? (
+                        instructionLines.map((line, i) => (
+                          <li key={i} className="flex gap-2.5">
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" />
+                            <span dangerouslySetInnerHTML={{ __html: highlightInstruction(line) }} />
+                          </li>
+                        ))
+                      ) : (
+                        <>
+                          <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Open your <b style={{ color: "#FFD700" }}>{brand?.label ?? method.name}</b> app</span></li>
+                          <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Choose: <b style={{ color: "#FFD700" }}>"Payment"</b></span></li>
+                        </>
                       )}
-                      <li className="flex flex-wrap items-center gap-2">
-                        <span className="text-white/70">•</span>
-                        <span>নম্বর:</span>
-                        <span className="font-display font-extrabold" style={{ color: "#FFD54A" }}>{method.account_number || "—"}</span>
-                        <button onClick={copyNumber} className="inline-flex items-center gap-1 rounded-md bg-white/20 hover:bg-white/30 px-2 py-0.5 text-[11px] font-bold">
+                      <li className="flex flex-wrap gap-2 items-center">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" />
+                        <span>Enter the Receiver Account Number:</span>
+                        <span className="font-display font-extrabold" style={{ color: "#FFD700" }}>{method.account_number || "—"}</span>
+                        <button onClick={copyNumber} className="inline-flex items-center gap-1 rounded-md bg-black/25 hover:bg-black/40 px-2 py-1 text-[11px] font-bold text-white">
                           <Copy className="h-3 w-3" /> {copied ? "Copied!" : "Copy"}
                         </button>
                       </li>
-                      <li className="flex gap-2">
-                        <span className="text-white/70">•</span>
-                        <span>Amount: <span className="font-display font-extrabold" style={{ color: "#FFD54A" }}>{formatBDT(total)}</span></span>
-                      </li>
-                      <li className="flex gap-2">
-                        <span className="text-white/70">•</span>
-                        <span><span className="font-bold" style={{ color: "#FFD54A" }}>Transaction ID</span> বক্সে দিয়ে <span className="font-bold" style={{ color: "#FFD54A" }}>VERIFY</span> চাপুন</span>
-                      </li>
+                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Enter the amount: <b style={{ color: "#FFD700" }}>{Math.round(total)}</b></span></li>
+                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Now enter your PIN to confirm.</span></li>
+                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Done! You will receive a confirmation message.</span></li>
+                      <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" /><span>Put the <b style={{ color: "#FFD700" }}>Transaction ID</b> in the upper box and press <b style={{ color: "#FFD700" }}>VERIFY</b></span></li>
                     </ul>
-
-                    <input
-                      value={trxId}
-                      onChange={(e) => setTrxId(e.target.value)}
-                      placeholder="Enter Transaction ID"
-                      className="mt-4 w-full rounded-[10px] bg-white text-slate-900 placeholder:text-slate-400 px-4 py-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-white/60"
-                    />
-
-                    <button
-                      onClick={submit}
-                      disabled={submitting}
-                      className="mt-4 w-full rounded-xl bg-white/95 hover:bg-white text-slate-900 font-extrabold py-3 text-base tracking-wide inline-flex items-center justify-center gap-2 disabled:opacity-60 transition"
-                      style={{ color: brand?.color ?? "#111" }}
-                    >
-                      {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : null} VERIFY
-                    </button>
                   </div>
+
+                  <button
+                    onClick={submit}
+                    disabled={submitting}
+                    className="mt-4 w-full rounded-[14px] py-[18px] text-base font-extrabold text-white tracking-wide inline-flex items-center justify-center gap-2 disabled:opacity-60 transition hover:brightness-110"
+                    style={{ background: brand?.color ?? "#7B2FBE" }}
+                  >
+                    {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : null} VERIFY
+                  </button>
                 </div>
               )}
             </div>
@@ -518,6 +586,18 @@ function CheckoutPage() {
       )}
     </div>
   );
+}
+
+function escapeHtml(s: string) {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+function highlightInstruction(line: string): string {
+  const esc = escapeHtml(line);
+  // Highlight quoted strings, digit-only numbers (>=3 digits), and words like Transaction ID / VERIFY / Payment
+  return esc
+    .replace(/&quot;([^&]+?)&quot;/g, '<b style="color:#FFD700">"$1"</b>')
+    .replace(/\b(VERIFY|Transaction ID|Payment|Send Money|Cash In)\b/g, '<b style="color:#FFD700">$1</b>')
+    .replace(/(?<![\w#])(\d{3,})(?![\w])/g, '<b style="color:#FFD700">$1</b>');
 }
 
 function Row({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
