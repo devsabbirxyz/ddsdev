@@ -439,7 +439,34 @@ function ProductPage() {
       )}
 
       <RecentlyViewed excludeId={product.id} />
+
+      <ProductStickyBar
+        title={product.title}
+        image={images[0]?.image_url ?? null}
+        price={Number(unitPrice ?? 0)}
+        regularPrice={hasDiscount ? Number(unitRegular ?? 0) : null}
+        disabled={(isSubscription && !selectedPlan) || isOutOfStock || selectedIsOut}
+        disabledLabel={isOutOfStock || selectedIsOut ? "স্টকে নেই" : "প্ল্যান বেছে নিন"}
+        ctaLabel={isSubscription ? "সাবস্ক্রাইব" : "কার্টে যোগ"}
+        onAdd={() => {
+          if (isSubscription && !selectedPlan) { toast.error("প্ল্যান বেছে নিন"); return; }
+          addItem({
+            productId: product.id,
+            slug: product.slug,
+            title: product.title,
+            price: Number(unitPrice ?? 0),
+            image: images[0]?.image_url ?? null,
+            variantId: isSubscription ? null : selectedVariant?.id ?? null,
+            variantLabel: isSubscription ? null : selectedVariant?.label ?? null,
+            planId: isSubscription ? selectedPlan?.id ?? null : null,
+            planLabel: isSubscription ? selectedPlan?.name ?? null : null,
+            quantity: isSubscription ? 1 : qty,
+          });
+          toast.success("কার্টে যোগ হয়েছে");
+        }}
+      />
     </div>
+
   );
 }
 
