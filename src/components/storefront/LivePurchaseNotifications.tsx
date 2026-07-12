@@ -80,8 +80,11 @@ export function LivePurchaseNotifications() {
 
   return (
     <div
-      className={`fixed z-40 left-3 sm:left-6 bottom-24 sm:bottom-8 max-w-[calc(100vw-1.5rem)] sm:max-w-md w-full sm:w-[26rem] transition-all duration-500 ${
-        visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-6 scale-95 pointer-events-none"
+      className={`fixed z-40 left-2 sm:left-6 bottom-3 sm:bottom-8 max-w-[calc(100vw-1rem)] sm:max-w-md w-[19rem] sm:w-[26rem] transition-all duration-500 ${
+        visible && (navHidden || typeof window === "undefined" || window.matchMedia("(min-width: 640px)").matches)
+          ? "opacity-100 translate-y-0 scale-100"
+          : "opacity-0 translate-y-6 scale-95 pointer-events-none"
+      }`}
       }`}
       role="status"
       aria-live="polite"
