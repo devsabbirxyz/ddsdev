@@ -85,7 +85,6 @@ export function LivePurchaseNotifications() {
           ? "opacity-100 translate-y-0 scale-100"
           : "opacity-0 translate-y-6 scale-95 pointer-events-none"
       }`}
-      }`}
       role="status"
       aria-live="polite"
     >
