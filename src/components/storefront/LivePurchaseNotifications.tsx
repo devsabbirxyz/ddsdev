@@ -32,6 +32,23 @@ export function LivePurchaseNotifications() {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [navHidden, setNavHidden] = useState(false);
+
+  // Mirror MobileBottomNav scroll behavior: nav shows when scrolling up / at top,
+  // hides when scrolling down. Show notification on mobile only when nav is hidden.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const dy = y - lastY;
+      if (y < 40) setNavHidden(false);
+      else if (dy > 6) setNavHidden(true);
+      else if (dy < -6) setNavHidden(false);
+      lastY = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (dismissed || purchases.length === 0) return;
@@ -63,8 +80,10 @@ export function LivePurchaseNotifications() {
 
   return (
     <div
-      className={`fixed z-40 left-3 sm:left-6 bottom-24 sm:bottom-8 max-w-[calc(100vw-1.5rem)] sm:max-w-md w-full sm:w-[26rem] transition-all duration-500 ${
-        visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-6 scale-95 pointer-events-none"
+      className={`fixed z-40 left-2 sm:left-6 bottom-3 sm:bottom-8 max-w-[calc(100vw-1rem)] sm:max-w-md w-[19rem] sm:w-[26rem] transition-all duration-500 ${
+        visible && (navHidden || typeof window === "undefined" || window.matchMedia("(min-width: 640px)").matches)
+          ? "opacity-100 translate-y-0 scale-100"
+          : "opacity-0 translate-y-6 scale-95 pointer-events-none"
       }`}
       role="status"
       aria-live="polite"
@@ -92,13 +111,13 @@ export function LivePurchaseNotifications() {
           </button>
         </div>
 
-        <div className="p-4 flex items-start gap-4 relative">
+        <div className="p-2.5 sm:p-4 flex items-start gap-2.5 sm:gap-4 relative">
           <div className="shrink-0 relative">
-            <div className="h-14 w-14 rounded-2xl bg-gradient-brand grid place-items-center shadow-lg shadow-primary/30">
-              <Sparkles className="h-7 w-7 text-primary-foreground" />
+            <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-gradient-brand grid place-items-center shadow-lg shadow-primary/30">
+              <Sparkles className="h-5 w-5 sm:h-7 sm:w-7 text-primary-foreground" />
             </div>
-            <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-emerald-500 grid place-items-center ring-2 ring-background">
-              <CheckCircle2 className="h-3.5 w-3.5 text-white" />
+            <div className="absolute -bottom-1 -right-1 h-4 w-4 sm:h-6 sm:w-6 rounded-full bg-emerald-500 grid place-items-center ring-2 ring-background">
+              <CheckCircle2 className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 text-white" />
             </div>
           </div>
 
