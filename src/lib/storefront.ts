@@ -116,16 +116,17 @@ export const productQuestionsQuery = (productId: string | undefined) =>
     },
   });
 
-export const blogPostsQuery = (limit?: number, opts?: { featured?: boolean }) =>
+export const blogPostsQuery = (limit?: number, opts?: { featured?: boolean; category?: string | null }) =>
   queryOptions({
     queryKey: ["blog", limit ?? null, opts ?? {}],
     queryFn: async () => {
       let q = supabase
         .from("blog_posts")
-        .select("id,slug,title,title_en,short_description,short_description_en,thumbnail_url,published_at,view_count,is_featured")
+        .select("id,slug,title,title_en,short_description,short_description_en,thumbnail_url,published_at,view_count,is_featured,category,author_name")
         .eq("is_published", true)
         .order("published_at", { ascending: false, nullsFirst: false });
       if (opts?.featured) q = q.eq("is_featured", true);
+      if (opts?.category) q = q.eq("category", opts.category);
       if (limit) q = q.limit(limit);
       const { data, error } = await q;
       if (error) throw error;
@@ -133,6 +134,21 @@ export const blogPostsQuery = (limit?: number, opts?: { featured?: boolean }) =>
     },
   });
 
+export const blogCategoriesQuery = () =>
+  queryOptions({
+    queryKey: ["blog-categories"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("blog_posts")
+        .select("category")
+        .eq("is_published", true)
+        .not("category", "is", null);
+      if (error) return [] as string[];
+      const set = new Set<string>();
+      (data ?? []).forEach((r: any) => r.category && set.add(r.category));
+      return Array.from(set).sort();
+    },
+  });
 
 export const blogPostBySlugQuery = (slug: string) =>
   queryOptions({
@@ -146,6 +162,24 @@ export const blogPostBySlugQuery = (slug: string) =>
         .maybeSingle();
       if (error) throw error;
       return data;
+    },
+  });
+
+export const relatedBlogPostsQuery = (opts: { excludeId: string; category?: string | null; limit?: number }) =>
+  queryOptions({
+    queryKey: ["blog-related", opts.excludeId, opts.category ?? null, opts.limit ?? 3],
+    queryFn: async () => {
+      let q = supabase
+        .from("blog_posts")
+        .select("id,slug,title,thumbnail_url,short_description,published_at,category,author_name")
+        .eq("is_published", true)
+        .neq("id", opts.excludeId)
+        .order("published_at", { ascending: false, nullsFirst: false })
+        .limit(opts.limit ?? 3);
+      if (opts.category) q = q.eq("category", opts.category);
+      const { data, error } = await q;
+      if (error) return [];
+      return data ?? [];
     },
   });
 
