@@ -1,81 +1,36 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBDT } from "@/lib/storefront";
-import { LineChart, Line, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Area, AreaChart } from "recharts";
-import { TrendingUp, ShoppingCart, Users, Package, DollarSign, Clock, AlertCircle, Award } from "lucide-react";
-import { useState } from "react";
+import { Receipt, BarChart3, Clock, Users } from "lucide-react";
 
-type Range = "7d" | "30d" | "90d" | "all";
+const overviewQuery = queryOptions({
+  queryKey: ["admin", "overview", "stat4"],
+  staleTime: 60_000,
+  queryFn: async () => {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-const overviewQuery = (range: Range) =>
-  queryOptions({
-    queryKey: ["admin", "overview", range],
-    staleTime: 60_000,
-    queryFn: async () => {
-      const days = range === "7d" ? 7 : range === "30d" ? 30 : range === "90d" ? 90 : 3650;
-      const since = new Date(Date.now() - days * 86400_000).toISOString();
+    const [today, month, pending, customers] = await Promise.all([
+      supabase.from("orders").select("total_price", { count: "exact" }).gte("created_at", startOfDay),
+      supabase.from("orders").select("total_price").gte("created_at", startOfMonth),
+      supabase.from("orders").select("total_price", { count: "exact" }).eq("status", "pending"),
+      supabase.from("profiles").select("id", { count: "exact", head: true }),
+    ]);
 
-      const [allOrders, rangeOrders, sellers, affiliates, products, pendingOrders, pendingSellers, pendingAffiliates, pendingProducts, pendingWithdrawalsS, pendingWithdrawalsA] = await Promise.all([
-        supabase.from("orders").select("total_price", { count: "exact" }),
-        supabase.from("orders").select("total_price, created_at, status").gte("created_at", since).order("created_at", { ascending: true }),
-        supabase.from("sellers").select("id", { count: "exact", head: true }).eq("status", "approved"),
-        supabase.from("affiliates").select("id", { count: "exact", head: true }).eq("status", "approved"),
-        supabase.from("products").select("id", { count: "exact", head: true }).eq("status", "approved"),
-        supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("seller_applications").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("affiliate_applications").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("products").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("seller_withdrawals").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("affiliate_withdrawals").select("id", { count: "exact", head: true }).eq("status", "pending"),
-      ]);
+    const sum = (rows: any[] | null) => (rows ?? []).reduce((s, o) => s + Number(o.total_price ?? 0), 0);
 
-      const revenue = (allOrders.data ?? []).reduce((sum, o: any) => sum + Number(o.total_price ?? 0), 0);
-
-      // Build daily series
-      const byDay = new Map<string, { date: string; revenue: number; orders: number }>();
-      for (let i = days - 1; i >= 0; i--) {
-        const d = new Date(Date.now() - i * 86400_000);
-        const key = d.toISOString().slice(0, 10);
-        byDay.set(key, { date: key.slice(5), revenue: 0, orders: 0 });
-      }
-      for (const o of (rangeOrders.data ?? []) as any[]) {
-        const key = String(o.created_at).slice(0, 10);
-        const bucket = byDay.get(key);
-        if (bucket) {
-          bucket.revenue += Number(o.total_price ?? 0);
-          bucket.orders += 1;
-        }
-      }
-      const series = Array.from(byDay.values());
-
-      // Status breakdown for bar chart
-      const statusMap: Record<string, number> = {};
-      for (const o of (rangeOrders.data ?? []) as any[]) {
-        statusMap[o.status ?? "pending"] = (statusMap[o.status ?? "pending"] ?? 0) + 1;
-      }
-      const statusData = Object.entries(statusMap).map(([name, value]) => ({ name, value }));
-
-      return {
-        revenue,
-        rangeRevenue: series.reduce((s, d) => s + d.revenue, 0),
-        rangeOrders: series.reduce((s, d) => s + d.orders, 0),
-        orderCount: allOrders.count ?? 0,
-        sellerCount: sellers.count ?? 0,
-        affiliateCount: affiliates.count ?? 0,
-        productCount: products.count ?? 0,
-        series,
-        statusData,
-        pending: {
-          orders: pendingOrders.count ?? 0,
-          sellers: pendingSellers.count ?? 0,
-          affiliates: pendingAffiliates.count ?? 0,
-          products: pendingProducts.count ?? 0,
-          withdrawals: (pendingWithdrawalsS.count ?? 0) + (pendingWithdrawalsA.count ?? 0),
-        },
-      };
-    },
-  });
+    return {
+      todaySales: sum(today.data as any),
+      todayOrders: today.count ?? 0,
+      monthSales: sum(month.data as any),
+      totalDue: sum(pending.data as any),
+      pendingCount: pending.count ?? 0,
+      customers: customers.count ?? 0,
+    };
+  },
+});
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({ meta: [{ title: "Admin Overview — DDS-Digital" }, { name: "robots", content: "noindex" }] }),
@@ -83,171 +38,96 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminOverview() {
-  const [range, setRange] = useState<Range>("30d");
-  const { data, isLoading } = useQuery(overviewQuery(range));
-
-  if (isLoading || !data) {
-    return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-8 w-56 rounded-lg bg-muted" />
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[0,1,2,3].map((i) => <div key={i} className="h-28 rounded-2xl bg-muted/60" />)}
-        </div>
-        <div className="grid lg:grid-cols-3 gap-4">
-          <div className="h-72 rounded-2xl bg-muted/60 lg:col-span-2" />
-          <div className="h-72 rounded-2xl bg-muted/60" />
-        </div>
-        <div className="h-52 rounded-2xl bg-muted/60" />
-      </div>
-    );
-  }
+  const { data, isLoading } = useQuery(overviewQuery);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-display font-bold text-2xl">ড্যাশবোর্ড ওভারভিউ</h1>
-          <p className="text-sm text-muted-foreground mt-1">Real-time business insights</p>
+          <h1 className="font-display font-bold text-2xl">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-1">আপনার স্টোরের এক নজরে</p>
         </div>
-        <div className="inline-flex rounded-xl border border-border bg-card p-1">
-          {(["7d", "30d", "90d", "all"] as const).map((r) => (
-            <button
-              key={r}
-              onClick={() => setRange(r)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                range === r ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {r === "7d" ? "৭ দিন" : r === "30d" ? "৩০ দিন" : r === "90d" ? "৯০ দিন" : "Lifetime"}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <Link
+            to="/admin/products/new"
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-primary-foreground bg-gradient-brand shadow-glow hover:scale-[1.02] transition"
+          >
+            <span className="text-lg leading-none">+</span> New Product
+          </Link>
+          <Link
+            to="/admin/coupons"
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold border border-white/15 hover:bg-white/5 transition"
+          >
+            New Coupon
+          </Link>
         </div>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard icon={DollarSign} label="মোট আয়" value={formatBDT(data.revenue)} sub={`${range}: ${formatBDT(data.rangeRevenue)}`} tint="amber" />
-        <KpiCard icon={ShoppingCart} label="মোট অর্ডার" value={data.orderCount} sub={`${range}: ${data.rangeOrders}`} tint="violet" />
-        <KpiCard icon={Package} label="প্রোডাক্ট" value={data.productCount} tint="teal" />
-        <KpiCard icon={Users} label="সেলার + অ্যাফিলিয়েট" value={data.sellerCount + data.affiliateCount} sub={`${data.sellerCount} sellers · ${data.affiliateCount} aff.`} tint="cyan" />
-      </div>
-
-      <div className="grid lg:grid-cols-3 gap-4">
-        <div className="glass-card rounded-2xl p-5 lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-display font-bold">রেভিনিউ ট্রেন্ড</h3>
-              <p className="text-xs text-muted-foreground">Revenue over time</p>
-            </div>
-            <TrendingUp className="h-5 w-5 text-emerald-400" />
-          </div>
-          <ResponsiveContainer width="100%" height={260}>
-            <AreaChart data={data.series} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
-              <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
-              <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 }} />
-              <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#rev)" animationDuration={800} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="glass-card rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-display font-bold">অর্ডার স্ট্যাটাস</h3>
-              <p className="text-xs text-muted-foreground">Status breakdown</p>
-            </div>
-            <Award className="h-5 w-5 text-violet-400" />
-          </div>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={data.statusData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
-              <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
-              <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 }} />
-              <Bar dataKey="value" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} animationDuration={800} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      <div className="glass-card rounded-2xl p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="font-display font-bold">অর্ডার ভলিউম</h3>
-            <p className="text-xs text-muted-foreground">Daily order count</p>
-          </div>
-          <ShoppingCart className="h-5 w-5 text-blue-400" />
-        </div>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={data.series}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
-            <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
-            <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 }} />
-            <Line type="monotone" dataKey="orders" stroke="hsl(var(--accent))" strokeWidth={2} dot={false} animationDuration={800} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <AlertCircle className="h-5 w-5 text-amber-400" />
-          <h2 className="font-display font-bold text-xl">পেন্ডিং অ্যাকশন</h2>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <PendingStat icon={Clock} label="অর্ডার" value={data.pending.orders} />
-          <PendingStat icon={Users} label="সেলার আবেদন" value={data.pending.sellers} />
-          <PendingStat icon={Award} label="অ্যাফিলিয়েট আবেদন" value={data.pending.affiliates} />
-          <PendingStat icon={Package} label="প্রোডাক্ট রিভিউ" value={data.pending.products} />
-          <PendingStat icon={DollarSign} label="উইথড্র" value={data.pending.withdrawals} />
-        </div>
+        <StatCard
+          accent="purple"
+          icon={Receipt}
+          label="TODAY'S SALES"
+          value={isLoading ? "—" : formatBDT(data?.todaySales ?? 0)}
+          meta={`${data?.todayOrders ?? 0} orders today`}
+        />
+        <StatCard
+          accent="blue"
+          icon={BarChart3}
+          label="THIS MONTH"
+          value={isLoading ? "—" : formatBDT(data?.monthSales ?? 0)}
+          meta="Total revenue"
+        />
+        <StatCard
+          accent="amber"
+          icon={Clock}
+          label="TOTAL DUE"
+          value={isLoading ? "—" : formatBDT(data?.totalDue ?? 0)}
+          meta={`${data?.pendingCount ?? 0} pending orders`}
+        />
+        <StatCard
+          accent="emerald"
+          icon={Users}
+          label="CUSTOMERS"
+          value={isLoading ? "—" : (data?.customers ?? 0).toLocaleString()}
+          meta="Registered users"
+        />
       </div>
     </div>
   );
 }
 
-function KpiCard({ icon: Icon, label, value, sub, tint }: { icon: any; label: string; value: React.ReactNode; sub?: string; tint: "teal" | "violet" | "cyan" | "amber" | "rose" }) {
-  const tints: Record<string, { bg: string; glow: string }> = {
-    amber:  { bg: "bg-gradient-to-br from-orange-400 to-amber-600",  glow: "shadow-[0_10px_30px_-10px_rgba(251,146,60,0.55)]" },
-    violet: { bg: "bg-gradient-to-br from-violet-500 to-indigo-700", glow: "shadow-[0_10px_30px_-10px_rgba(139,92,246,0.55)]" },
-    teal:   { bg: "bg-gradient-to-br from-teal-400 to-emerald-600",  glow: "shadow-[0_10px_30px_-10px_rgba(45,212,191,0.55)]" },
-    cyan:   { bg: "bg-gradient-to-br from-cyan-400 to-sky-600",      glow: "shadow-[0_10px_30px_-10px_rgba(34,211,238,0.55)]" },
-    rose:   { bg: "bg-gradient-to-br from-rose-500 to-pink-700",     glow: "shadow-[0_10px_30px_-10px_rgba(244,63,94,0.55)]" },
-  };
-  const t = tints[tint];
+const accents: Record<string, string> = {
+  purple: "var(--admin-accent-purple)",
+  blue: "var(--admin-accent-blue)",
+  amber: "var(--admin-accent-amber)",
+  emerald: "var(--admin-accent-emerald)",
+};
+
+function StatCard({
+  accent,
+  icon: Icon,
+  label,
+  value,
+  meta,
+}: {
+  accent: "purple" | "blue" | "amber" | "emerald";
+  icon: any;
+  label: string;
+  value: React.ReactNode;
+  meta: string;
+}) {
   return (
-    <div className="glass-card rounded-2xl p-5 hover:scale-[1.02] transition relative overflow-hidden">
+    <div className="stat-card" style={{ ["--stat-accent" as any]: accents[accent] }}>
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="text-xs text-muted-foreground uppercase tracking-wider">{label}</div>
-          <div className="text-3xl font-display font-bold leading-tight mt-2 truncate">{value}</div>
-          {sub && <div className="text-[11px] text-muted-foreground/80 mt-1 truncate">{sub}</div>}
-        </div>
-        <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${t.bg} ${t.glow}`}>
-          <Icon className="h-5 w-5 text-white" />
+        <div className="stat-icon">
+          <Icon className="h-5 w-5" />
         </div>
       </div>
-    </div>
-  );
-}
-
-function PendingStat({ icon: Icon, label, value }: { icon: any; label: string; value: number }) {
-  const hot = value > 0;
-  return (
-    <div className={`glass-card rounded-2xl p-4 ${hot ? "ring-2 ring-amber-400/40" : ""}`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-xs text-muted-foreground">{label}</div>
-          <div className="text-2xl font-display font-bold mt-1">{value}</div>
-        </div>
-        <Icon className={`h-5 w-5 ${hot ? "text-amber-400" : "text-muted-foreground"}`} />
+      <div className="mt-4">
+        <div className="text-[10px] font-semibold tracking-[0.15em] text-muted-foreground">{label}</div>
+        <div className="text-3xl font-display font-bold mt-1.5 leading-none truncate">{value}</div>
+        <div className="text-[11px] text-muted-foreground mt-2">{meta}</div>
       </div>
     </div>
   );
