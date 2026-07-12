@@ -435,7 +435,7 @@ function CheckoutPage() {
                         <button
                           key={m.id}
                           type="button"
-                          onClick={() => setMethodId(m.id)}
+                          onClick={() => { setMethodId(m.id); setPayChoice(null); }}
                           className="group grid place-items-center bg-white transition-all"
                           style={{
                             border: `${isSelected ? 2 : 1}px solid ${isSelected ? color : "#E5E7EB"}`,
