@@ -16,7 +16,7 @@ const overviewQuery = queryOptions({
       supabase.from("orders").select("total_price", { count: "exact" }).gte("created_at", startOfDay),
       supabase.from("orders").select("total_price").gte("created_at", startOfMonth),
       supabase.from("orders").select("total_price", { count: "exact" }).eq("status", "pending"),
-      supabase.from("profiles").select("id", { count: "exact", head: true }),
+      supabase.from("users").select("id", { count: "exact", head: true }),
     ]);
 
     const sum = (rows: any[] | null) => (rows ?? []).reduce((s, o) => s + Number(o.total_price ?? 0), 0);
