@@ -634,7 +634,9 @@ function CheckoutPage() {
                 <button
                   onClick={() => {
                     if (!methodId) { toast.error("একটি পেমেন্ট মেথড বেছে নিন"); return; }
-                    setModalStep("choice");
+                    if (!payChoice) { toast.error("Automatic / Manual বেছে নিন"); return; }
+                    if (payChoice === "auto") { setShowComingSoon(true); return; }
+                    setModalStep("manual"); setTrxError(false);
                   }}
                   className="w-full text-center font-display font-bold transition hover:brightness-95"
                   style={{ color: "#1A56DB", fontSize: "20px" }}
