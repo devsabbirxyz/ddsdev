@@ -1,11 +1,18 @@
 import { sendTelegramNotification } from "@/lib/telegram.functions";
 
+type TelegramPayload =
+  | { template: "new_order"; name: string; phone: string; product: string; amount: number }
+  | { template: "new_signup"; email: string; name: string }
+  | { template: "new_ticket"; name: string; subject: string; message: string }
+  | { template: "password_reset"; email: string }
+  | { template: "payment_submit"; name: string; amount: number; method: string; trxId: string };
+
 function siteOrigin(): string | undefined {
   if (typeof window !== "undefined") return window.location.origin;
   return undefined;
 }
 
-function fire(payload: Parameters<typeof sendTelegramNotification>[0]["data"]["payload"]) {
+function fire(payload: TelegramPayload) {
   try {
     void sendTelegramNotification({
       data: { payload, origin: siteOrigin() },
