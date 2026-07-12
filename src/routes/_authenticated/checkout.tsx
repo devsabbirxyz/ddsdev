@@ -588,6 +588,18 @@ function CheckoutPage() {
   );
 }
 
+function escapeHtml(s: string) {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+function highlightInstruction(line: string): string {
+  const esc = escapeHtml(line);
+  // Highlight quoted strings, digit-only numbers (>=3 digits), and words like Transaction ID / VERIFY / Payment
+  return esc
+    .replace(/&quot;([^&]+?)&quot;/g, '<b style="color:#FFD700">"$1"</b>')
+    .replace(/\b(VERIFY|Transaction ID|Payment|Send Money|Cash In)\b/g, '<b style="color:#FFD700">$1</b>')
+    .replace(/(?<![\w#])(\d{3,})(?![\w])/g, '<b style="color:#FFD700">$1</b>');
+}
+
 function Row({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="flex justify-between">
