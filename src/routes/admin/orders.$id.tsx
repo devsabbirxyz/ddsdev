@@ -84,7 +84,7 @@ function AdminOrderDetail() {
     setSubmitting(true);
     try {
       await deliver({ data: { orderId: order.id } });
-      await qc.invalidateQueries({ queryKey: ["admin"] });
+      await qc.refetchQueries({ queryKey: ["admin"], type: "all" });
       toast.success("অর্ডার ডেলিভার হয়েছে!");
       nav({ to: "/admin/orders" });
     } catch (e: any) {
