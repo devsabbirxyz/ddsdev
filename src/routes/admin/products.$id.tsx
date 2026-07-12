@@ -158,11 +158,14 @@ function ProductEditor() {
   const tabs: { key: Tab; label: string; icon: any }[] = [
     { key: "basic", label: "মূল তথ্য", icon: Package },
     { key: "media", label: "ছবি", icon: ImageIcon },
-    { key: "variants", label: "ভ্যারিয়েন্ট", icon: Layers },
+    ...(form.is_variant ? [{ key: "variants" as Tab, label: "ভ্যারিয়েন্ট", icon: Layers }] : []),
     { key: "delivery", label: "ডেলিভারি", icon: Database },
     { key: "guide", label: "Use Guide", icon: BookOpen },
     { key: "seo", label: "SEO", icon: Search },
   ];
+  if (tab === "variants" && !form.is_variant) {
+    setTab("basic");
+  }
 
   return (
     <div className="space-y-4">
