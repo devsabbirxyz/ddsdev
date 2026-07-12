@@ -75,6 +75,7 @@ import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authe
 import { Route as SellerProductsNewRouteImport } from './routes/seller.products.new'
 import { Route as SellerProductsIdRouteImport } from './routes/seller.products.$id'
 import { Route as BlogCategorySlugRouteImport } from './routes/blog.category.$slug'
+import { Route as BlogAuthorSlugRouteImport } from './routes/blog.author.$slug'
 import { Route as AdminTicketsIdRouteImport } from './routes/admin/tickets.$id'
 import { Route as AdminProductsNewRouteImport } from './routes/admin/products.new'
 import { Route as AdminProductsIdRouteImport } from './routes/admin/products.$id'
@@ -424,6 +425,11 @@ const BlogCategorySlugRoute = BlogCategorySlugRouteImport.update({
   path: '/category/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const BlogAuthorSlugRoute = BlogAuthorSlugRouteImport.update({
+  id: '/author/$slug',
+  path: '/author/$slug',
+  getParentRoute: () => BlogRoute,
+} as any)
 const AdminTicketsIdRoute = AdminTicketsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -602,6 +608,7 @@ export interface FileRoutesByFullPath {
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/tickets/$id': typeof AdminTicketsIdRoute
+  '/blog/author/$slug': typeof BlogAuthorSlugRoute
   '/blog/category/$slug': typeof BlogCategorySlugRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
@@ -680,6 +687,7 @@ export interface FileRoutesByTo {
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/tickets/$id': typeof AdminTicketsIdRoute
+  '/blog/author/$slug': typeof BlogAuthorSlugRoute
   '/blog/category/$slug': typeof BlogCategorySlugRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
@@ -767,6 +775,7 @@ export interface FileRoutesById {
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/tickets/$id': typeof AdminTicketsIdRoute
+  '/blog/author/$slug': typeof BlogAuthorSlugRoute
   '/blog/category/$slug': typeof BlogCategorySlugRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
@@ -854,6 +863,7 @@ export interface FileRouteTypes {
     | '/admin/products/$id'
     | '/admin/products/new'
     | '/admin/tickets/$id'
+    | '/blog/author/$slug'
     | '/blog/category/$slug'
     | '/seller/products/$id'
     | '/seller/products/new'
@@ -932,6 +942,7 @@ export interface FileRouteTypes {
     | '/admin/products/$id'
     | '/admin/products/new'
     | '/admin/tickets/$id'
+    | '/blog/author/$slug'
     | '/blog/category/$slug'
     | '/seller/products/$id'
     | '/seller/products/new'
@@ -1018,6 +1029,7 @@ export interface FileRouteTypes {
     | '/admin/products/$id'
     | '/admin/products/new'
     | '/admin/tickets/$id'
+    | '/blog/author/$slug'
     | '/blog/category/$slug'
     | '/seller/products/$id'
     | '/seller/products/new'
@@ -1522,6 +1534,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogCategorySlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/blog/author/$slug': {
+      id: '/blog/author/$slug'
+      path: '/author/$slug'
+      fullPath: '/blog/author/$slug'
+      preLoaderRoute: typeof BlogAuthorSlugRouteImport
+      parentRoute: typeof BlogRoute
+    }
     '/admin/tickets/$id': {
       id: '/admin/tickets/$id'
       path: '/$id'
@@ -1825,11 +1844,13 @@ const AffiliateRouteWithChildren = AffiliateRoute._addFileChildren(
 
 interface BlogRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
+  BlogAuthorSlugRoute: typeof BlogAuthorSlugRoute
   BlogCategorySlugRoute: typeof BlogCategorySlugRoute
 }
 
 const BlogRouteChildren: BlogRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
+  BlogAuthorSlugRoute: BlogAuthorSlugRoute,
   BlogCategorySlugRoute: BlogCategorySlugRoute,
 }
 
