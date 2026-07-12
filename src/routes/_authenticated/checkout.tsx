@@ -80,6 +80,7 @@ function CheckoutPage() {
   const [redeemPoints, setRedeemPoints] = useState<number>(0);
   const [showPayment, setShowPayment] = useState(false);
   const [modalStep, setModalStep] = useState<"methods" | "choice" | "manual">("methods");
+  const [payChoice, setPayChoice] = useState<"auto" | "manual" | null>(null);
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
