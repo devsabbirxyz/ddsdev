@@ -423,39 +423,50 @@ function CheckoutPage() {
                     MOBILE BANKING
                   </div>
 
-                  {/* 2×2 Grid */}
-                  <div className="mt-4 grid grid-cols-2 gap-3">
+                  {/* Method Grid — hides others once selected */}
+                  <div className={`mt-4 grid gap-3 ${methodId ? "grid-cols-1" : "grid-cols-2"}`}>
                     {methods.length === 0 && (
                       <p className="col-span-2 text-center text-sm text-slate-500 py-6">কোনো পেমেন্ট মেথড সক্রিয় নেই</p>
                     )}
-                    {methods.map((m) => {
-                      const b = brandFor(m.name);
-                      const logo = logoFor(m.name);
-                      const color = b?.color ?? "#1A56DB";
-                      const isSelected = methodId === m.id;
-                      return (
-                        <button
-                          key={m.id}
-                          type="button"
-                          onClick={() => { setMethodId(m.id); setPayChoice(null); }}
-                          className="group grid place-items-center bg-white transition-all"
-                          style={{
-                            border: `${isSelected ? 2 : 1}px solid ${isSelected ? color : "#E5E7EB"}`,
-                            borderRadius: "12px",
-                            padding: "20px",
-                            minHeight: "96px",
-                          }}
-                          onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.borderColor = color; }}
-                          onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.borderColor = "#E5E7EB"; }}
-                        >
-                          {logo ? (
-                            <img src={logo} alt={b?.label ?? m.name} className="h-10 max-w-full object-contain" />
-                          ) : (
-                            <span className="font-display font-extrabold text-base" style={{ color }}>{b?.label ?? m.name}</span>
-                          )}
-                        </button>
-                      );
-                    })}
+                    {methods
+                      .filter((m) => !methodId || m.id === methodId)
+                      .map((m) => {
+                        const b = brandFor(m.name);
+                        const logo = logoFor(m.name);
+                        const color = b?.color ?? "#1A56DB";
+                        const isSelected = methodId === m.id;
+                        return (
+                          <button
+                            key={m.id}
+                            type="button"
+                            onClick={() => { if (!isSelected) { setMethodId(m.id); setPayChoice(null); } }}
+                            className="group relative flex items-center justify-center bg-white transition-all"
+                            style={{
+                              border: `${isSelected ? 2 : 1}px solid ${isSelected ? color : "#E5E7EB"}`,
+                              borderRadius: "12px",
+                              padding: "20px",
+                              minHeight: "96px",
+                            }}
+                            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.borderColor = color; }}
+                            onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.borderColor = "#E5E7EB"; }}
+                          >
+                            {logo ? (
+                              <img src={logo} alt={b?.label ?? m.name} className="h-10 max-w-full object-contain" />
+                            ) : (
+                              <span className="font-display font-extrabold text-base" style={{ color }}>{b?.label ?? m.name}</span>
+                            )}
+                            {isSelected && (
+                              <span
+                                onClick={(e) => { e.stopPropagation(); setMethodId(""); setPayChoice(null); }}
+                                role="button"
+                                className="absolute right-2 top-2 text-[11px] font-semibold px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600"
+                              >
+                                Change
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
                   </div>
 
                   {/* Auto / Manual choice — appears after method selected */}
