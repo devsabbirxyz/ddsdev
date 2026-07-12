@@ -111,13 +111,13 @@ export function LivePurchaseNotifications() {
           </button>
         </div>
 
-        <div className="p-4 flex items-start gap-4 relative">
+        <div className="p-2.5 sm:p-4 flex items-start gap-2.5 sm:gap-4 relative">
           <div className="shrink-0 relative">
-            <div className="h-14 w-14 rounded-2xl bg-gradient-brand grid place-items-center shadow-lg shadow-primary/30">
-              <Sparkles className="h-7 w-7 text-primary-foreground" />
+            <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-gradient-brand grid place-items-center shadow-lg shadow-primary/30">
+              <Sparkles className="h-5 w-5 sm:h-7 sm:w-7 text-primary-foreground" />
             </div>
-            <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-emerald-500 grid place-items-center ring-2 ring-background">
-              <CheckCircle2 className="h-3.5 w-3.5 text-white" />
+            <div className="absolute -bottom-1 -right-1 h-4 w-4 sm:h-6 sm:w-6 rounded-full bg-emerald-500 grid place-items-center ring-2 ring-background">
+              <CheckCircle2 className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 text-white" />
             </div>
           </div>
 
