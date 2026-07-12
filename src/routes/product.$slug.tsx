@@ -220,6 +220,9 @@ function ProductPage() {
             </span>
           </div>
 
+          <RecentSalesCount productId={product.id} />
+
+
           {product.short_description && (
             <p className="mt-4 text-muted-foreground leading-relaxed">{product.short_description}</p>
           )}
