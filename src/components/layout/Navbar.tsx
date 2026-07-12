@@ -58,6 +58,8 @@ export function Navbar() {
 
         {/* Right cluster */}
         <div className="hidden lg:flex items-center gap-2">
+          <InstantSearch className="w-64 xl:w-80" />
+
 
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
