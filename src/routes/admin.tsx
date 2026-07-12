@@ -190,13 +190,18 @@ function AdminLayout() {
   );
 
   return (
-    <div className="admin-theme min-h-screen bg-background">
+    <div className="admin-theme min-h-screen bg-background lg:flex">
       {/* Ambient glow */}
       <div className="pointer-events-none fixed inset-0 -z-10 opacity-60" style={{ background: "var(--gradient-glow)" }} />
 
-      {/* Drawer sidebar (all viewports) */}
+      {/* Persistent desktop sidebar */}
+      <aside className="hidden lg:flex lg:flex-col w-72 shrink-0 h-screen sticky top-0 bg-card border-r border-white/10 p-4">
+        {SidebarContent}
+      </aside>
+
+      {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-50 flex lg:hidden">
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
           <aside className="relative w-72 max-w-[85vw] h-full overflow-hidden bg-card border-r border-white/10 p-4 shadow-2xl animate-in slide-in-from-left">
             {SidebarContent}
@@ -211,14 +216,14 @@ function AdminLayout() {
           <div className="flex items-center gap-3 px-4 sm:px-6 py-3">
             <button
               onClick={() => setMobileOpen(true)}
-              className="rounded-xl p-2 hover:bg-white/5 transition border border-white/10"
+              className="lg:hidden rounded-xl p-2 hover:bg-white/5 transition border border-white/10"
               aria-label="Open menu"
             >
               <Menu className="h-5 w-5" />
             </button>
 
             <div className="hidden sm:flex items-center gap-3 min-w-0">
-              <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-brand text-primary-foreground font-bold shadow-glow">
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-brand text-primary-foreground font-bold shadow-glow shrink-0">
                 {initial}
               </div>
               <div className="min-w-0">
@@ -229,7 +234,7 @@ function AdminLayout() {
               </div>
             </div>
 
-            <div className="flex-1 max-w-xl mx-auto">
+            <div className="flex-1 max-w-md mx-auto">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
@@ -242,13 +247,13 @@ function AdminLayout() {
             <div className="flex items-center gap-2">
               <Link
                 to="/admin/products/new"
-                className="hidden sm:inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold text-primary-foreground bg-gradient-brand shadow-glow hover:scale-[1.02] transition"
+                className="hidden md:inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold text-primary-foreground bg-gradient-brand shadow-glow hover:scale-[1.02] transition"
               >
                 <span className="text-base leading-none">+</span> New Product
               </Link>
               <Link
                 to="/admin/coupons"
-                className="hidden sm:inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold border border-white/15 hover:bg-white/5 transition"
+                className="hidden md:inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold border border-white/15 hover:bg-white/5 transition"
               >
                 New Coupon
               </Link>
@@ -269,4 +274,5 @@ function AdminLayout() {
     </div>
   );
 }
+
 

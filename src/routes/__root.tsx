@@ -120,6 +120,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const pathname = router.state.location.pathname;
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/") || pathname === "/admin-login";
 
   // Auto-recover from stale dynamic-import chunks after a new deploy
   useEffect(() => {
@@ -156,6 +158,17 @@ function RootComponent() {
     });
     return () => subscription.unsubscribe();
   }, [router, queryClient]);
+
+  if (isAdmin) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <AppProviders>
+          <Outlet />
+          <OfflineIndicator />
+        </AppProviders>
+      </QueryClientProvider>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
