@@ -79,10 +79,12 @@ function CheckoutPage() {
   const [couponMsg, setCouponMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [redeemPoints, setRedeemPoints] = useState<number>(0);
   const [showPayment, setShowPayment] = useState(false);
+  const [modalStep, setModalStep] = useState<"methods" | "choice" | "manual">("methods");
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [trxError, setTrxError] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
