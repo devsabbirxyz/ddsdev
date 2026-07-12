@@ -1,4 +1,4 @@
-import { useState, type ImgHTMLAttributes } from "react";
+import { useMemo, useState, type ImgHTMLAttributes } from "react";
 
 const FALLBACK_DATA_URI =
   "data:image/svg+xml;utf8," +
@@ -25,11 +25,34 @@ interface Props extends Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> {
   fallback?: string;
   /** Max number of automatic retries on load failure */
   maxRetries?: number;
+  /** Target width for auto WebP transform on Supabase storage URLs */
+  targetWidth?: number;
+  /** Disable automatic WebP/resize transform */
+  noOptimize?: boolean;
 }
 
 /**
- * Image with graceful fallback + lightweight retry on transient network failure.
- * Defaults to lazy loading and async decoding.
+ * Auto-convert Supabase public storage URL to WebP via the render endpoint.
+ * `/storage/v1/object/public/<bucket>/<path>` → `/storage/v1/render/image/public/<bucket>/<path>?width=&format=webp`
+ */
+function optimizeUrl(url: string, width?: number): string {
+  try {
+    if (!/\/storage\/v1\/object\/public\//.test(url)) return url;
+    const rendered = url.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
+    const u = new URL(rendered);
+    u.searchParams.set("format", "webp");
+    u.searchParams.set("quality", "75");
+    if (width) u.searchParams.set("width", String(width));
+    u.searchParams.set("resize", "contain");
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
+/**
+ * Image with graceful fallback, blur placeholder, lazy loading (default),
+ * async decoding, and automatic WebP conversion for Supabase storage URLs.
  */
 export function SmartImage({
   src,
@@ -39,29 +62,44 @@ export function SmartImage({
   decoding = "async",
   alt = "",
   onError,
+  onLoad,
+  targetWidth,
+  noOptimize,
+  className,
+  style,
   ...rest
 }: Props) {
   const [attempt, setAttempt] = useState(0);
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
-  const resolvedSrc = !src || failed
-    ? fallback
-    : attempt > 0
-      ? `${src}${src.includes("?") ? "&" : "?"}r=${attempt}`
-      : src;
+  const finalSrc = useMemo(() => {
+    if (!src || failed) return fallback;
+    const base = noOptimize ? src : optimizeUrl(src, targetWidth);
+    return attempt > 0 ? `${base}${base.includes("?") ? "&" : "?"}r=${attempt}` : base;
+  }, [src, failed, fallback, noOptimize, targetWidth, attempt]);
 
   return (
     <img
       {...rest}
-      src={resolvedSrc}
+      src={finalSrc}
       alt={alt}
       loading={loading}
       decoding={decoding}
+      className={className}
+      style={{
+        backgroundColor: loaded ? undefined : "hsl(var(--muted) / 0.4)",
+        transition: "opacity 300ms ease",
+        opacity: loaded ? 1 : 0.6,
+        ...style,
+      }}
+      onLoad={(e) => { setLoaded(true); onLoad?.(e); }}
       onError={(e) => {
         if (attempt < maxRetries && !failed) {
           setAttempt((n) => n + 1);
         } else {
           setFailed(true);
+          setLoaded(true);
         }
         onError?.(e);
       }}
