@@ -163,9 +163,10 @@ function ProductEditor() {
     { key: "guide", label: "Use Guide", icon: BookOpen },
     { key: "seo", label: "SEO", icon: Search },
   ];
-  if (tab === "variants" && !form.is_variant) {
-    setTab("basic");
-  }
+  useEffect(() => {
+    if (tab === "variants" && form && !form.is_variant) setTab("basic");
+  }, [tab, form?.is_variant]);
+
 
   return (
     <div className="space-y-4">
