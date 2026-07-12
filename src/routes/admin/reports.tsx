@@ -23,7 +23,7 @@ const REPORTS: { key: ReportKey; label: string; desc: string; icon: any; accent:
 
 function toCSV(rows: any[]): string {
   if (!rows.length) return "";
-  const headers = Array.from(rows.reduce((s, r) => { Object.keys(r).forEach((k) => s.add(k)); return s; }, new Set<string>()));
+  const headers = Array.from(rows.reduce((s, r) => { Object.keys(r).forEach((k) => s.add(k)); return s; }, new Set<string>())) as string[];
   const esc = (v: any) => {
     if (v === null || v === undefined) return "";
     if (typeof v === "object") v = JSON.stringify(v);
