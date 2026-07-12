@@ -251,11 +251,13 @@ function ProductEditor() {
           </div>
 
           <div className="space-y-4">
-            <div className="glass-card rounded-2xl p-5 space-y-3">
-              <h3 className="font-bold">মূল্য</h3>
-              <Field label="রেগুলার প্রাইস (৳)" type="number" value={form.regular_price ?? ""} onChange={(v) => set("regular_price", v)} />
-              <Field label="অফার প্রাইস (৳)" type="number" value={form.offer_price ?? ""} onChange={(v) => set("offer_price", v)} />
-            </div>
+            {!form.is_variant && (
+              <div className="glass-card rounded-2xl p-5 space-y-3">
+                <h3 className="font-bold">মূল্য</h3>
+                <Field label="রেগুলার প্রাইস (৳)" type="number" value={form.regular_price ?? ""} onChange={(v) => set("regular_price", v)} />
+                <Field label="অফার প্রাইস (৳)" type="number" value={form.offer_price ?? ""} onChange={(v) => set("offer_price", v)} />
+              </div>
+            )}
 
             <div className="glass-card rounded-2xl p-5 space-y-3">
               <h3 className="font-bold">স্টক / ইনভেন্টরি</h3>
