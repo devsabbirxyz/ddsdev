@@ -164,6 +164,10 @@ function CheckoutPage() {
   const handlePayNow = () => {
     if (items.length === 0) { toast.error("কার্ট খালি"); return; }
     if (!validateInfo()) return;
+    setModalStep("methods");
+    setMethodId("");
+    setTrxId("");
+    setTrxError(false);
     setShowPayment(true);
   };
 
@@ -172,6 +176,8 @@ function CheckoutPage() {
     setShowPayment(false);
     setMethodId("");
     setTrxId("");
+    setTrxError(false);
+    setModalStep("methods");
   };
 
   const copyNumber = async () => {
