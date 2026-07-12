@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ShoppingBag, X } from "lucide-react";
+import { CheckCircle2, Sparkles, X } from "lucide-react";
 import { getRecentPurchases } from "@/lib/live-purchases.functions";
 
 type Purchase = {
