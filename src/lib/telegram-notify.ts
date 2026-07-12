@@ -1,19 +1,15 @@
 import { sendTelegramNotification } from "@/lib/telegram.functions";
 
-function fmtTime() {
-  return new Date().toLocaleString("bn-BD", { dateStyle: "medium", timeStyle: "short" });
-}
-
-function siteUrl() {
+function siteOrigin(): string | undefined {
   if (typeof window !== "undefined") return window.location.origin;
-  return "";
+  return undefined;
 }
 
-function fire(message: string) {
-  const full = `${message}\n\n🔗 Admin Panel দেখুন: ${siteUrl()}/admin`;
-  // fire-and-forget; never block UX
+function fire(payload: Parameters<typeof sendTelegramNotification>[0]["data"]["payload"]) {
   try {
-    void sendTelegramNotification({ data: { message: full } }).catch(() => {});
+    void sendTelegramNotification({
+      data: { payload, origin: siteOrigin() },
+    }).catch(() => {});
   } catch {
     // ignore
   }
@@ -21,28 +17,18 @@ function fire(message: string) {
 
 export const notify = {
   newOrder(o: { name: string; phone: string; product: string; amount: number }) {
-    fire(
-      `🛒 <b>নতুন অর্ডার!</b>\n👤 নাম: ${o.name}\n📱 ফোন: ${o.phone}\n🛍️ পণ্য: ${o.product}\n💰 টাকা: ${o.amount} টাকা\n🕐 সময়: ${fmtTime()}`,
-    );
+    fire({ template: "new_order", ...o });
   },
   newSignup(o: { email: string; name: string }) {
-    fire(
-      `👤 <b>নতুন কাস্টমার রেজিস্ট্রেশন!</b>\n📧 ইমেইল: ${o.email}\n👤 নাম: ${o.name}\n🕐 সময়: ${fmtTime()}`,
-    );
+    fire({ template: "new_signup", ...o });
   },
   newTicket(o: { name: string; subject: string; message: string }) {
-    fire(
-      `🎫 <b>নতুন সাপোর্ট টিকিট!</b>\n👤 নাম: ${o.name}\n📝 বিষয়: ${o.subject}\n💬 বার্তা: ${o.message}\n🕐 সময়: ${fmtTime()}`,
-    );
+    fire({ template: "new_ticket", ...o });
   },
   passwordReset(o: { email: string }) {
-    fire(
-      `🔑 <b>পাসওয়ার্ড রিসেট রিকোয়েস্ট!</b>\n📧 ইমেইল: ${o.email}\n🕐 সময়: ${fmtTime()}`,
-    );
+    fire({ template: "password_reset", ...o });
   },
   paymentSubmit(o: { name: string; amount: number; method: string; trxId: string }) {
-    fire(
-      `💳 <b>নতুন পেমেন্ট সাবমিট!</b>\n👤 নাম: ${o.name}\n💰 পরিমাণ: ${o.amount} টাকা\n🏦 মেথড: ${o.method}\n🔢 TrxID: ${o.trxId}\n🕐 সময়: ${fmtTime()}`,
-    );
+    fire({ template: "payment_submit", ...o });
   },
 };
