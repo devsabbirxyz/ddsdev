@@ -240,6 +240,18 @@ function AdminLayout() {
             </div>
 
             <div className="flex items-center gap-2">
+              <Link
+                to="/admin/products/new"
+                className="hidden sm:inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold text-primary-foreground bg-gradient-brand shadow-glow hover:scale-[1.02] transition"
+              >
+                <span className="text-base leading-none">+</span> New Product
+              </Link>
+              <Link
+                to="/admin/coupons"
+                className="hidden sm:inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold border border-white/15 hover:bg-white/5 transition"
+              >
+                New Coupon
+              </Link>
               <button className="grid h-10 w-10 place-items-center rounded-full bg-white/5 hover:bg-white/10 transition border border-white/10" aria-label="Messages">
                 <MessageSquare className="h-4 w-4" />
               </button>
