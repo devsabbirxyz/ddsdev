@@ -158,11 +158,15 @@ function ProductEditor() {
   const tabs: { key: Tab; label: string; icon: any }[] = [
     { key: "basic", label: "মূল তথ্য", icon: Package },
     { key: "media", label: "ছবি", icon: ImageIcon },
-    { key: "variants", label: "ভ্যারিয়েন্ট", icon: Layers },
+    ...(form.is_variant ? [{ key: "variants" as Tab, label: "ভ্যারিয়েন্ট", icon: Layers }] : []),
     { key: "delivery", label: "ডেলিভারি", icon: Database },
     { key: "guide", label: "Use Guide", icon: BookOpen },
     { key: "seo", label: "SEO", icon: Search },
   ];
+  useEffect(() => {
+    if (tab === "variants" && form && !form.is_variant) setTab("basic");
+  }, [tab, form?.is_variant]);
+
 
   return (
     <div className="space-y-4">
@@ -247,11 +251,13 @@ function ProductEditor() {
           </div>
 
           <div className="space-y-4">
-            <div className="glass-card rounded-2xl p-5 space-y-3">
-              <h3 className="font-bold">মূল্য</h3>
-              <Field label="রেগুলার প্রাইস (৳)" type="number" value={form.regular_price ?? ""} onChange={(v) => set("regular_price", v)} />
-              <Field label="অফার প্রাইস (৳)" type="number" value={form.offer_price ?? ""} onChange={(v) => set("offer_price", v)} />
-            </div>
+            {!form.is_variant && (
+              <div className="glass-card rounded-2xl p-5 space-y-3">
+                <h3 className="font-bold">মূল্য</h3>
+                <Field label="রেগুলার প্রাইস (৳)" type="number" value={form.regular_price ?? ""} onChange={(v) => set("regular_price", v)} />
+                <Field label="অফার প্রাইস (৳)" type="number" value={form.offer_price ?? ""} onChange={(v) => set("offer_price", v)} />
+              </div>
+            )}
 
             <div className="glass-card rounded-2xl p-5 space-y-3">
               <h3 className="font-bold">স্টক / ইনভেন্টরি</h3>
@@ -292,7 +298,7 @@ function ProductEditor() {
       )}
 
       {tab === "media" && <MediaTab productId={id} images={images} onChange={() => qc.invalidateQueries({ queryKey: ["admin", "product", id] })} />}
-      {tab === "variants" && <VariantsTab productId={id} variants={variants} onChange={() => qc.invalidateQueries({ queryKey: ["admin", "product", id] })} />}
+      {tab === "variants" && form.is_variant && <VariantsTab productId={id} variants={variants} onChange={() => qc.invalidateQueries({ queryKey: ["admin", "product", id] })} />}
       {tab === "delivery" && (
         <DeliveryTab
           form={form} set={set}
