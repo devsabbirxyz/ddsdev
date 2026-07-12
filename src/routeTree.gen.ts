@@ -49,6 +49,7 @@ import { Route as AdminSubscriptionsRouteImport } from './routes/admin/subscript
 import { Route as AdminSlidesRouteImport } from './routes/admin/slides'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminSellersRouteImport } from './routes/admin/sellers'
+import { Route as AdminReportsRouteImport } from './routes/admin/reports'
 import { Route as AdminPushRouteImport } from './routes/admin/push'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminPopupRouteImport } from './routes/admin/popup'
@@ -292,6 +293,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
 const AdminSellersRoute = AdminSellersRouteImport.update({
   id: '/sellers',
   path: '/sellers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPushRoute = AdminPushRouteImport.update({
@@ -575,6 +581,7 @@ export interface FileRoutesByFullPath {
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRouteWithChildren
   '/admin/push': typeof AdminPushRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -655,6 +662,7 @@ export interface FileRoutesByTo {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/push': typeof AdminPushRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -742,6 +750,7 @@ export interface FileRoutesById {
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRouteWithChildren
   '/admin/push': typeof AdminPushRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slides': typeof AdminSlidesRoute
@@ -830,6 +839,7 @@ export interface FileRouteTypes {
     | '/admin/popup'
     | '/admin/products'
     | '/admin/push'
+    | '/admin/reports'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/slides'
@@ -910,6 +920,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/push'
+    | '/admin/reports'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/slides'
@@ -996,6 +1007,7 @@ export interface FileRouteTypes {
     | '/admin/popup'
     | '/admin/products'
     | '/admin/push'
+    | '/admin/reports'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/slides'
@@ -1350,6 +1362,13 @@ declare module '@tanstack/react-router' {
       path: '/sellers'
       fullPath: '/admin/sellers'
       preLoaderRoute: typeof AdminSellersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/push': {
@@ -1786,6 +1805,7 @@ interface AdminRouteChildren {
   AdminPopupRoute: typeof AdminPopupRoute
   AdminProductsRoute: typeof AdminProductsRouteWithChildren
   AdminPushRoute: typeof AdminPushRoute
+  AdminReportsRoute: typeof AdminReportsRoute
   AdminSellersRoute: typeof AdminSellersRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSlidesRoute: typeof AdminSlidesRoute
@@ -1814,6 +1834,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPopupRoute: AdminPopupRoute,
   AdminProductsRoute: AdminProductsRouteWithChildren,
   AdminPushRoute: AdminPushRoute,
+  AdminReportsRoute: AdminReportsRoute,
   AdminSellersRoute: AdminSellersRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSlidesRoute: AdminSlidesRoute,
