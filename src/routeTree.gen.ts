@@ -74,6 +74,7 @@ import { Route as AdminOrdersIndexRouteImport } from './routes/admin/orders.inde
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as SellerProductsNewRouteImport } from './routes/seller.products.new'
 import { Route as SellerProductsIdRouteImport } from './routes/seller.products.$id'
+import { Route as BlogCategorySlugRouteImport } from './routes/blog.category.$slug'
 import { Route as AdminTicketsIdRouteImport } from './routes/admin/tickets.$id'
 import { Route as AdminProductsNewRouteImport } from './routes/admin/products.new'
 import { Route as AdminProductsIdRouteImport } from './routes/admin/products.$id'
@@ -418,6 +419,11 @@ const SellerProductsIdRoute = SellerProductsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => SellerProductsRoute,
 } as any)
+const BlogCategorySlugRoute = BlogCategorySlugRouteImport.update({
+  id: '/category/$slug',
+  path: '/category/$slug',
+  getParentRoute: () => BlogRoute,
+} as any)
 const AdminTicketsIdRoute = AdminTicketsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -596,6 +602,7 @@ export interface FileRoutesByFullPath {
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/tickets/$id': typeof AdminTicketsIdRoute
+  '/blog/category/$slug': typeof BlogCategorySlugRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -673,6 +680,7 @@ export interface FileRoutesByTo {
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/tickets/$id': typeof AdminTicketsIdRoute
+  '/blog/category/$slug': typeof BlogCategorySlugRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
@@ -759,6 +767,7 @@ export interface FileRoutesById {
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/tickets/$id': typeof AdminTicketsIdRoute
+  '/blog/category/$slug': typeof BlogCategorySlugRoute
   '/seller/products/$id': typeof SellerProductsIdRoute
   '/seller/products/new': typeof SellerProductsNewRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -845,6 +854,7 @@ export interface FileRouteTypes {
     | '/admin/products/$id'
     | '/admin/products/new'
     | '/admin/tickets/$id'
+    | '/blog/category/$slug'
     | '/seller/products/$id'
     | '/seller/products/new'
     | '/dashboard/'
@@ -922,6 +932,7 @@ export interface FileRouteTypes {
     | '/admin/products/$id'
     | '/admin/products/new'
     | '/admin/tickets/$id'
+    | '/blog/category/$slug'
     | '/seller/products/$id'
     | '/seller/products/new'
     | '/dashboard'
@@ -1007,6 +1018,7 @@ export interface FileRouteTypes {
     | '/admin/products/$id'
     | '/admin/products/new'
     | '/admin/tickets/$id'
+    | '/blog/category/$slug'
     | '/seller/products/$id'
     | '/seller/products/new'
     | '/_authenticated/dashboard/'
@@ -1503,6 +1515,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SellerProductsIdRouteImport
       parentRoute: typeof SellerProductsRoute
     }
+    '/blog/category/$slug': {
+      id: '/blog/category/$slug'
+      path: '/category/$slug'
+      fullPath: '/blog/category/$slug'
+      preLoaderRoute: typeof BlogCategorySlugRouteImport
+      parentRoute: typeof BlogRoute
+    }
     '/admin/tickets/$id': {
       id: '/admin/tickets/$id'
       path: '/$id'
@@ -1806,10 +1825,12 @@ const AffiliateRouteWithChildren = AffiliateRoute._addFileChildren(
 
 interface BlogRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
+  BlogCategorySlugRoute: typeof BlogCategorySlugRoute
 }
 
 const BlogRouteChildren: BlogRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
+  BlogCategorySlugRoute: BlogCategorySlugRoute,
 }
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
