@@ -99,7 +99,7 @@ function AdminOrderDetail() {
     setRejecting(true);
     try {
       await reject({ data: { orderId: order.id, reason: reason.trim() } });
-      await qc.invalidateQueries({ queryKey: ["admin"] });
+      await qc.refetchQueries({ queryKey: ["admin"], type: "all" });
       toast.success("অর্ডার বাতিল");
       nav({ to: "/admin/orders" });
     } catch (e: any) {
