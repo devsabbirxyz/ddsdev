@@ -57,16 +57,34 @@ export const Route = createFileRoute("/sitemap.xml")({
         try {
           const { data: posts } = await supabase
             .from("blog_posts")
-            .select("slug, updated_at")
+            .select("slug, updated_at, category, author_name")
             .eq("is_published", true)
             .limit(1000);
           if (posts) {
-            for (const b of posts) {
+            const categorySet = new Set<string>();
+            const authorSet = new Set<string>();
+            for (const b of posts as any[]) {
               entries.push({
                 path: `/blog/${b.slug}`,
                 lastmod: b.updated_at ?? undefined,
                 changefreq: "monthly",
                 priority: "0.6",
+              });
+              if (b.category) categorySet.add(b.category);
+              if (b.author_name) authorSet.add(b.author_name);
+            }
+            for (const c of categorySet) {
+              entries.push({
+                path: `/blog/category/${encodeURIComponent(c)}`,
+                changefreq: "weekly",
+                priority: "0.5",
+              });
+            }
+            for (const a of authorSet) {
+              entries.push({
+                path: `/blog/author/${encodeURIComponent(a)}`,
+                changefreq: "weekly",
+                priority: "0.4",
               });
             }
           }

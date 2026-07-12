@@ -222,6 +222,8 @@ export type Database = {
       }
       blog_posts: {
         Row: {
+          author_name: string | null
+          category: string | null
           content: string | null
           content_en: string | null
           created_at: string
@@ -241,6 +243,8 @@ export type Database = {
           view_count: number
         }
         Insert: {
+          author_name?: string | null
+          category?: string | null
           content?: string | null
           content_en?: string | null
           created_at?: string
@@ -260,6 +264,8 @@ export type Database = {
           view_count?: number
         }
         Update: {
+          author_name?: string | null
+          category?: string | null
           content?: string | null
           content_en?: string | null
           created_at?: string
