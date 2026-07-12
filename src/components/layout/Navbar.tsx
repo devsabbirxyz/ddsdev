@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { siteSettingsQuery } from "@/lib/site-settings";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { InstantSearch } from "@/components/storefront/InstantSearch";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
