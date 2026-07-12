@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { categoriesQuery, productsQuery } from "@/lib/storefront";
 import { ProductCard, EmptyState } from "@/components/storefront/ProductCard";
+import { ProductGridSkeleton } from "@/components/storefront/ProductGridSkeleton";
 
 type SortKey = "new" | "best" | "price_asc" | "price_desc";
 
@@ -238,11 +239,7 @@ function ShopPage() {
         {/* Grid */}
         <div>
           {isLoading ? (
-            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="glass-card rounded-2xl h-72 animate-pulse" />
-              ))}
-            </div>
+            <ProductGridSkeleton count={9} />
           ) : products.length === 0 ? (
             <EmptyState
               title="এখনো কোনো প্রোডাক্ট নেই"
