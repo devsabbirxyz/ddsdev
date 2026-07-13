@@ -410,10 +410,13 @@ function ProductPage() {
           <div className="grid sm:grid-cols-2 gap-4">
             {reviews.map((r) => (
               <div key={r.id} className="glass-card rounded-2xl p-5">
-                <div className="flex gap-0.5 mb-2">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className={`h-4 w-4 ${i < r.rating ? "fill-primary text-primary" : "text-muted-foreground/30"}`} />
-                  ))}
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className={`h-4 w-4 ${i < r.rating ? "fill-primary text-primary" : "text-muted-foreground/30"}`} />
+                    ))}
+                  </div>
+                  <VerifiedBuyerBadge size="xs" />
                 </div>
                 <p className="text-sm">{r.review_text}</p>
                 <p className="mt-2 text-xs text-muted-foreground">{new Date(r.created_at!).toLocaleDateString("bn-BD")}</p>
