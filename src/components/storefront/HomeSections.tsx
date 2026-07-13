@@ -235,10 +235,10 @@ function useInView<T extends HTMLElement>(once = true) {
 export function LiveStats() {
   const { data } = useQuery(liveStatsQuery);
   const { ref, inView } = useInView<HTMLDivElement>(true);
-  const orders = useCounter(data?.ordersToday ?? 0, 1600, inView);
-  const customers = useCounter(Math.max(data?.customers ?? 0, 1500), 1800, inView);
-  const rating = useCounter(data?.avgRating ?? 4.9, 1400, inView, 1);
-  const secure = useCounter(100, 1500, inView);
+  const orders = useCounter(data?.ordersToday ?? 0, 3200, inView);
+  const customers = useCounter(Math.max(data?.customers ?? 0, 1500), 3600, inView);
+  const rating = useCounter(data?.avgRating ?? 4.9, 3000, inView, 1);
+  const secure = useCounter(100, 3200, inView);
   const items = [
     { icon: Package, label: "আজকের অর্ডার", value: `${toBn(orders)}+`, sub: "✅ ডেলিভার্ড" },
     { icon: Users, label: "হ্যাপি কাস্টমার", value: `${toBn(customers)}+`, sub: "🇧🇩 বাংলাদেশজুড়ে" },
