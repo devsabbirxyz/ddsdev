@@ -14,6 +14,7 @@ import { CountdownBanner } from "@/components/storefront/CountdownBanner";
 import { RecentlyViewed } from "@/components/storefront/RecentlyViewed";
 import { FlashDeals, BestSellers, JustArrived, LiveStats, TestimonialsHighlight, HomeFAQ, BundleOffers } from "@/components/storefront/HomeSections";
 import { FreeGiftBanner } from "@/components/storefront/FreeGiftBanner";
+import { TrustBadgeSection, MoneyBackBanner } from "@/components/storefront/TrustBadges";
 import { supabase } from "@/integrations/supabase/client";
 
 
