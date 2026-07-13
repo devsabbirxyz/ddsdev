@@ -56,6 +56,42 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          ip: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip?: string | null
+        }
+        Relationships: []
+      }
       affiliate_applications: {
         Row: {
           created_at: string
@@ -1222,6 +1258,7 @@ export type Database = {
       }
       products: {
         Row: {
+          auto_deliver: boolean
           average_rating: number
           category_id: string | null
           created_at: string
@@ -1263,6 +1300,7 @@ export type Database = {
           view_count: number
         }
         Insert: {
+          auto_deliver?: boolean
           average_rating?: number
           category_id?: string | null
           created_at?: string
@@ -1304,6 +1342,7 @@ export type Database = {
           view_count?: number
         }
         Update: {
+          auto_deliver?: boolean
           average_rating?: number
           category_id?: string | null
           created_at?: string
