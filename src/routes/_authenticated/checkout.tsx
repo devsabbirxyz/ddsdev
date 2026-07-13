@@ -380,6 +380,7 @@ function CheckoutPage() {
             <div className="space-y-2 text-sm">
               <Row label="মূল দাম" value={formatBDT(subtotal)} />
               {discount > 0 && <Row label="কুপন ছাড়" value={`− ${formatBDT(discount)}`} accent />}
+              {firstTimeDiscount > 0 && <Row label="🎁 প্রথম অর্ডার ছাড় (৩%)" value={`− ${formatBDT(firstTimeDiscount)}`} accent />}
               {safeRedeem > 0 && <Row label="ওয়ালেট" value={`− ${formatBDT(safeRedeem)}`} accent />}
               <div className="border-t border-border pt-2 mt-2 flex justify-between">
                 <span className="font-bold">সর্বমোট</span>
