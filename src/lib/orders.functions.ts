@@ -221,6 +221,21 @@ export const placeOrder = createServerFn({ method: "POST" })
       couponId = coupon.id;
     }
 
+    // 4a) First-time buyer 3% discount (stacks with coupon)
+    let firstTimeDiscount = 0;
+    {
+      const { count: prevOrders } = await supabaseAdmin
+        .from("orders")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId);
+      if ((prevOrders ?? 0) === 0) {
+        const base = Math.max(0, subtotal - discount);
+        firstTimeDiscount = Math.round(base * 0.03);
+        discount += firstTimeDiscount;
+      }
+    }
+
+
     // 4b) Validate wallet redemption
     let walletRedeem = 0;
     if (data.redeemPoints && data.redeemPoints > 0) {

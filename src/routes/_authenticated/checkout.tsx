@@ -97,15 +97,37 @@ function CheckoutPage() {
   const method = methods.find((m) => m.id === methodId);
   const brand = brandFor(method?.name);
   const discount = coupon?.discount ?? 0;
+
+  // First-time buyer detection (3% off)
+  const { data: prevOrderCount = 0 } = useQuery({
+    queryKey: ["my-order-count", user?.id],
+    enabled: !!user?.id,
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("orders")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user!.id);
+      return count ?? 0;
+    },
+  });
+  const isFirstTime = !!user && prevOrderCount === 0;
+  const firstTimeDiscount = useMemo(
+    () => (isFirstTime ? Math.round(Math.max(0, subtotal - discount) * 0.03) : 0),
+    [isFirstTime, subtotal, discount],
+  );
+  const totalDiscount = discount + firstTimeDiscount;
+
   const maxRedeem = useMemo(
-    () => Math.max(0, Math.min(walletBalance, subtotal - discount)),
-    [walletBalance, subtotal, discount],
+    () => Math.max(0, Math.min(walletBalance, subtotal - totalDiscount)),
+    [walletBalance, subtotal, totalDiscount],
   );
   const safeRedeem = Math.max(0, Math.min(redeemPoints, maxRedeem));
   const total = useMemo(
-    () => Math.max(0, subtotal - discount - safeRedeem),
-    [subtotal, discount, safeRedeem],
+    () => Math.max(0, subtotal - totalDiscount - safeRedeem),
+    [subtotal, totalDiscount, safeRedeem],
   );
+
 
   const validateInfo = (): boolean => {
     const defs = [
@@ -358,6 +380,7 @@ function CheckoutPage() {
             <div className="space-y-2 text-sm">
               <Row label="মূল দাম" value={formatBDT(subtotal)} />
               {discount > 0 && <Row label="কুপন ছাড়" value={`− ${formatBDT(discount)}`} accent />}
+              {firstTimeDiscount > 0 && <Row label="🎁 প্রথম অর্ডার ছাড় (৩%)" value={`− ${formatBDT(firstTimeDiscount)}`} accent />}
               {safeRedeem > 0 && <Row label="ওয়ালেট" value={`− ${formatBDT(safeRedeem)}`} accent />}
               <div className="border-t border-border pt-2 mt-2 flex justify-between">
                 <span className="font-bold">সর্বমোট</span>
