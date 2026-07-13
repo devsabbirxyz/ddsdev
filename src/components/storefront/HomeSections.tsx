@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { productsQuery, faqsQuery, formatBDT } from "@/lib/storefront";
 import { bundlesQuery } from "@/lib/bundles";
 import { ProductCard } from "./ProductCard";
+import { VerifiedBuyerBadge } from "./TrustBadges";
 
 /* ============ FLASH DEALS — countdown + high-discount products ============ */
 export function FlashDeals() {
