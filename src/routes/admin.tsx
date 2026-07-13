@@ -7,7 +7,7 @@ import { getAdminAuthState } from "@/lib/admin.functions";
 import {
   LayoutDashboard, ShoppingBag, Store, Users, Package, Wallet,
   Tag, Image as ImageIcon, Settings, Home, CreditCard, Ticket, LifeBuoy,
-  Sparkles, ShieldCheck, Mail, PanelBottom, Menu, X, Search, Bell, MessageSquare, LogOut, Rocket, MessageCircle, CalendarClock, BarChart3, FileSpreadsheet,
+  Sparkles, ShieldCheck, Mail, PanelBottom, Menu, X, Search, Bell, MessageSquare, LogOut, Rocket, MessageCircle, CalendarClock, BarChart3, FileSpreadsheet, ScrollText, Database,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -62,6 +62,8 @@ const navGroups: NavGroup[] = [
       { to: "/admin/settings", label: "সেটিংস", icon: Settings },
       { to: "/admin/telegram", label: "টেলিগ্রাম নোটিফিকেশন", icon: MessageCircle },
       { to: "/admin/push", label: "পুশ নোটিফিকেশন", icon: Bell },
+      { to: "/admin/audit", label: "Activity Log", icon: ScrollText },
+      { to: "/admin/backups", label: "ব্যাকআপ ও এক্সপোর্ট", icon: Database },
       { to: "/admin/admins", label: "অ্যাডমিন ম্যানেজমেন্ট", icon: ShieldCheck, superOnly: true },
     ],
   },
