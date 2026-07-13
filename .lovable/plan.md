@@ -1,51 +1,52 @@
-## Admin Dashboard Redesign — Reference-Style Purple Dark Theme
+## Upsell/Cross-sell Engine — Checkout Suggestions
 
-রেফারেন্স ইমেজের premium purple-accent dark admin UI-এর মতো করে পুরো `/admin` shell ও overview page রিডিজাইন করব। সব sub-page (orders, products, customers ইত্যাদি) একই ভিজ্যুয়াল ভাষায় আসবে।
+Checkout page-এ cart items-এর সাথে relevant product suggest করবো, এক-ক্লিকে cart-এ add করা যাবে।
 
-### ১. Admin Shell (`src/routes/admin.tsx`)
+### কী বানাবো
 
-- **Sidebar**: শীর্ষে স্টোর ব্র্যান্ড ব্লক (logo + "DDS-Digital / Admin Panel"), তারপর section labels (MAIN / COMMERCE / CMS / SETTINGS) ছোট uppercase muted style-এ। Active item: soft purple gradient pill + left glow bar। Inactive: muted, hover-এ subtle `bg-white/5`।
-- **Top header**: বাম দিকে hamburger + page title (route-derived); ডান দিকে দুইটা primary action button — **`+ New Product`** (gradient purple) এবং **`New Coupon`** (outline)। Search বার এবং notification/message আইকন থাকবে current-এর মতোই।
-- **Ambient**: বর্তমান radial purple glow রাখব, তবে density কমিয়ে reference-এর মতো পরিচ্ছন্ন করব।
+**1. Suggestion Logic (server-side)**
+নতুন server function `getCheckoutSuggestions` in `src/lib/product-extras.functions.ts`:
+- Input: cart-এ থাকা `productIds[]`
+- Rules (priority order):
+  1. **Same category, cheaper products** — cart items-এর category থেকে top-selling (by `sold_count` / recent orders), যেগুলো cart-এ নেই
+  2. **Frequently bought together** — যে products একই order-এ বেশি এসেছে (query `orders` table, group by user, find co-occurrence)
+  3. **Fallback: Best sellers** — যদি কম হয়, best-selling active products দিয়ে fill করবো
+- Return max 4 products (id, title, slug, offer_price, regular_price, image, category)
+- Only active + in-stock products
 
-### ২. Overview Page (`src/routes/admin/index.tsx`)
+**2. UI Component**
+নতুন file `src/components/storefront/CheckoutUpsell.tsx`:
+- Section title: "🎁 আপনি এটাও কিনতে পারেন" 
+- Horizontal scroll (mobile) / 4-column grid (desktop)
+- Each card: image, title (2 lines), price (offer + regular strikethrough), **"+ Add"** button
+- Click → `addItem()` from `useCart()` + toast "কার্টে যোগ হয়েছে" + card-এ checkmark animation
+- Discount badge if `offer_price < regular_price`
+- Glassmorphism card style (site theme match)
 
-শুধু **৪টা stat card** সেকশন — reference-এর হুবহু স্টাইলে:
+**3. Integration**
+`src/routes/_authenticated/checkout.tsx`:
+- Order Summary section-এর ঠিক নিচে `<CheckoutUpsell cartProductIds={...} />` mount
+- Cart items change হলে suggestions auto-refresh (react-query)
+- Hide if suggestions.length === 0
 
+### Technical
+
+```text
+checkout.tsx
+  └── Order Summary
+  └── CheckoutUpsell (NEW)      ← useQuery(['upsell', cartIds])
+        └── getCheckoutSuggestions (server fn)
+              ├── query products in cart category (exclude cart ids)
+              ├── query co-purchase from orders
+              └── fallback best sellers
+  └── Payment Section
 ```
-┌──────────────┬──────────────┬──────────────┬──────────────┐
-│ TODAY'S SALES│ THIS MONTH   │ TOTAL DUE    │ CUSTOMERS    │
-│ purple bar   │ blue bar     │ amber bar    │ green bar    │
-│ 💳 icon      │ 📊 icon      │ ⏰ icon       │ 👥 icon       │
-│ ৳ big value  │ ৳ big value  │ ৳ big value  │ count        │
-│ subtle meta  │ subtle meta  │ subtle meta  │ subtle meta  │
-└──────────────┴──────────────┴──────────────┴──────────────┘
-```
 
-- Cards: `glass-card` + top colored border-glow (purple/blue/amber/emerald), rounded-2xl, বড় bold ৳ value, নিচে muted meta line (e.g. "36 orders today")।
-- বাকি existing sections (charts, recent orders ইত্যাদি যদি থাকে) index page থেকে সরানো হবে — শুধু ৪ কার্ড থাকবে reference-এর মতো focused overview হিসেবে।
+- Query cached 5 min; invalidate when cart changes
+- Add-to-cart optimistic (instant UI update)
+- No schema/migration needed — uses existing `products`, `orders`, `product_images` tables
 
-### ৩. Sub-pages Consistency
-
-`admin/orders`, `admin/products`, `admin/customers`, `admin/coupons` ইত্যাদি সব page-এর page-header + table/card wrapper একই style-এ ইউনিফাই করব:
-
-- Page header: বড় display heading + muted subtitle + right-aligned primary action button (gradient purple)।
-- Table/list cards: `glass-card rounded-2xl`, subtle border, hover glow।
-- Status badges: purple/emerald/amber/red pill with soft tinted bg।
-- Form inputs: dark glass with purple focus ring।
-
-কোনো business logic, query, বা data flow পরিবর্তন হবে না — শুধু presentation layer।
-
-### ৪. Design Tokens
-
-`src/styles.css`-এ admin-scoped tokens যোগ/আপডেট করব (existing Midnight Indigo palette রেখে):
-
-- `--admin-accent-purple`, `--admin-accent-blue`, `--admin-accent-amber`, `--admin-accent-emerald` — stat card border glow-এর জন্য।
-- `--gradient-admin-primary` — purple button gradient।
-- `.admin-theme` scope-এই সীমিত রাখব যাতে storefront-এ প্রভাব না পড়ে।
-
-### Technical Notes
-
-- Files touched: `src/routes/admin.tsx` (shell), `src/routes/admin/index.tsx` (overview), `src/styles.css` (admin tokens), এবং sub-page গুলোর page-header + wrapper class (products/orders/customers/coupons/sellers/withdrawals/categories ইত্যাদি — শুধু className ও header markup)।
-- কোনো data query, server function, RLS, বা schema পরিবর্তন নেই।
-- Mobile: sidebar drawer + stat cards stack single column।
+### Files
+- **New:** `src/components/storefront/CheckoutUpsell.tsx`
+- **Modified:** `src/lib/product-extras.functions.ts` (add `getCheckoutSuggestions`)
+- **Modified:** `src/routes/_authenticated/checkout.tsx` (mount component)
