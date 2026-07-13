@@ -187,43 +187,80 @@ const liveStatsQuery = queryOptions({
   },
 });
 
-function useCounter(target: number, duration = 1200) {
+const toBn = (s: string | number) =>
+  String(s).replace(/[0-9]/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+
+function useCounter(target: number, duration = 1600, active = true, decimals = 0) {
   const [val, setVal] = useState(0);
   const start = useRef<number | null>(null);
   useEffect(() => {
+    if (!active) return;
     start.current = null;
     let raf = 0;
     const tick = (ts: number) => {
       if (start.current == null) start.current = ts;
       const p = Math.min(1, (ts - start.current) / duration);
-      setVal(Math.floor(target * (1 - Math.pow(1 - p, 3))));
+      const eased = 1 - Math.pow(1 - p, 3);
+      const next = target * eased;
+      setVal(decimals ? Number(next.toFixed(decimals)) : Math.floor(next));
       if (p < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [target, duration]);
+  }, [target, duration, active, decimals]);
   return val;
+}
+
+function useInView<T extends HTMLElement>(once = true) {
+  const ref = useRef<T | null>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    if (!ref.current || (once && inView)) return;
+    const el = ref.current;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setInView(true);
+          if (once) io.disconnect();
+        } else if (!once) setInView(false);
+      },
+      { threshold: 0.25 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [once, inView]);
+  return { ref, inView };
 }
 
 export function LiveStats() {
   const { data } = useQuery(liveStatsQuery);
-  const orders = useCounter(data?.ordersToday ?? 0);
-  const customers = useCounter(Math.max(data?.customers ?? 0, 1500));
-  const products = useCounter(Math.max(data?.products ?? 0, 0));
+  const { ref, inView } = useInView<HTMLDivElement>(true);
+  const orders = useCounter(data?.ordersToday ?? 0, 1600, inView);
+  const customers = useCounter(Math.max(data?.customers ?? 0, 1500), 1800, inView);
+  const rating = useCounter(data?.avgRating ?? 4.9, 1400, inView, 1);
+  const secure = useCounter(100, 1500, inView);
   const items = [
-    { icon: Package, label: "আজকের অর্ডার", value: `${orders}+`, sub: "✅ ডেলিভার্ড" },
-    { icon: Users, label: "হ্যাপি কাস্টমার", value: `${customers}+`, sub: "🇧🇩 বাংলাদেশজুড়ে" },
-    { icon: Star, label: "এভারেজ রেটিং", value: (data?.avgRating ?? 4.9).toFixed(1) + "★", sub: "৫ এ ৫" },
-    { icon: ShieldCheck, label: "সিকিউর পেমেন্ট", value: "১০০%", sub: "এসএসএল প্রটেক্টেড" },
+    { icon: Package, label: "আজকের অর্ডার", value: `${toBn(orders)}+`, sub: "✅ ডেলিভার্ড" },
+    { icon: Users, label: "হ্যাপি কাস্টমার", value: `${toBn(customers)}+`, sub: "🇧🇩 বাংলাদেশজুড়ে" },
+    { icon: Star, label: "এভারেজ রেটিং", value: `${toBn(rating.toFixed(1))}★`, sub: "৫ এ ৫" },
+    { icon: ShieldCheck, label: "সিকিউর পেমেন্ট", value: `${toBn(secure)}%`, sub: "এসএসএল প্রটেক্টেড" },
   ];
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 -mt-6">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {items.map((it) => {
+      <div ref={ref} className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {items.map((it, i) => {
           const Icon = it.icon;
           return (
-            <div key={it.label} className="glass-card rounded-2xl p-4 flex items-center gap-3 hover:shadow-glow transition">
-              <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shrink-0">
+            <div
+              key={it.label}
+              className="glass-card rounded-2xl p-4 flex items-center gap-3 hover:shadow-glow transition-all duration-500 hover:-translate-y-0.5"
+              style={{
+                opacity: inView ? 1 : 0,
+                transform: inView ? "translateY(0)" : "translateY(12px)",
+                transition: `opacity 500ms ease ${i * 100}ms, transform 500ms ease ${i * 100}ms`,
+              }}
+            >
+              <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shrink-0 animate-pulse-glow">
                 <Icon className="h-5 w-5" />
               </div>
               <div className="min-w-0">
@@ -238,6 +275,7 @@ export function LiveStats() {
     </section>
   );
 }
+
 
 /* ============ TESTIMONIALS HIGHLIGHT ============ */
 const featuredTestimonialsQuery = queryOptions({
