@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { productsQuery, faqsQuery, formatBDT } from "@/lib/storefront";
 import { bundlesQuery } from "@/lib/bundles";
 import { ProductCard } from "./ProductCard";
+import { VerifiedBuyerBadge } from "./TrustBadges";
 
 /* ============ FLASH DEALS — countdown + high-discount products ============ */
 export function FlashDeals() {
@@ -286,8 +287,11 @@ export function TestimonialsHighlight() {
               <div className="h-11 w-11 rounded-full bg-gradient-brand grid place-items-center text-primary-foreground font-bold">
                 {(r.users?.full_name || "U").slice(0, 1)}
               </div>
-              <div className="min-w-0">
-                <div className="text-sm font-semibold truncate">{r.users?.full_name || "ভেরিফায়েড কাস্টমার"}</div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="text-sm font-semibold truncate">{r.users?.full_name || "ভেরিফায়েড কাস্টমার"}</div>
+                  <VerifiedBuyerBadge size="xs" />
+                </div>
                 <div className="text-xs text-muted-foreground truncate">{r.products?.title || "ভেরিফায়েড পার্চেজ"}</div>
               </div>
             </div>

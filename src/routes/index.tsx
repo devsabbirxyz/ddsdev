@@ -14,6 +14,7 @@ import { CountdownBanner } from "@/components/storefront/CountdownBanner";
 import { RecentlyViewed } from "@/components/storefront/RecentlyViewed";
 import { FlashDeals, BestSellers, JustArrived, LiveStats, TestimonialsHighlight, HomeFAQ, BundleOffers } from "@/components/storefront/HomeSections";
 import { FreeGiftBanner } from "@/components/storefront/FreeGiftBanner";
+import { TrustBadgeSection, MoneyBackBanner } from "@/components/storefront/TrustBadges";
 import { supabase } from "@/integrations/supabase/client";
 
 
@@ -333,7 +334,9 @@ function HomePage() {
       })()}
 
       <BundleOffers />
+      <MoneyBackBanner />
       <TestimonialsHighlight />
+      <TrustBadgeSection />
 
       {/* HOW TO BUY */}
       <section className="mx-auto max-w-5xl px-4 sm:px-6 pb-16">
