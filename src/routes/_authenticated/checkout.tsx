@@ -15,6 +15,7 @@ import logoBkash from "@/assets/pay-bkash.png";
 import logoNagad from "@/assets/pay-nagad.png";
 import logoRocket from "@/assets/pay-rocket.png";
 import logoUpay from "@/assets/pay-upay.png";
+import { CheckoutUpsell } from "@/components/storefront/CheckoutUpsell";
 
 const METHOD_LOGO: Record<string, string> = {
   bkash: logoBkash,
@@ -304,6 +305,8 @@ function CheckoutPage() {
               ))}
             </div>
           </section>
+
+          <CheckoutUpsell cartProductIds={items.map((i) => i.productId)} />
 
           <section className="glass-card rounded-2xl p-5">
             <h2 className="font-display font-bold text-lg mb-3 inline-flex items-center gap-2">
