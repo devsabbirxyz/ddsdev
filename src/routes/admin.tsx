@@ -23,6 +23,7 @@ const navGroups: NavGroup[] = [
     items: [
       { to: "/admin", label: "ওভারভিউ", icon: LayoutDashboard, exact: true },
       { to: "/admin/analytics", label: "অ্যানালিটিক্স", icon: BarChart3 },
+      { to: "/admin/intelligence", label: "Intelligence ✨", icon: Sparkles },
       { to: "/admin/reports", label: "রিপোর্ট", icon: FileSpreadsheet },
       { to: "/admin/orders", label: "অর্ডার", icon: ShoppingBag },
       { to: "/admin/products", label: "প্রোডাক্ট", icon: Package },

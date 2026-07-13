@@ -57,6 +57,7 @@ import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
 import { Route as AdminOffersRouteImport } from './routes/admin/offers'
 import { Route as AdminNewsletterRouteImport } from './routes/admin/newsletter'
+import { Route as AdminIntelligenceRouteImport } from './routes/admin/intelligence'
 import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
 import { Route as AdminFooterRouteImport } from './routes/admin/footer'
 import { Route as AdminCustomersRouteImport } from './routes/admin/customers'
@@ -335,6 +336,11 @@ const AdminNewsletterRoute = AdminNewsletterRouteImport.update({
   path: '/newsletter',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminIntelligenceRoute = AdminIntelligenceRouteImport.update({
+  id: '/intelligence',
+  path: '/intelligence',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminHomepageRoute = AdminHomepageRouteImport.update({
   id: '/homepage',
   path: '/homepage',
@@ -574,6 +580,7 @@ export interface FileRoutesByFullPath {
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/intelligence': typeof AdminIntelligenceRoute
   '/admin/newsletter': typeof AdminNewsletterRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
@@ -657,6 +664,7 @@ export interface FileRoutesByTo {
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/intelligence': typeof AdminIntelligenceRoute
   '/admin/newsletter': typeof AdminNewsletterRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -743,6 +751,7 @@ export interface FileRoutesById {
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/intelligence': typeof AdminIntelligenceRoute
   '/admin/newsletter': typeof AdminNewsletterRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
@@ -832,6 +841,7 @@ export interface FileRouteTypes {
     | '/admin/customers'
     | '/admin/footer'
     | '/admin/homepage'
+    | '/admin/intelligence'
     | '/admin/newsletter'
     | '/admin/offers'
     | '/admin/orders'
@@ -915,6 +925,7 @@ export interface FileRouteTypes {
     | '/admin/customers'
     | '/admin/footer'
     | '/admin/homepage'
+    | '/admin/intelligence'
     | '/admin/newsletter'
     | '/admin/offers'
     | '/admin/payments'
@@ -1000,6 +1011,7 @@ export interface FileRouteTypes {
     | '/admin/customers'
     | '/admin/footer'
     | '/admin/homepage'
+    | '/admin/intelligence'
     | '/admin/newsletter'
     | '/admin/offers'
     | '/admin/orders'
@@ -1420,6 +1432,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewsletterRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/intelligence': {
+      id: '/admin/intelligence'
+      path: '/intelligence'
+      fullPath: '/admin/intelligence'
+      preLoaderRoute: typeof AdminIntelligenceRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/homepage': {
       id: '/admin/homepage'
       path: '/homepage'
@@ -1798,6 +1817,7 @@ interface AdminRouteChildren {
   AdminCustomersRoute: typeof AdminCustomersRoute
   AdminFooterRoute: typeof AdminFooterRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
+  AdminIntelligenceRoute: typeof AdminIntelligenceRoute
   AdminNewsletterRoute: typeof AdminNewsletterRoute
   AdminOffersRoute: typeof AdminOffersRoute
   AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
@@ -1827,6 +1847,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCustomersRoute: AdminCustomersRoute,
   AdminFooterRoute: AdminFooterRoute,
   AdminHomepageRoute: AdminHomepageRoute,
+  AdminIntelligenceRoute: AdminIntelligenceRoute,
   AdminNewsletterRoute: AdminNewsletterRoute,
   AdminOffersRoute: AdminOffersRoute,
   AdminOrdersRoute: AdminOrdersRouteWithChildren,
