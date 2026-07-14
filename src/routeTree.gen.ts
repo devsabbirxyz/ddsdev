@@ -96,6 +96,8 @@ import { Route as AuthenticatedDashboardNotificationsRouteImport } from './route
 import { Route as AuthenticatedDashboardDownloadsRouteImport } from './routes/_authenticated/dashboard.downloads'
 import { Route as AuthenticatedDashboardCouponsRouteImport } from './routes/_authenticated/dashboard.coupons'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksProcessSubscriptionsRouteImport } from './routes/api/public/hooks/process-subscriptions'
 import { Route as ApiPublicHooksProcessAbandonedCartsRouteImport } from './routes/api/public/hooks/process-abandoned-carts'
 import { Route as AuthenticatedDashboardTicketsIdRouteImport } from './routes/_authenticated/dashboard.tickets.$id'
@@ -546,6 +548,16 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksProcessSubscriptionsRoute =
   ApiPublicHooksProcessSubscriptionsRouteImport.update({
     id: '/api/public/hooks/process-subscriptions',
@@ -654,6 +666,8 @@ export interface FileRoutesByFullPath {
   '/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
   '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
@@ -738,6 +752,8 @@ export interface FileRoutesByTo {
   '/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
   '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -831,6 +847,8 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
   '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -924,6 +942,8 @@ export interface FileRouteTypes {
     | '/dashboard/tickets/$id'
     | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1008,6 +1028,8 @@ export interface FileRouteTypes {
     | '/dashboard/tickets/$id'
     | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -1100,6 +1122,8 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/tickets/$id'
     | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -1129,6 +1153,8 @@ export interface RootRouteChildren {
   ProductSlugRoute: typeof ProductSlugRoute
   ApiPublicHooksProcessAbandonedCartsRoute: typeof ApiPublicHooksProcessAbandonedCartsRoute
   ApiPublicHooksProcessSubscriptionsRoute: typeof ApiPublicHooksProcessSubscriptionsRoute
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -1743,6 +1769,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/process-subscriptions': {
       id: '/api/public/hooks/process-subscriptions'
       path: '/api/public/hooks/process-subscriptions'
@@ -2022,6 +2062,8 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksProcessAbandonedCartsRoute,
   ApiPublicHooksProcessSubscriptionsRoute:
     ApiPublicHooksProcessSubscriptionsRoute,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
