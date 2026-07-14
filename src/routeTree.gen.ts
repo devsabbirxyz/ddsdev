@@ -95,6 +95,7 @@ import { Route as AuthenticatedDashboardOrdersRouteImport } from './routes/_auth
 import { Route as AuthenticatedDashboardNotificationsRouteImport } from './routes/_authenticated/dashboard.notifications'
 import { Route as AuthenticatedDashboardDownloadsRouteImport } from './routes/_authenticated/dashboard.downloads'
 import { Route as AuthenticatedDashboardCouponsRouteImport } from './routes/_authenticated/dashboard.coupons'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicHooksProcessSubscriptionsRouteImport } from './routes/api/public/hooks/process-subscriptions'
 import { Route as ApiPublicHooksProcessAbandonedCartsRouteImport } from './routes/api/public/hooks/process-abandoned-carts'
 import { Route as AuthenticatedDashboardTicketsIdRouteImport } from './routes/_authenticated/dashboard.tickets.$id'
@@ -539,6 +540,12 @@ const AuthenticatedDashboardCouponsRoute =
     path: '/coupons',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksProcessSubscriptionsRoute =
   ApiPublicHooksProcessSubscriptionsRouteImport.update({
     id: '/api/public/hooks/process-subscriptions',
@@ -647,6 +654,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
   '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -730,6 +738,7 @@ export interface FileRoutesByTo {
   '/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
   '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -822,6 +831,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/tickets/$id': typeof AuthenticatedDashboardTicketsIdRoute
   '/api/public/hooks/process-abandoned-carts': typeof ApiPublicHooksProcessAbandonedCartsRoute
   '/api/public/hooks/process-subscriptions': typeof ApiPublicHooksProcessSubscriptionsRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -914,6 +924,7 @@ export interface FileRouteTypes {
     | '/dashboard/tickets/$id'
     | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -997,6 +1008,7 @@ export interface FileRouteTypes {
     | '/dashboard/tickets/$id'
     | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -1088,6 +1100,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/tickets/$id'
     | '/api/public/hooks/process-abandoned-carts'
     | '/api/public/hooks/process-subscriptions'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1116,6 +1129,7 @@ export interface RootRouteChildren {
   ProductSlugRoute: typeof ProductSlugRoute
   ApiPublicHooksProcessAbandonedCartsRoute: typeof ApiPublicHooksProcessAbandonedCartsRoute
   ApiPublicHooksProcessSubscriptionsRoute: typeof ApiPublicHooksProcessSubscriptionsRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1722,6 +1736,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardCouponsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/process-subscriptions': {
       id: '/api/public/hooks/process-subscriptions'
       path: '/api/public/hooks/process-subscriptions'
@@ -2001,17 +2022,8 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksProcessAbandonedCartsRoute,
   ApiPublicHooksProcessSubscriptionsRoute:
     ApiPublicHooksProcessSubscriptionsRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
