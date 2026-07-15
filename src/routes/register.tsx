@@ -234,7 +234,7 @@ function RegisterPage() {
             ← ইমেইল বদলান
           </button>
         </form>
-      )}
+      ) : null}
       <div className="mt-5 text-center text-xs">
         <Link to="/login" className="text-white/80 hover:text-white">
           {t("have_account")} <span className="font-semibold text-white">{t("sign_in")}</span>
