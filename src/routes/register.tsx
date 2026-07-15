@@ -8,6 +8,7 @@ import { notifyNewSignupServer } from "@/lib/telegram.functions";
 import { attachReferrer } from "@/lib/referral.functions";
 import { getPendingReferralCode, clearPendingReferralCode } from "@/components/storefront/ReferralCapture";
 import { AuthShell, Field } from "@/components/auth/AuthShell";
+import { GoogleButton } from "@/components/auth/GoogleButton";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
