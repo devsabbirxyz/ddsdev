@@ -83,7 +83,7 @@ function RegisterPage() {
     const { error: verifyError } = await supabase.auth.verifyOtp({
       email,
       token: otp.trim(),
-      type: "email",
+      type: "signup",
     });
 
     if (verifyError) {
