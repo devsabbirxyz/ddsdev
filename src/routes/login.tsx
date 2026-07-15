@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { Loader2 } from "lucide-react";
 import { AuthShell, Field } from "@/components/auth/AuthShell";
+import { GoogleButton } from "@/components/auth/GoogleButton";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
