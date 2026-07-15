@@ -8,6 +8,7 @@ import { notifyNewSignupServer } from "@/lib/telegram.functions";
 import { attachReferrer } from "@/lib/referral.functions";
 import { getPendingReferralCode, clearPendingReferralCode } from "@/components/storefront/ReferralCapture";
 import { AuthShell, Field } from "@/components/auth/AuthShell";
+import { GoogleButton } from "@/components/auth/GoogleButton";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -155,7 +156,18 @@ function RegisterPage() {
             {t("sign_up")}
           </button>
         </form>
-      ) : (
+      ) : null}
+      {step === "form" && (
+        <>
+          <div className="my-5 flex items-center gap-3 text-xs text-white/50">
+            <div className="h-px flex-1 bg-white/15" />
+            <span>অথবা</span>
+            <div className="h-px flex-1 bg-white/15" />
+          </div>
+          <GoogleButton label="Google দিয়ে সাইনআপ করুন" />
+        </>
+      )}
+      {step === "otp" ? (
         <form onSubmit={handleVerify} className="space-y-5">
           <div className="flex flex-col items-center gap-2 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-purple-500/20 border border-white/10">
@@ -222,7 +234,7 @@ function RegisterPage() {
             ← ইমেইল বদলান
           </button>
         </form>
-      )}
+      ) : null}
       <div className="mt-5 text-center text-xs">
         <Link to="/login" className="text-white/80 hover:text-white">
           {t("have_account")} <span className="font-semibold text-white">{t("sign_in")}</span>
