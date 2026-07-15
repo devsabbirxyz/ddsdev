@@ -57,6 +57,12 @@ function LoginPage() {
           {t("sign_in")}
         </button>
       </form>
+      <div className="my-5 flex items-center gap-3 text-xs text-white/50">
+        <div className="h-px flex-1 bg-white/15" />
+        <span>অথবা</span>
+        <div className="h-px flex-1 bg-white/15" />
+      </div>
+      <GoogleButton />
       <div className="mt-5 flex items-center justify-between text-xs">
         <Link to="/forgot-password" className="text-white/70 hover:text-white">{t("forgot_password")}</Link>
         <Link to="/register" className="text-white font-semibold hover:underline">{t("no_account")} {t("sign_up")}</Link>
