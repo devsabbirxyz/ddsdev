@@ -17,9 +17,15 @@ export const Route = createFileRoute("/register")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  beforeLoad: async () => {
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : undefined,
+  }),
+  beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/dashboard" });
+    if (data.session) {
+      const n = search.next;
+      throw redirect({ href: n && n.startsWith("/") && !n.startsWith("//") ? n : "/dashboard" } as never);
+    }
   },
   component: RegisterPage,
 });
@@ -27,6 +33,8 @@ export const Route = createFileRoute("/register")({
 function RegisterPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
+  const dest = next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -97,8 +105,11 @@ function RegisterPage() {
     }
 
     setLoading(false);
-    setInfo("✅ অ্যাকাউন্ট তৈরি সফল! ড্যাশবোর্ডে নিয়ে যাচ্ছি...");
-    setTimeout(() => navigate({ to: "/dashboard" }), 700);
+    setInfo("✅ অ্যাকাউন্ট তৈরি সফল! নিয়ে যাচ্ছি...");
+    setTimeout(() => {
+      if (dest !== "/dashboard") window.location.href = dest;
+      else navigate({ to: "/dashboard" });
+    }, 700);
   }
 
   return (
@@ -124,9 +135,13 @@ function RegisterPage() {
         <span>অথবা</span>
         <div className="h-px flex-1 bg-white/15" />
       </div>
-      <GoogleButton label="Google দিয়ে সাইনআপ করুন" />
+      <GoogleButton label="Google দিয়ে সাইনআপ করুন" next={dest} />
       <div className="mt-5 text-center text-xs">
-        <Link to="/login" className="text-white/80 hover:text-white">
+        <Link
+          to="/login"
+          search={next ? { next } : undefined as never}
+          className="text-white/80 hover:text-white"
+        >
           {t("have_account")} <span className="font-semibold text-white">{t("sign_in")}</span>
         </Link>
       </div>
