@@ -135,9 +135,13 @@ function RegisterPage() {
         <span>অথবা</span>
         <div className="h-px flex-1 bg-white/15" />
       </div>
-      <GoogleButton label="Google দিয়ে সাইনআপ করুন" />
+      <GoogleButton label="Google দিয়ে সাইনআপ করুন" next={dest} />
       <div className="mt-5 text-center text-xs">
-        <Link to="/login" className="text-white/80 hover:text-white">
+        <Link
+          to="/login"
+          search={next ? { next } : undefined as never}
+          className="text-white/80 hover:text-white"
+        >
           {t("have_account")} <span className="font-semibold text-white">{t("sign_in")}</span>
         </Link>
       </div>
