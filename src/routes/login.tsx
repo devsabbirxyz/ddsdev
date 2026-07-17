@@ -6,6 +6,11 @@ import { Loader2 } from "lucide-react";
 import { AuthShell, Field } from "@/components/auth/AuthShell";
 import { GoogleButton } from "@/components/auth/GoogleButton";
 
+function safeNext(raw: unknown): string {
+  if (typeof raw !== "string" || !raw.startsWith("/") || raw.startsWith("//")) return "/dashboard";
+  return raw;
+}
+
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
@@ -14,9 +19,12 @@ export const Route = createFileRoute("/login")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  beforeLoad: async () => {
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : undefined,
+  }),
+  beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/dashboard" });
+    if (data.session) throw redirect({ href: safeNext(search.next) } as never);
   },
   component: LoginPage,
 });
@@ -24,6 +32,8 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
+  const dest = safeNext(next);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,7 +49,11 @@ function LoginPage() {
       setError(error.message);
       return;
     }
-    navigate({ to: "/dashboard" });
+    if (dest !== "/dashboard") {
+      window.location.href = dest;
+    } else {
+      navigate({ to: "/dashboard" });
+    }
   }
 
   return (
@@ -62,12 +76,17 @@ function LoginPage() {
         <span>অথবা</span>
         <div className="h-px flex-1 bg-white/15" />
       </div>
-      <GoogleButton />
+      <GoogleButton next={dest} />
       <div className="mt-5 flex items-center justify-between text-xs">
         <Link to="/forgot-password" className="text-white/70 hover:text-white">{t("forgot_password")}</Link>
-        <Link to="/register" className="text-white font-semibold hover:underline">{t("no_account")} {t("sign_up")}</Link>
+        <Link
+          to="/register"
+          search={next ? { next } : undefined as never}
+          className="text-white font-semibold hover:underline"
+        >
+          {t("no_account")} {t("sign_up")}
+        </Link>
       </div>
     </AuthShell>
   );
 }
-
