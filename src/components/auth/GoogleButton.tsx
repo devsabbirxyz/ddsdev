@@ -2,9 +2,15 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { lovable } from "@/integrations/lovable";
 
-export function GoogleButton({ label = "Google দিয়ে চালিয়ে যান" }: { label?: string }) {
+function safeNext(raw: string | undefined): string {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/dashboard";
+  return raw;
+}
+
+export function GoogleButton({ label = "Google দিয়ে চালিয়ে যান", next }: { label?: string; next?: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const dest = safeNext(next);
 
   async function handleClick() {
     setError(null);
@@ -18,7 +24,7 @@ export function GoogleButton({ label = "Google দিয়ে চালিয�
       return;
     }
     if (result.redirected) return;
-    window.location.href = "/dashboard";
+    window.location.href = dest;
   }
 
   return (
