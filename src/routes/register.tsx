@@ -17,9 +17,15 @@ export const Route = createFileRoute("/register")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  beforeLoad: async () => {
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : undefined,
+  }),
+  beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/dashboard" });
+    if (data.session) {
+      const n = search.next;
+      throw redirect({ href: n && n.startsWith("/") && !n.startsWith("//") ? n : "/dashboard" } as never);
+    }
   },
   component: RegisterPage,
 });
@@ -27,6 +33,8 @@ export const Route = createFileRoute("/register")({
 function RegisterPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
+  const dest = next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
