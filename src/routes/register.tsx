@@ -105,8 +105,11 @@ function RegisterPage() {
     }
 
     setLoading(false);
-    setInfo("✅ অ্যাকাউন্ট তৈরি সফল! ড্যাশবোর্ডে নিয়ে যাচ্ছি...");
-    setTimeout(() => navigate({ to: "/dashboard" }), 700);
+    setInfo("✅ অ্যাকাউন্ট তৈরি সফল! নিয়ে যাচ্ছি...");
+    setTimeout(() => {
+      if (dest !== "/dashboard") window.location.href = dest;
+      else navigate({ to: "/dashboard" });
+    }, 700);
   }
 
   return (
