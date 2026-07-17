@@ -98,7 +98,7 @@ function ConsentPage() {
 
         {scopes.length > 0 && (
           <ul className="mb-6 space-y-1 text-sm text-white/80">
-            {scopes.map((s) => (
+            {scopes.map((s: string) => (
               <li key={s}>• {s}</li>
             ))}
           </ul>
